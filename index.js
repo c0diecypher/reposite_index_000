@@ -43,7 +43,7 @@ app.post('/web-data', async(req, res)=>{
             type: 'article',
             id: queryId,
             title: 'Ваши детали заказа переданы в обработку...',
-            input_message_content: {message_text: 'Поздравляю с покупкой, ваш заказ:'+ name+price+size}
+            input_message_content: {message_text: 'Поздравляю с покупкой, ваш заказ:'+ name + price+ size}
         })
         return res.status(200).json({});
     }catch(e){
@@ -60,4 +60,4 @@ app.post('/web-data', async(req, res)=>{
 } )
 
 const PORT = 8000;
-app.listen(PORT, () => console.log('server started on PORT'+PORT))
+app.listen(PORT, () => console.log('server started on PORT' + PORT))
