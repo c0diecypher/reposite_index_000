@@ -2,7 +2,7 @@
 const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
 const cors = require('cors');
-const token = '6348468870:AAEca4TmOnLDr59Qv6NnRiFpryShFrm5MAE';
+const token = '6597024566:AAGXwbkrq2CTnpxPSQIqTlqZQEK9Ur3SBR4';
 
 const bot = new TelegramBot(token, {polling: true});
 const app = express();
@@ -36,7 +36,7 @@ bot.on('message', async(msg) => {
     }
 });
 
-app.post('/web-data', async(req, res)=>{
+app.post('/web-data', async(req, res) => {
     const {queryId, name, price, size} = req.body;
     try{
         await bot.answerWebAppQuery(queryId,{
@@ -59,5 +59,5 @@ app.post('/web-data', async(req, res)=>{
     
 } )
 
-const PORT = 8080;
+const PORT = 8000;
 app.listen(PORT, () => console.log('server started on PORT' + PORT))
