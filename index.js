@@ -2,7 +2,7 @@
 const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
 const cors = require('cors');
-const token = '6597024566:AAGXwbkrq2CTnpxPSQIqTlqZQEK9Ur3SBR4';
+const token = '581660861:AAHhPPWB10ljEv78r8lbIzhEDxs3vcD-eHE';
 
 const bot = new TelegramBot(token, {polling: true});
 const app = express();
@@ -36,7 +36,20 @@ bot.on('message', async(msg) => {
     }
 });
 
-app.post('/web-data', async (req, res) => {
+app.get('/', (req, res) => {
+    // Ваш код для обработки запроса на главную страницу здесь
+    // Например, вы можете вернуть HTML страницу или другой контент
+    res.send('Cannot GET /zipperapp');
+  });
+
+// Добавляем обработчик GET запросов для адреса /web-data
+app.get('/web-data', (req, res) => {
+    // Ваш код обработки GET запроса здесь
+    // Например, вы можете вернуть текстовое сообщение
+    res.send('GET запрос к /web-data успешно обработан');
+  });
+
+app.post('/web-data', async(req, res) => {
     const {queryId, price} = req.body;
     try {
         await bot.answerWebAppQuery(queryId, {
