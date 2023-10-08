@@ -23,16 +23,10 @@ bot.on('message', async(msg) => {
   const chatId = msg.chat.id;
   const text = msg.text;
     if(text === '/start'){
-        await bot.getUserProfilePhotos(userId).then((result) => {
-      const photos = result.photos;
-
-      if (photos.length > 0) {
-        // Получаем URL изображения профиля
-        const photoUrl = bot.getFileLink(photos[0][0].file_id);
         await bot.sendMessage(chatId,start,{
             reply_markup: {
                 inline_keyboard: [
-                    [{text: ' ${photoUrl}', web_app: {url: webAppUrl}}]
+                    [{text: 'Open App', web_app: {url: webAppUrl}}]
                 ]
             },
             parse_mode: 'HTML'
