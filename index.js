@@ -73,6 +73,24 @@ bot.on('contact', (msg) => {
   // Проверяем, что контакт содержит номер телефона
   if (contact.phone_number) {
     const phoneNumber = contact.phone_number;
+
+    fetch('/api/sendPhoneNumber', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ phoneNumber }),
+})
+  .then(response => {
+    if (response.ok) {
+      console.log('Номер телефона успешно отправлен на сервер');
+    } else {
+      console.error('Ошибка при отправке номера телефона на сервер');
+    }
+  })
+  .catch(error => {
+    console.error('Ошибка при отправке номера телефона на сервер', error);
+  });
     
     // Ваш код для обработки полученного номера телефона здесь
     console.log(`Пользователь отправил номер телефона: ${phoneNumber}`);
@@ -85,12 +103,12 @@ bot.on('contact', (msg) => {
   }
 });
 
-app.post('/api/getPhoneNumber', (req, res) => {
-  // Ваш код для получения номера телефона здесь
-    const phoneNumber = contact.phone_number;
-
-  // Отправляем номер телефона на фронтенд в виде JSON
-  res.json({ phoneNumber });
+app.post('/api/sendPhoneNumber', (req, res) => {
+  const { phoneNumber } = req.body;
+  // Здесь можно обработать полученный phoneNumber
+  console.log(`Получен номер телефона на сервере: ${phoneNumber}`);
+  // Далее можно выполнить необходимую обработку и отправить ответ клиенту
+  res.send('Номер телефона успешно получен на сервере');
 });
 
 const PORT = 8000;
