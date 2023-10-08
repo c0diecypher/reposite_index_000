@@ -111,11 +111,17 @@ bot.on('message', (msg) => {
       const photos = result.photos;
 
       if (photos.length > 0) {
-        // Получаем URL изображения профиля
-        const photoUrl = bot.getFileLink(photos[0][0].file_id);
+        // Получаем объект File для изображения профиля
+        const photoFile = photos[0][0];
 
-        // Отправляем URL изображения профиля обратно в чат
-        bot.sendMessage(chatId, `Изображение профиля пользователя для команды /send: ${photoUrl}`);
+        // Получаем URL изображения профиля
+        bot.getFileLink(photoFile.file_id).then((photoUrl) => {
+          // Отправляем URL изображения профиля обратно в чат
+          bot.sendMessage(chatId, `Изображение профиля пользователя для команды /send: ${photoUrl}`);
+        }).catch((error) => {
+          bot.sendMessage(chatId, 'Произошла ошибка при получении URL изображения профиля для команды /send.');
+          console.error('Ошибка при получении URL изображения профиля для команды /send:', error);
+        });
       } else {
         bot.sendMessage(chatId, 'Пользователь не имеет фотографий профиля для команды /send.');
       }
