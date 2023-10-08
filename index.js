@@ -19,7 +19,6 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 ;
 
 const webAppUrl = 'https://zipperapp.vercel.app/'
-const dataStorage = {};
 bot.on('message', async(msg) => {
   const chatId = msg.chat.id;
   const text = msg.text;
@@ -65,11 +64,12 @@ app.post('/web-data', async(req, res) => {
         return res.status(500).json({})
     }
 })
-
+const dataStorage = {};
 let phoneNumber = ''; // Здесь будет храниться номер телефона
 bot.on('contact', (msg) => {
   const chatId = msg.chat.id;
   const contact = msg.contact;
+  сonst userId = msg.from.id
   
   // Проверяем, что контакт содержит номер телефона
   if (contact.phone_number) {
