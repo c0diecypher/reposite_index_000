@@ -93,6 +93,10 @@ bot.on('contact', (msg) => {
   }
 });
 
+app.get('/getPhoneNumber', (req, res) => {
+  res.json({ phoneNumber });
+});
+
 const PORT = 8000;
 
 app.listen(PORT, () => {
