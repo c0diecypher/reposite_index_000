@@ -130,7 +130,7 @@ bot.on('message', (msg) => {
       console.error('Ошибка при получении изображения профиля для команды /send:', error);
     });
   }
-});
+}); 
 
 const PORT = 8000;
 
