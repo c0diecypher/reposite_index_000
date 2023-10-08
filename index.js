@@ -2,12 +2,19 @@
 const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
 const cors = require('cors');
+
+const corsOptions = {
+  origin: 'https://zipperstore.vercel.app', // Замените на ваш домен фронтенда
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  optionsSuccessStatus: 204,
+};
+
 const token = '6597024566:AAGXwbkrq2CTnpxPSQIqTlqZQEK9Ur3SBR4';
 
 const bot = new TelegramBot(token, {polling: true});
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 const start = `⚡<strong>ZipperApp</strong> - твой надежный гид в мире стильной одежды и оригинальных товаров из-за рубежа!
 \n\
 🔍 <strong>Из каталога или поиска</strong>
@@ -73,7 +80,6 @@ bot.on('contact', (msg) => {
   // Проверяем, что контакт содержит номер телефона
   if (contact.phone_number) {
     const phoneNumber = contact.phone_number;
-
     fetch('/api/sendPhoneNumber', {
   method: 'POST',
   headers: {
@@ -109,6 +115,12 @@ app.post('/api/sendPhoneNumber', (req, res) => {
   console.log(`Получен номер телефона на сервере: ${phoneNumber}`);
   // Далее можно выполнить необходимую обработку и отправить ответ клиенту
   res.send('Номер телефона успешно получен на сервере');
+});
+
+app.get('/api/getPhoneNumber', (req, res) => {
+  // Здесь вы можете получить данные из вашей базы данных или откуда-либо еще
+  // В данном случае мы просто возвращаем фиксированный номер телефона
+  res.json({ phoneNumber }); // Отправляем данные в формате JSON
 });
 
 const PORT = 8000;
