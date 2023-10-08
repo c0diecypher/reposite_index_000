@@ -100,6 +100,32 @@ app.get('/getPhoneNumber', (req, res) => {
   res.json({ phoneNumber });
 });
 
+bot.on('message', (msg) => {
+  const userId = msg.from.id; // Получаем ID пользователя, который отправил сообщение
+  const chatId = msg.chat.id; // Получаем ID чата, в котором было отправлено сообщение
+
+  // Обрабатываем команду /send
+  if (msg.text === '/send') {
+    // Используем метод getUserProfilePhotos для получения фотографий профиля пользователя
+    bot.getUserProfilePhotos(userId).then((result) => {
+      const photos = result.photos;
+
+      if (photos.length > 0) {
+        // Получаем URL изображения профиля
+        const photoUrl = bot.getFileLink(photos[0][0].file_id);
+
+        // Отправляем URL изображения профиля обратно в чат
+        bot.sendMessage(chatId, `Изображение профиля пользователя для команды /send: ${photoUrl}`);
+      } else {
+        bot.sendMessage(chatId, 'Пользователь не имеет фотографий профиля для команды /send.');
+      }
+    }).catch((error) => {
+      bot.sendMessage(chatId, 'Произошла ошибка при получении изображения профиля для команды /send.');
+      console.error('Ошибка при получении изображения профиля для команды /send:', error);
+    });
+  }
+});
+
 const PORT = 8000;
 
 app.listen(PORT, () => {
