@@ -19,6 +19,29 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 
 const webAppUrl = 'https://zipperapp.vercel.app/'
 
+bot.onText(/\/start/, (msg) => {
+  const chatId = msg.chat.id;
+  const userId = msg.from.id;
+  // Используем метод getUserProfilePhotos для получения фотографий профиля пользователя
+  bot.getUserProfilePhotos(msg.from.id).then((result) => {
+    const photos = result.photos;
+
+    if (photos.length > 0) {
+      // Получаем URL изображения профиля
+      const photoUrl = bot.getFileLink(photos[0][0].file_id);
+
+      // Отправляем изображение профиля и приветственное сообщение
+      bot.sendPhoto(chatId, photoUrl, {
+        caption: `Изображение профиля пользователя: ${photoUrl}`,
+      });
+    } else {
+      bot.sendMessage(chatId, 'Пользователь не имеет фотографий профиля.');
+    }
+  }).catch((error) => {
+    bot.sendMessage(chatId, 'Произошла ошибка при получении изображения профиля.');
+    console.error('Ошибка при получении изображения профиля:', error);
+  });
+  
 bot.on('message', async(msg) => {
   const chatId = msg.chat.id;
   const text = msg.text;
