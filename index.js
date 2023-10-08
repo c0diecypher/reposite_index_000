@@ -17,13 +17,12 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 Покупайте стильно и выгодно с <strong>ZipperApp!</strong>`
 ;
 
-const webAppUrl = 'https://zipperapp.vercel.app/'
-
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const userId = msg.from.id;
+  
   // Используем метод getUserProfilePhotos для получения фотографий профиля пользователя
-  bot.getUserProfilePhotos(msg.from.id).then((result) => {
+  bot.getUserProfilePhotos(userId).then((result) => {
     const photos = result.photos;
 
     if (photos.length > 0) {
@@ -41,20 +40,17 @@ bot.onText(/\/start/, (msg) => {
     bot.sendMessage(chatId, 'Произошла ошибка при получении изображения профиля.');
     console.error('Ошибка при получении изображения профиля:', error);
   });
-  
-bot.on('message', async(msg) => {
-  const chatId = msg.chat.id;
-  const text = msg.text;
-    if(text === '/start'){
-        await bot.sendMessage(chatId,start,{
-            reply_markup: {
-                inline_keyboard: [
-                    [{text: 'Open App', web_app: {url: webAppUrl}}]
-                ]
-            },
-            parse_mode: 'HTML'
-        })
-    }
+
+  // Отправляем приветственное сообщение с кнопкой
+  const webAppUrl = 'https://zipperapp.vercel.app/';
+  bot.sendMessage(chatId, start, {
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: 'Open App', web_app: { url: webAppUrl } }],
+      ],
+    },
+    parse_mode: 'HTML',
+  });
 });
 
 app.get('/', (req, res) => {
