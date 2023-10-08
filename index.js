@@ -4,7 +4,7 @@ const express = require('express');
 const cors = require('cors');
 
 const corsOptions = {
-  origin: 'https://zipperstore.vercel.app', // Замените на ваш домен фронтенда
+  origin: 'https://zipperapp.vercel.app/', // Замените на ваш домен фронтенда
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   optionsSuccessStatus: 204,
 };
