@@ -17,40 +17,21 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 Покупайте стильно и выгодно с <strong>ZipperApp!</strong>`
 ;
 
-bot.onText(/\/start/, (msg) => {
+const webAppUrl = 'https://zipperapp.vercel.app/'
+
+bot.on('message', async(msg) => {
   const chatId = msg.chat.id;
-  const userId = msg.from.id;
-  
-  // Используем метод getUserProfilePhotos для получения фотографий профиля пользователя
-  bot.getUserProfilePhotos(userId).then((result) => {
-    const photos = result.photos;
-
-    if (photos.length > 0) {
-      // Получаем URL изображения профиля
-      const photoUrl = bot.getFileLink(photos[0][0].file_id);
-
-      // Отправляем изображение профиля и приветственное сообщение
-      bot.sendPhoto(chatId, photoUrl, {
-        caption: `Изображение профиля пользователя: ${photoUrl}`,
-      });
-    } else {
-      bot.sendMessage(chatId, 'Пользователь не имеет фотографий профиля.');
+  const text = msg.text;
+    if(text === '/start'){
+        await bot.sendMessage(chatId,start,{
+            reply_markup: {
+                inline_keyboard: [
+                    [{text: 'Open App', web_app: {url: webAppUrl}}]
+                ]
+            },
+            parse_mode: 'HTML'
+        })
     }
-  }).catch((error) => {
-    bot.sendMessage(chatId, 'Произошла ошибка при получении изображения профиля.');
-    console.error('Ошибка при получении изображения профиля:', error);
-  });
-
-  // Отправляем приветственное сообщение с кнопкой
-  const webAppUrl = 'https://zipperapp.vercel.app/';
-  bot.sendMessage(chatId, start, {
-    reply_markup: {
-      inline_keyboard: [
-        [{ text: 'Open App', web_app: { url: webAppUrl } }],
-      ],
-    },
-    parse_mode: 'HTML',
-  });
 });
 
 app.get('/', (req, res) => {
