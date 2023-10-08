@@ -87,7 +87,6 @@ bot.on('contact', (msg) => {
 
 app.post('/api/getPhoneNumber', (req, res) => {
   // Ваш код для получения номера телефона здесь
-  if (contact.phone_number) {
     const phoneNumber = contact.phone_number;
 
   // Отправляем номер телефона на фронтенд в виде JSON
