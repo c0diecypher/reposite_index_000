@@ -73,31 +73,15 @@ app.post('/web-data', async(req, res) => {
     }
 })
 
+let phoneNumber = ''; // Здесь будет храниться номер телефона
+
 bot.on('contact', (msg) => {
   const chatId = msg.chat.id;
   const contact = msg.contact;
   
   // Проверяем, что контакт содержит номер телефона
   if (contact.phone_number) {
-    const phoneNumber = contact.phone_number;
-    fetch('/api/sendPhoneNumber', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({ phoneNumber }),
-})
-  .then(response => {
-    if (response.ok) {
-      console.log('Номер телефона успешно отправлен на сервер');
-    } else {
-      console.error('Ошибка при отправке номера телефона на сервер');
-    }
-  })
-  .catch(error => {
-    console.error('Ошибка при отправке номера телефона на сервер', error);
-  });
-    
+    phoneNumber = contact.phone_number;  
     // Ваш код для обработки полученного номера телефона здесь
     console.log(`Пользователь отправил номер телефона: ${phoneNumber}`);
     
@@ -107,20 +91,6 @@ bot.on('contact', (msg) => {
     // Если контакт не содержит номера телефона, отправляем сообщение об ошибке
     bot.sendMessage(chatId, 'К сожалению, не удалось получить номер телефона.');
   }
-});
-
-app.post('/api/sendPhoneNumber', (req, res) => {
-  const { phoneNumber } = req.body;
-  // Здесь можно обработать полученный phoneNumber
-  console.log(`Получен номер телефона на сервере: ${phoneNumber}`);
-  // Далее можно выполнить необходимую обработку и отправить ответ клиенту
-  res.send('Номер телефона успешно получен на сервере');
-});
-
-app.get('/api/getPhoneNumber', (req, res) => {
-  // Здесь вы можете получить данные из вашей базы данных или откуда-либо еще
-  // В данном случае мы просто возвращаем фиксированный номер телефона
-  res.json({ phoneNumber }); // Отправляем данные в формате JSON
 });
 
 const PORT = 8000;
