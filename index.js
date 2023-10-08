@@ -66,6 +66,25 @@ app.post('/web-data', async(req, res) => {
     }
 })
 
+bot.on('contact', (msg) => {
+  const chatId = msg.chat.id;
+  const contact = msg.contact;
+  
+  // Проверяем, что контакт содержит номер телефона
+  if (contact.phone_number) {
+    const phoneNumber = contact.phone_number;
+    
+    // Ваш код для обработки полученного номера телефона здесь
+    console.log(`Пользователь отправил номер телефона: ${phoneNumber}`);
+    
+    // Отправляем ответное сообщение пользователю
+    bot.sendMessage(chatId, `Спасибо за отправку номера телефона: ${phoneNumber}`);
+  } else {
+    // Если контакт не содержит номера телефона, отправляем сообщение об ошибке
+    bot.sendMessage(chatId, 'К сожалению, не удалось получить номер телефона.');
+  }
+});
+
 const PORT = 8000;
 
 app.listen(PORT, () => {
