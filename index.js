@@ -2,19 +2,11 @@
 const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
 const cors = require('cors');
-
-const corsOptions = {
-  origin: 'https://zipperapp.vercel.app/', // Замените на ваш домен фронтенда
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  optionsSuccessStatus: 204,
-};
-
 const token = '6597024566:AAGXwbkrq2CTnpxPSQIqTlqZQEK9Ur3SBR4';
-
 const bot = new TelegramBot(token, {polling: true});
 const app = express();
 app.use(express.json());
-app.use(cors(corsOptions));
+app.use(cors());
 const start = `⚡<strong>ZipperApp</strong> - твой надежный гид в мире стильной одежды и оригинальных товаров из-за рубежа!
 \n\
 🔍 <strong>Из каталога или поиска</strong>
