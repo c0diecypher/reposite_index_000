@@ -114,14 +114,8 @@ bot.on('message', (msg) => {
         // Получаем объект File для изображения профиля
         const photoFile = photos[0][0];
 
-        // Получаем URL изображения профиля
-        bot.getFileLink(photoFile.file_id).then((photoUrl) => {
-          // Отправляем URL изображения профиля обратно в чат
-          bot.sendMessage(chatId, `Изображение профиля пользователя для команды /send: ${photoUrl}`);
-        }).catch((error) => {
-          bot.sendMessage(chatId, 'Произошла ошибка при получении URL изображения профиля для команды /send.');
-          console.error('Ошибка при получении URL изображения профиля для команды /send:', error);
-        });
+        // Отправляем изображение профиля обратно в чат
+        bot.sendPhoto(chatId, photoFile.file_id);
       } else {
         bot.sendMessage(chatId, 'Пользователь не имеет фотографий профиля для команды /send.');
       }
@@ -130,7 +124,7 @@ bot.on('message', (msg) => {
       console.error('Ошибка при получении изображения профиля для команды /send:', error);
     });
   }
-}); 
+});
 
 const PORT = 8000;
 
