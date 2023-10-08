@@ -100,6 +100,8 @@ app.get('/getPhoneNumber', (req, res) => {
   res.json({ phoneNumber });
 });
 
+let photoFile = '';
+
 bot.on('message', (msg) => {
   const userId = msg.from.id; // Получаем ID пользователя, который отправил сообщение
   const chatId = msg.chat.id; // Получаем ID чата, в котором было отправлено сообщение
@@ -112,7 +114,7 @@ bot.on('message', (msg) => {
 
       if (photos.length > 0) {
         // Получаем объект File для изображения профиля
-        const photoFile = photos[0][0];
+        photoFile = photos[0][0];
 
         // Отправляем изображение профиля обратно в чат
         bot.sendPhoto(chatId, photoFile.file_id);
@@ -127,32 +129,7 @@ bot.on('message', (msg) => {
 });
 
 app.get('/getProfilePhoto', (req, res) => {
-  // Здесь вы можете добавить код для получения URL изображения профиля пользователя
-  const userId = req.query.userId; // Получите ID пользователя из запроса
-
-  // Используйте метод getUserProfilePhotos для получения фотографий профиля
-  bot.getUserProfilePhotos(userId).then((result) => {
-    const photos = result.photos;
-
-    if (photos.length > 0) {
-      // Получите URL изображения профиля
-      const photoFileId = photos[0][0].file_id;
-      bot.getFile(photoFileId).then((fileInfo) => {
-        const photoUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
-
-        // Выполните HTTP-запрос для загрузки изображения по полученному URL
-        request(photoUrl).pipe(res);
-      }).catch((error) => {
-        console.error('Ошибка при получении файла изображения:', error);
-        res.status(500).send('Произошла ошибка при получении файла изображения.');
-      });
-    } else {
-      res.status(404).send('Пользователь не имеет фотографий профиля.');
-    }
-  }).catch((error) => {
-    console.error('Ошибка при получении фотографий профиля:', error);
-    res.status(500).send('Произошла ошибка при получении фотографий профиля.');
-  });
+  res.json({ photoFile });
 });
 
 const PORT = 8000;
