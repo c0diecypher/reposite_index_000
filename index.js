@@ -1,4 +1,3 @@
-
 const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
 const cors = require('cors');
@@ -19,6 +18,7 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 ;
 
 const webAppUrl = 'https://zipperapp.vercel.app/'
+
 bot.on('message', async(msg) => {
   const chatId = msg.chat.id;
   const text = msg.text;
@@ -55,8 +55,7 @@ app.post('/web-data', async(req, res) => {
             id: queryId,
             title: 'Успешная покупка',
             input_message_content: {
-                message_text: ` Поздравляю с покупкой! Вы приобрели ${name} на сумму ${price}₽, размер ${size}US
-                Номер для связи: ${phoneNumber}`
+                message_text: ` Поздравляю с покупкой! Вы приобрели ${name} на сумму ${price}₽, размер ${size}US.`
             }
         })
         return res.status(200).json({});
@@ -64,18 +63,16 @@ app.post('/web-data', async(req, res) => {
         return res.status(500).json({})
     }
 })
-const dataStorage = {};
+
 let phoneNumber = ''; // Здесь будет храниться номер телефона
+
 bot.on('contact', (msg) => {
   const chatId = msg.chat.id;
   const contact = msg.contact;
-  сonst userId = msg.from.id
   
   // Проверяем, что контакт содержит номер телефона
   if (contact.phone_number) {
     phoneNumber = contact.phone_number;  
-
-    dateStorage[phoneNumber] = chatId;
     // Ваш код для обработки полученного номера телефона здесь
     console.log(`Пользователь отправил номер телефона: ${phoneNumber}`);
     
@@ -88,7 +85,7 @@ bot.on('contact', (msg) => {
 });
 
 app.get('/getPhoneNumber', (req, res) => {
-   res.json(dataStorage);
+  res.json({ phoneNumber });
 });
 
 const PORT = 8000;
