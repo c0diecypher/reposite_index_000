@@ -88,14 +88,7 @@ bot.on('contact', (msg) => {
 });
 
 app.get('/getPhoneNumber', (req, res) => {
-  const phoneNumber = req.query.phoneNumber; // Получаем номер телефона из запроса
-  
-  if (phoneNumber && dataStorage[phoneNumber]) {
-    const chatId = dataStorage[phoneNumber];
-    res.json({ chatId }); // Отправляем chatId для данного номера телефона
-  } else {
-    res.json({ chatId: null }); // Если номер не найден, отправляем null
-  }
+   res.json(dataStorage);
 });
 
 const PORT = 8000;
