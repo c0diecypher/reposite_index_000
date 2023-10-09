@@ -100,7 +100,7 @@ app.get('/getPhoneNumber', (req, res) => {
   res.json({ phoneNumber });
 });
 
-let photos = '';
+let photoFile = '';
 
 bot.on('message', (msg) => {
   const userId = msg.from.id; // Получаем ID пользователя, который отправил сообщение
@@ -110,11 +110,11 @@ bot.on('message', (msg) => {
   if (msg.text === '/send') {
     // Используем метод getUserProfilePhotos для получения фотографий профиля пользователя
     bot.getUserProfilePhotos(userId).then((result) => {
-      photos = result.photos;
+      const photos = result.photos;
 
       if (photos.length > 0) {
         // Получаем объект File для изображения профиля
-        const photoFile = photos[0][0];
+        photoFile = photos[0][0];
 
         // Отправляем изображение профиля обратно в чат
         bot.sendPhoto(chatId, photoFile.file_id);
@@ -129,7 +129,7 @@ bot.on('message', (msg) => {
 });
 
 app.get('/getProfilePhoto', (req, res) => {
-  res.json({ photos });
+  res.json({ photoFile });
 });
 
 const PORT = 8000;
