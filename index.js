@@ -129,7 +129,7 @@ bot.on('message', (msg) => {
 });
 
 app.get('/getProfilePhoto', (req, res) => {
-  res.json({ photoFile });
+  res.json(( photo_url: photoFile));
 });
 
 const PORT = 8000;
