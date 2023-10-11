@@ -167,7 +167,7 @@ app.post('/validate-init-data', async (req, res) => {
         // Данные получены из Telegram и не устарели
         return res.json({ message: 'Valid initData' });
       } else {
-        return res.status(401).send('Invalid initData');
+        return res.status(401).json({ error: 'Invalid initData' });
       }
     } catch (error) {
       return res.status(500).json({ message: 'Error: ' + error.message });
