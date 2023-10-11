@@ -64,30 +64,39 @@ app.get('/web-data', (req, res) => {
     res.send('GET запрос к /web-data успешно обработан');
   });
 
-  app.post('/web-data', async (req, res) => {
-    const { queryId, name, price, size, phonenumber } = req.body;
-  
+  app.post('/web-data', async(req, res) => { 
+    const {queryId, price, size, name} = req.body;
+    
     try {
-      // Создать новую запись в таблице с предоставленными данными
-      await User.create({ queryId, name, price, size, phonenumber });
-  
-      // Отправить ответ WebApp о успешной покупке или выполнении операции
-      await bot.answerWebAppQuery(queryId, {
-        type: 'article',
-        id: queryId,
-        title: 'Успешная покупка',
-        input_message_content: {
-          message_text: 'Поздравляем с покупкой!'
-          // Другие данные о покупке
-        }
-      });
-  
-      return res.status(200).json({});
-    } catch (error) {
-      return res.status(500).json({ error: 'Ошибка при добавлении данных в базу данных' });
-    }
-  });
+        await User.create({ queryId, name, price, size, phoneNumber });
+        await bot.answerWebAppQuery(queryId, {
+            type: 'article',
+            id: queryId,
+            title: 'Успешная покупка',
+            input_message_content: {
+                message_text: `
+            Поздравляем с покупкой! 
+        📋 Детали заказа:
+ ℹ  Оффер заказа: 
+🧾 Название: ${name}
+💎 Цена: ${price} ₽, 
+📏 Размер: ${size} US.
 
+        🚚 Детали доставки:
+📱 Номер для связи: ${phoneNumber}, 
+👤 ФИО: ...., 
+📍 Адрес выдачи: ...
+
+Спасибо, что пользуетесь zipper app ! ⚡`
+            }
+           
+        })
+        
+        return res.status(200).json({});
+    } catch (e) {
+        return res.status(500).json({})
+    }
+})
 let phoneNumber = ''; // Здесь будет храниться номер телефона
 
 bot.on('contact', (msg) => {
