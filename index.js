@@ -4,9 +4,27 @@ const cors = require('cors');
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const bot = new TelegramBot(token, {polling: true});
 const app = express();
+const sequelize = require('./database');
+const UserModel = require('./models');
 app.use(express.json());
 app.use(cors());
-const start = `⚡<strong>ZipperApp</strong> - твой надежный гид в мире стильной одежды и оригинальных товаров из-за рубежа!
+
+
+const webAppUrl = 'https://zipperapp.vercel.app/'
+
+bot.on('message', async(msg) => {
+  const chatId = msg.chat.id;
+  const text = msg.text;
+  const firstname = msg.from.first_name;
+  const usersId = msg.from.id
+    sequelize.authenticate();
+    sequelize.sync();
+  try {
+    if(text === '/start'){
+         
+    
+        const desc =
+`⚡<strong>ZipperApp</strong> - твой надежный гид в мире стильной одежды и оригинальных товаров из-за рубежа!
 \n\
 🔍 <strong>Из каталога или поиска</strong>
 Мы представляем вам более 8500 стильных кроссовок из Poizon с полным ассортиментом размеров и цен в рублях.
@@ -14,16 +32,9 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 👩‍💼 <strong>С помощью оператора</strong>
 Просто напиши в чат модель или отправь фотографию, и получи цену на 30-50% дешевле по сравнению с другими магазинами!
 \n\
-Покупайте стильно и выгодно с <strong>ZipperApp!</strong>`
-;
+Покупайте стильно и выгодно с <strong>ZipperApp!</strong>`;
 
-const webAppUrl = 'https://zipperapp.vercel.app/'
-
-bot.on('message', async(msg) => {
-  const chatId = msg.chat.id;
-  const text = msg.text;
-    if(text === '/start'){
-        await bot.sendMessage(chatId,start,{
+        await bot.sendMessage(chatId,desc,{
             reply_markup: {
                 inline_keyboard: [
                     [{text: 'Open App', web_app: {url: webAppUrl}}]
@@ -32,6 +43,12 @@ bot.on('message', async(msg) => {
             parse_mode: 'HTML'
         })
     }
+      console.log('Подключение к базе данных успешно!');
+  }     
+  catch(e) {
+    console.log('Ошибка подключения к базе данных:');
+    await bot.sendMessage(chatId,'Мы уже решаем данную ошибочку, ожидайте ответ оператора');
+  };
 });
 
 app.get('/', (req, res) => {
@@ -47,34 +64,29 @@ app.get('/web-data', (req, res) => {
     res.send('GET запрос к /web-data успешно обработан');
   });
 
-app.post('/web-data', async(req, res) => {
-    const {queryId, price, size, name} = req.body;
+  app.post('/web-data', async (req, res) => {
+    const { queryId, name, price, size, phonenumber } = req.body;
+  
     try {
-        await bot.answerWebAppQuery(queryId, {
-            type: 'article',
-            id: queryId,
-            title: 'Успешная покупка',
-            input_message_content: {
-                message_text: `
-            Поздравляем с покупкой! 
-        📋 Детали заказа: 
-🧾 Название: ${name}
-💎 Цена: ${price} ₽, 
-📏 Размер: ${size} US.
-
-        🚚 Детали доставки:
-📱 Номер для связи: ${phoneNumber}, 
-👤 ФИО: ...., 
-📍 Адрес выдачи: ...
-
-Спасибо, что пользуетесь zipper app ! ⚡`
-            }
-        })
-        return res.status(200).json({});
-    } catch (e) {
-        return res.status(500).json({})
+      // Создать новую запись в таблице с предоставленными данными
+      await User.create({ queryId, name, price, size, phonenumber });
+  
+      // Отправить ответ WebApp о успешной покупке или выполнении операции
+      await bot.answerWebAppQuery(queryId, {
+        type: 'article',
+        id: queryId,
+        title: 'Успешная покупка',
+        input_message_content: {
+          message_text: 'Поздравляем с покупкой!'
+          // Другие данные о покупке
+        }
+      });
+  
+      return res.status(200).json({});
+    } catch (error) {
+      return res.status(500).json({ error: 'Ошибка при добавлении данных в базу данных' });
     }
-})
+  });
 
 let phoneNumber = ''; // Здесь будет храниться номер телефона
 
