@@ -5,7 +5,6 @@ const token = process.env.TELEGRAM_BOT_TOKEN;
 const CryptoJS = require('crypto-js');
 const bot = new TelegramBot(token, {polling: true});
 const app = express();
-const { validate } = require('@tma.js/init-data-node'); 
 app.use(express.json());
 app.use(cors());
 const start = `⚡<strong>ZipperApp</strong> - твой надежный гид в мире стильной одежды и оригинальных товаров из-за рубежа!
@@ -162,11 +161,16 @@ app.post('/validate-init-data', async (req, res) => {
   
       // Вычислите подпись HMAC-SHA-256
       const calculated_hash = CryptoJS.HmacSHA256(data_check_string, secret_key).toString();
-      validate(initData, token)
+  
       // Сравните calculated_hash с полученным параметром "hash"
-      console.log('Данные действительны.'); // Если данные прошли проверку
+      if (calculated_hash === hash && auth_date >= Math.floor(Date.now() / 1000)) {
+        // Данные получены из Telegram и не устарели
+        return res.json({ message: 'Valid initData' });
+      } else {
+        return res.status(401).json({ error: 'Invalid initData' });
+      }
     } catch (error) {
-      console.error('Ошибка:', error.message); // Если произошла ошибка проверки
+      return res.status(500).json({ message: 'Error: ' + error.message });
     }
   });
 
