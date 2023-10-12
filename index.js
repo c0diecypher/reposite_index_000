@@ -136,14 +136,14 @@ app.get('/getProfilePhoto', (req, res) => {
 
 app.post('/validate-init-data', async (req, res) => {
   try {
-    // Получите `hash` из заголовка Authorization
+    // Получите `initData` из заголовка Authorization
     const authHeader = req.headers['authorization'];
-    const hash = authHeader.split(' ')[1]; // Разбираем Authorization заголовок
+    const initData = authHeader.split(' ')[1]; // Разбираем Authorization заголовок
 
-    // Теперь можно произвести валидацию `hash`
+    // Теперь можно произвести валидацию `initData`
 
-    // Передайте `hash` в функцию validate с вашим секретным токеном
-    const isValid = validate(token, hash);
+    // Передайте `initData` в функцию validate с вашим секретным токеном
+    const isValid = validate(token, initData);
 
     if (isValid) {
       return res.json({ message: 'Valid initData' });
