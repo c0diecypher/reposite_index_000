@@ -133,7 +133,7 @@ bot.on('message', (msg) => {
 app.get('/getProfilePhoto', (req, res) => {
   res.json({ photo_url: photoFile });
 });
-
+let validatedData = null;
 app.post('/validate-init-data', async (req, res) => {
   try {
     const { query_id, user, auth_date, hash } = req.body;
