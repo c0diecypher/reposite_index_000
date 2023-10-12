@@ -49,9 +49,6 @@ app.post('/validate-initdata', (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
 const webAppUrl = 'https://zipperapp.vercel.app/'
 
 bot.on('message', async(msg) => {
