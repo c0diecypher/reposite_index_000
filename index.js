@@ -18,6 +18,47 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 Покупайте стильно и выгодно с <strong>ZipperApp!</strong>`
 ;
 
+
+app.post('/validate-init-data', async (req, res) => {
+    try {
+      // Получить значение заголовка Authorization
+      const authHeader = req.header('Authorization');
+  
+      if (!authHeader || !authHeader.startsWith('twa-init-data')) {
+        return res.status(401).send('Invalid Authorization header');
+      }
+  
+      // Извлечь данные инициализации из заголовка
+      const initData = authHeader.replace('twa-init-data', '').trim();
+  
+      // Добавьте код валидации с использованием CryptoJS
+      const initDataString = initData;
+      const params = new URLSearchParams(initDataString);
+      const auth_date = params.get('auth_date');
+      const query_id = params.get('query_id');
+      const user = params.get('user');
+      const hash = params.get('hash');
+  
+      // Создайте "data-check-string"
+      const data_check_string = `auth_date=${auth_date}\nquery_id=${query_id}\nuser=${user}`;
+  
+      // Вычислите секретный ключ
+      const secret_key = CryptoJS.HmacSHA256(token, 'WebAppData').toString();
+  
+      // Вычислите подпись HMAC-SHA-256
+      const calculated_hash = CryptoJS.HmacSHA256(data_check_string, secret_key).toString();
+  
+      // Сравните calculated_hash с полученным параметром "hash"
+      if (calculated_hash === hash && auth_date >= Math.floor(Date.now() / 1000)) {
+        // Данные получены из Telegram и не устарели
+        return res.json({ message: 'Valid initData' });
+      } else {
+        return res.status(401).json({ error: 'Invalid initData' });
+      }
+    } catch (error) {
+      return res.status(500).json({ message: 'Error: ' + error.message });
+    }
+  });
 const webAppUrl = 'https://zipperapp.vercel.app/'
 
 bot.on('message', async(msg) => {
@@ -133,46 +174,7 @@ app.get('/getProfilePhoto', (req, res) => {
   res.json({ photo_url: photoFile });
 });
 
-app.post('/validate-init-data', async (req, res) => {
-    try {
-      // Получить значение заголовка Authorization
-      const authHeader = req.header('Authorization');
-  
-      if (!authHeader || !authHeader.startsWith('twa-init-data')) {
-        return res.status(401).send('Invalid Authorization header');
-      }
-  
-      // Извлечь данные инициализации из заголовка
-      const initData = authHeader.replace('twa-init-data', '').trim();
-  
-      // Добавьте код валидации с использованием CryptoJS
-      const initDataString = initData;
-      const params = new URLSearchParams(initDataString);
-      const auth_date = params.get('auth_date');
-      const query_id = params.get('query_id');
-      const user = params.get('user');
-      const hash = params.get('hash');
-  
-      // Создайте "data-check-string"
-      const data_check_string = `auth_date=${auth_date}\nquery_id=${query_id}\nuser=${user}`;
-  
-      // Вычислите секретный ключ
-      const secret_key = CryptoJS.HmacSHA256(token, 'WebAppData').toString();
-  
-      // Вычислите подпись HMAC-SHA-256
-      const calculated_hash = CryptoJS.HmacSHA256(data_check_string, secret_key).toString();
-  
-      // Сравните calculated_hash с полученным параметром "hash"
-      if (calculated_hash === hash && auth_date >= Math.floor(Date.now() / 1000)) {
-        // Данные получены из Telegram и не устарели
-        return res.json({ message: 'Valid initData' });
-      } else {
-        return res.status(401).json({ error: 'Invalid initData' });
-      }
-    } catch (error) {
-      return res.status(500).json({ message: 'Error: ' + error.message });
-    }
-  });
+
 
 const PORT = 8000;
 
