@@ -136,21 +136,13 @@ app.get('/getProfilePhoto', (req, res) => {
 
 app.post('/validate-init-data', async (req, res) => {
   try {
-    // Получить значение Authorization из заголовков запроса
+    // Получите `hash` из заголовка Authorization
     const authHeader = req.headers['authorization'];
+    const hash = authHeader.split(' ')[1]; // Разбираем Authorization заголовок
 
-    if (!authHeader || !authHeader.startsWith('twa-init-data ')) {
-      return res.status(401).json({ error: 'Invalid authorization header' });
-    }
+    // Теперь можно произвести валидацию `hash`
 
-    // Извлекаем и декодируем initData
-    const authData = authHeader.slice('twa-init-data '.length);
-    const initData = decodeURIComponent(authData);
-
-    // Теперь у вас есть initData, и вы можете использовать его для проверки
-    const { hash, auth_date, user, query_id } = req.body;
-
-    // Передайте их в функцию validate с вашим секретным токеном
+    // Передайте `hash` в функцию validate с вашим секретным токеном
     const isValid = validate(token, hash);
 
     if (isValid) {
@@ -162,6 +154,7 @@ app.post('/validate-init-data', async (req, res) => {
     return res.status(500).json({ message: 'Error: ' + error.message });
   }
 });
+
 app.get('/validate-init-data', (req, res) => {
     // Ваш код обработки GET запроса здесь
     // Например, вы можете вернуть текстовое сообщение
