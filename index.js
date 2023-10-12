@@ -143,6 +143,7 @@ app.post('/validate-init-data', async (req, res) => {
 
     if (isValid) {
       // Если валидация успешна, продолжайте с обработкой данных
+      console.log('Data received and validated successfully');
       res.json({ message: 'Data received and validated' });
     } else {
       // Если валидация не прошла, отправьте ошибку
