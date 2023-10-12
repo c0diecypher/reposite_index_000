@@ -138,15 +138,16 @@ app.post('/validate-init-data', async (req, res) => {
   try {
     const { query_id, user, auth_date, hash } = req.body;
 
-    // Проведите валидацию hash, используя ваш секретный токен
-    const isValid = validate(secretToken, hash);
+    // Проводим валидацию hash, используя ваш секретный токен
+    const isValid = validate(token, hash);
 
     if (isValid) {
-      // Если валидация успешна, продолжайте с обработкой данных
+      // Если валидация успешна, сохраняем данные
+      validatedData = { query_id, user, auth_date, hash };
       console.log('Data received and validated successfully');
       res.json({ message: 'Data received and validated' });
     } else {
-      // Если валидация не прошла, отправьте ошибку
+      // Если валидация не прошла, отправляем ошибку
       res.status(401).json({ error: 'Invalid data' });
     }
   } catch (error) {
@@ -154,11 +155,14 @@ app.post('/validate-init-data', async (req, res) => {
   }
 });
 
-app.get('/validate-init-data', (req, res) => {
-    // Ваш код обработки GET запроса здесь
-    // Например, вы можете вернуть текстовое сообщение
-    res.send('Valid initData');
-  });
+app.get('/get-validated-data', (req, res) => {
+  if (validatedData) {
+    // Если есть валидированные данные, отправляем их клиенту
+    res.json(validatedData);
+  } else {
+    res.status(404).json({ error: 'Data not found' });
+  }
+});
 
 const PORT = 8000;
 
