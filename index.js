@@ -19,7 +19,7 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 ;
 
 
-app.post('/validate-init-data', (req, res) => {
+app.post('/validate-initdata', (req, res) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('twa-init-data')) {
