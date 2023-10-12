@@ -33,7 +33,7 @@ app.post('/validate-initdata', (req, res) => {
     validate(initData, token);
     // Если валидация успешна, вы можете выполнить необходимые действия
 
-    res.json({ success: true, message: 'Authorized valid' });
+    res.json({ success: true, message: 'Authorization valid' });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
   }
