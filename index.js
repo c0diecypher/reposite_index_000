@@ -23,7 +23,7 @@ app.post('/validate-initdata', (req, res) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('twa-init-data')) {
-    return res.status(400).json({ success: false, error: 'Неверный заголовок Authorization' });
+    return res.status(400).json({ success: false, error: 'Invalid header Authorization' });
   }
 
   const initData = authHeader.replace('twa-init-data ', '');
@@ -33,7 +33,7 @@ app.post('/validate-initdata', (req, res) => {
     validate(initData, token);
     // Если валидация успешна, вы можете выполнить необходимые действия
 
-    res.json({ success: true, message: 'Данные initData валидны' });
+    res.json({ success: true, message: 'Authorized valid' });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
   }
