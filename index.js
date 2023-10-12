@@ -2,7 +2,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
 const cors = require('cors');
 const token = process.env.TELEGRAM_BOT_TOKEN;
-const CryptoJS = require('crypto-js');
+const { validate } = require('@twa.js/init-data-node');
 const bot = new TelegramBot(token, {polling: true});
 const app = express();
 app.use(express.json());
@@ -19,46 +19,39 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 ;
 
 
-app.post('/validate-init-data', async (req, res) => {
-    try {
-      // Получить значение заголовка Authorization
-      const authHeader = req.header('Authorization');
-  
-      if (!authHeader || !authHeader.startsWith('twa-init-data')) {
-        return res.status(401).send('Invalid Authorization header');
-      }
-  
-      // Извлечь данные инициализации из заголовка
-      const initData = authHeader.replace('twa-init-data', '').trim();
-  
-      // Добавьте код валидации с использованием CryptoJS
-      const initDataString = initData;
-      const params = new URLSearchParams(initDataString);
-      const auth_date = params.get('auth_date');
-      const query_id = params.get('query_id');
-      const user = params.get('user');
-      const hash = params.get('hash');
-  
-      // Создайте "data-check-string"
-      const data_check_string = `auth_date=${auth_date}\nquery_id=${query_id}\nuser=${user}`;
-  
-      // Вычислите секретный ключ
-      const secret_key = CryptoJS.HmacSHA256(token, 'WebAppData').toString();
-  
-      // Вычислите подпись HMAC-SHA-256
-      const calculated_hash = CryptoJS.HmacSHA256(data_check_string, secret_key).toString();
-  
-      // Сравните calculated_hash с полученным параметром "hash"
-      if (calculated_hash === hash && auth_date >= Math.floor(Date.now() / 1000)) {
-        // Данные получены из Telegram и не устарели
-        return res.json({ message: 'Valid initData' });
-      } else {
-        return res.status(401).json({ error: 'Invalid initData' });
-      }
-    } catch (error) {
-      return res.status(500).json({ message: 'Error: ' + error.message });
+app.post('/validate-initdata', (req, res) => {
+  try {
+    // Извлечение данных инициализации из заголовка Authorization
+    const initData = req.headers.authorization;
+
+    // Валидация данных инициализации
+    const validationResult = validate(initData, token);
+
+    // Если данные инициализации не прошли валидацию, можно вернуть ошибку
+    if (!validationResult.isValid) {
+      return res.status(400).json({ error: 'Invalid init data' });
     }
-  });
+
+    // Все данные прошли валидацию, можно обрабатывать запрос дальше
+    // validationResult.data содержит извлеченные данные инициализации
+    const query_id = validationResult.data.query_id;
+    const user = validationResult.data.user;
+    const auth_date = validationResult.data.auth_date;
+    const hash = validationResult.data.hash;
+
+    // Ваша логика обработки данных инициализации здесь
+
+    // Вернуть успешный ответ
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Ошибка:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
 const webAppUrl = 'https://zipperapp.vercel.app/'
 
 bot.on('message', async(msg) => {
