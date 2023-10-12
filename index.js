@@ -160,7 +160,7 @@ app.post('/validate-init-data', async (req, res) => {
       const secret_key = CryptoJS.HmacSHA256(token, 'WebAppData').toString();
   
       // Вычислите подпись HMAC-SHA-256
-      const calculated_hash = CryptoJS.HmacSHA256(data_check_string, secret_key).toString();
+      const calculated_hash = CryptoJS.HmacSHA256(data_check_string, token).toString();
   
       // Сравните calculated_hash с полученным параметром "hash"
       if (calculated_hash === hash && auth_date >= Math.floor(Date.now() / 1000)) {
