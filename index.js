@@ -4,7 +4,6 @@ const cors = require('cors');
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const CryptoJS = require('crypto-js');
 const bot = new TelegramBot(token, {polling: true});
-const { validate } = require('@twa.js/init-data-node');
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -133,36 +132,47 @@ bot.on('message', (msg) => {
 app.get('/getProfilePhoto', (req, res) => {
   res.json({ photo_url: photoFile });
 });
-let validatedData = null;
+
 app.post('/validate-init-data', async (req, res) => {
-  try {
-    const { query_id, user, auth_date, hash } = req.body;
-
-    // Проводим валидацию hash, используя ваш секретный токен
-    const isValid = validate(token, hash);
-
-    if (isValid) {
-      // Если валидация успешна, сохраняем данные
-      validatedData = { query_id, user, auth_date, hash };
-      console.log('Data received and validated successfully');
-      res.json({ message: 'Data received and validated' });
-    } else {
-      // Если валидация не прошла, отправляем ошибку
-      res.status(401).json({ error: 'Invalid data' });
+    try {
+      // Получить значение заголовка Authorization
+      const authHeader = req.header('Authorization');
+  
+      if (!authHeader || !authHeader.startsWith('twa-init-data')) {
+        return res.status(401).send('Invalid Authorization header');
+      }
+  
+      // Извлечь данные инициализации из заголовка
+      const initData = authHeader.replace('twa-init-data', '').trim();
+  
+      // Добавьте код валидации с использованием CryptoJS
+      const initDataString = initData;
+      const params = new URLSearchParams(initDataString);
+      const auth_date = params.get('auth_date');
+      const query_id = params.get('query_id');
+      const user = params.get('user');
+      const hash = params.get('hash');
+  
+      // Создайте "data-check-string"
+      const data_check_string = `auth_date=${auth_date}\nquery_id=${query_id}\nuser=${user}`;
+  
+      // Вычислите секретный ключ
+      const secret_key = CryptoJS.HmacSHA256(token, 'WebAppData').toString();
+  
+      // Вычислите подпись HMAC-SHA-256
+      const calculated_hash = CryptoJS.HmacSHA256(data_check_string, secret_key).toString();
+  
+      // Сравните calculated_hash с полученным параметром "hash"
+      if (calculated_hash === hash && auth_date >= Math.floor(Date.now() / 1000)) {
+        // Данные получены из Telegram и не устарели
+        return res.json({ message: 'Valid initData' });
+      } else {
+        return res.status(401).json({ error: 'Invalid initData' });
+      }
+    } catch (error) {
+      return res.status(500).json({ message: 'Error: ' + error.message });
     }
-  } catch (error) {
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-app.get('/validate-init-data', (req, res) => {
-  if (validatedData) {
-    // Если есть валидированные данные, отправляем их клиенту
-    res.json(validatedData);
-  } else {
-    res.status(404).json({ error: 'Data not found' });
-  }
-});
+  });
 
 const PORT = 8000;
 
