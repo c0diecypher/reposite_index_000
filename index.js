@@ -151,6 +151,11 @@ app.post('/validate-init-data', async (req, res) => {
     return res.status(500).json({ message: 'Error: ' + error.message });
   }
 });
+app.get('/validate-init-data', (req, res) => {
+    // Ваш код обработки GET запроса здесь
+    // Например, вы можете вернуть текстовое сообщение
+    res.send('Valid initData');
+  });
 
 const PORT = 8000;
 
