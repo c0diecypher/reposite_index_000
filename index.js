@@ -155,7 +155,7 @@ app.post('/validate-init-data', async (req, res) => {
   }
 });
 
-app.get('/get-validated-data', (req, res) => {
+app.get('/validate-init-data', (req, res) => {
   if (validatedData) {
     // Если есть валидированные данные, отправляем их клиенту
     res.json(validatedData);
