@@ -30,8 +30,8 @@ app.post('/validate-initdata', (req, res) => {
     }
 
     // Извлекаем и декодируем данные инициализации из заголовка
-    const initDataObject = authorizationHeader.substring('twa-init-data '.length);
-    const initData = JSON.parse(initDataObject);
+    const initDataString = authorizationHeader.substring('twa-init-data '.length);
+    const initData = JSON.parse(initDataString);
 
     // Выполняем валидацию данных инициализации, используя вашу логику
     const validationResult = validate(initData, token); // Предполагается, что у вас есть функция validate
