@@ -136,22 +136,20 @@ app.get('/getProfilePhoto', (req, res) => {
 
 app.post('/validate-init-data', async (req, res) => {
   try {
-    // Получите `initData` из заголовка Authorization
-    const authHeader = req.headers['authorization'];
-    const initData = authHeader.split(' ')[1]; // Разбираем Authorization заголовок
+    const { query_id, user, auth_date, hash } = req.body;
 
-    // Теперь можно произвести валидацию `initData`
-
-    // Передайте `initData` в функцию validate с вашим секретным токеном
-    const isValid = validate(token, initData);
+    // Проведите валидацию hash, используя ваш секретный токен
+    const isValid = validate(secretToken, hash);
 
     if (isValid) {
-      return res.json({ message: 'Valid initData' });
+      // Если валидация успешна, продолжайте с обработкой данных
+      res.json({ message: 'Data received and validated' });
     } else {
-      return res.status(401).json({ error: 'Invalid initData' });
+      // Если валидация не прошла, отправьте ошибку
+      res.status(401).json({ error: 'Invalid data' });
     }
   } catch (error) {
-    return res.status(500).json({ message: 'Error: ' + error.message });
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
