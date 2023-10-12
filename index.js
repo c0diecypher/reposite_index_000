@@ -136,7 +136,18 @@ app.get('/getProfilePhoto', (req, res) => {
 
 app.post('/validate-init-data', async (req, res) => {
   try {
-    // Получить данные инициализации из тела запроса
+    // Получить значение Authorization из заголовков запроса
+    const authHeader = req.headers['authorization'];
+
+    if (!authHeader || !authHeader.startsWith('twa-init-data ')) {
+      return res.status(401).json({ error: 'Invalid authorization header' });
+    }
+
+    // Извлекаем и декодируем initData
+    const authData = authHeader.slice('twa-init-data '.length);
+    const initData = decodeURIComponent(authData);
+
+    // Теперь у вас есть initData, и вы можете использовать его для проверки
     const { hash, auth_date, user, query_id } = req.body;
 
     // Передайте их в функцию validate с вашим секретным токеном
