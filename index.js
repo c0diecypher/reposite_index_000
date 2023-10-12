@@ -21,23 +21,31 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 
 app.post('/validate-initdata', (req, res) => {
   try {
-    // Извлечение данных инициализации из заголовка Authorization
-    const initData = req.headers.authorization;
+    // Получаем данные инициализации из заголовка Authorization
+    const authorizationHeader = req.headers.authorization;
+    
+    // Проверяем, что заголовок Authorization существует и начинается с "twa-init-data"
+    if (!authorizationHeader || !authorizationHeader.startsWith('twa-init-data ')) {
+      return res.status(400).json({ error: 'Invalid Authorization header' });
+    }
 
-    // Валидация данных инициализации
-    const validationResult = validate(initData, token);
+    // Извлекаем и декодируем данные инициализации из заголовка
+    const initDataString = authorizationHeader.substring('twa-init-data '.length);
+    const initData = JSON.parse(initDataString);
 
-    // Если данные инициализации не прошли валидацию, можно вернуть ошибку
+    // Выполняем валидацию данных инициализации, используя вашу логику
+    const validationResult = validate(initData, token); // Предполагается, что у вас есть функция validate
+
+    // Если данные инициализации не прошли валидацию, верните ошибку
     if (!validationResult.isValid) {
       return res.status(400).json({ error: 'Invalid init data' });
     }
 
-    // Все данные прошли валидацию, можно обрабатывать запрос дальше
-    // validationResult.data содержит извлеченные данные инициализации
-    const query_id = validationResult.data.query_id;
-    const user = validationResult.data.user;
-    const auth_date = validationResult.data.auth_date;
-    const hash = validationResult.data.hash;
+    // Все данные прошли валидацию, их можно использовать для дополнительной обработки
+    const query_id = initData.query_id;
+    const user = initData.user;
+    const auth_date = initData.auth_date;
+    const hash = initData.hash;
 
     // Ваша логика обработки данных инициализации здесь
 
