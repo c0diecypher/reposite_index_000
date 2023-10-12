@@ -19,41 +19,23 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 ;
 
 
-app.post('/validate-initdata', (req, res) => {
+app.post('/validate-init-data', (req, res) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('twa-init-data')) {
+    return res.status(400).json({ success: false, error: 'Неверный заголовок Authorization' });
+  }
+
+  const initData = authHeader.replace('twa-init-data ', '');
+
   try {
-    // Получаем данные инициализации из заголовка Authorization
-    const authorizationHeader = req.headers.authorization;
-    
-    // Проверяем, что заголовок Authorization существует и начинается с "twa-init-data"
-    if (!authorizationHeader || !authorizationHeader.startsWith('twa-init-data ')) {
-      return res.status(400).json({ error: 'Invalid Authorization header' });
-    }
+    // Выполняем валидацию данных initData
+    validate(initData, token);
+    // Если валидация успешна, вы можете выполнить необходимые действия
 
-    // Извлекаем и декодируем данные инициализации из заголовка
-    const initDataString = authorizationHeader.substring('twa-init-data '.length);
-    const initData = JSON.parse(initDataString);
-
-    // Выполняем валидацию данных инициализации, используя вашу логику
-    const validationResult = validate(initData, token); // Предполагается, что у вас есть функция validate
-
-    // Если данные инициализации не прошли валидацию, верните ошибку
-    if (!validationResult.isValid) {
-      return res.status(400).json({ error: 'Invalid init data' });
-    }
-
-    // Все данные прошли валидацию, их можно использовать для дополнительной обработки
-    const query_id = initData.query_id;
-    const user = initData.user;
-    const auth_date = initData.auth_date;
-    const hash = initData.hash;
-
-    // Ваша логика обработки данных инициализации здесь
-
-    // Вернуть успешный ответ
-    res.status(200).json({ success: true });
+    res.json({ success: true, message: 'Данные initData валидны' });
   } catch (error) {
-    console.error('Ошибка:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(400).json({ success: false, error: error.message });
   }
 });
 
