@@ -18,8 +18,8 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 Покупайте стильно и выгодно с <strong>ZipperApp!</strong>`
 ;
 
-let initData=''; //область выше, за пределом post запроса
-console.log('initData log:', initData);
+let initData = null; //область выше, за пределом post запроса
+console.log('initData logs:', initData);
 
 app.post('/validate-initdata', (req, res) => {
   const authHeader = req.headers.authorization;
