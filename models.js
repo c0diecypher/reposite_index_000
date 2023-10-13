@@ -2,33 +2,44 @@ const sequelize = require('./database');
 const {DataTypes} = require('sequelize')
 const User = sequelize.define('user',{
 
-    name: {
+    id: {
+        type: DataTypes.BIGINT,
+        primaryKey: true,
+        allowNull: false,
+    },
+    username: {
         type: DataTypes.STRING,
-        allowNull: false,
-      },
-      price: {
-        type: DataTypes.DECIMAL(10, 2), // Пример для цены, настройте тип данных по необходимости
-        allowNull: false,
-      },
-      size: {
-        type: DataTypes.DECIMAL(10, 2), // Пример для размера, настройте тип данных по необходимости
-        allowNull: false,
-      },
-      phonenumber: {
+        allowNull: true,
+    },
+    first_name: {
         type: DataTypes.STRING,
-        allowNull: false,
-      },
-      chatId: {
+        allowNull: true,
+    },
+    last_name: {
         type: DataTypes.STRING,
-        unique: true,
-        allowNull: false,
-      },
-      queryId: {
-        type: DataTypes.STRING,
-        unique: true,
-        allowNull: false,
-      },
+        allowNull: true,
+    },
     });
-    
+
+    User.checkAndCreateUser = async (userData) => {
+    const { id } = userData;
+
+    try {
+        const existingUser = await User.findOne({
+            where: { id },
+        });
+
+        if (existingUser) {
+            // Пользователь с данным id уже существует, не создаем новую запись
+            return existingUser;
+        } else {
+            // Создаем новую запись
+            const newUser = await User.create(userData);
+            return newUser;
+        }
+    } catch (error) {
+        throw error;
+    }
+};
 
 module.exports = User; 
