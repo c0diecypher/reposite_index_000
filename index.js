@@ -18,7 +18,8 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 Покупайте стильно и выгодно с <strong>ZipperApp!</strong>`
 ;
 
-
+let validate = '';
+console.log('validate log:', validate);
 app.post('/validate-initdata', (req, res) => {
   const authHeader = req.headers.authorization;
 
