@@ -140,7 +140,7 @@ bot.on('message', (msg) => {
       if (photos.length > 0) {
         // Получаем объект File для изображения профиля
         photoFile = photos[0][0];
-
+        console.log('photo_url:', photoFile); //фоточка пользователя, нужно ее переместить в команду /start
         // Отправляем изображение профиля обратно в чат
         bot.sendPhoto(chatId, photoFile.file_id);
       } else {
