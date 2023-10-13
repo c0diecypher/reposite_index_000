@@ -18,8 +18,9 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 Покупайте стильно и выгодно с <strong>ZipperApp!</strong>`
 ;
 
-let validate = '';
-console.log('validate log:', validate);
+let initData=''; //область выше, за пределом post запроса
+console.log('initData log:', initData);
+
 app.post('/validate-initdata', (req, res) => {
   const authHeader = req.headers.authorization;
 
@@ -27,12 +28,15 @@ app.post('/validate-initdata', (req, res) => {
     return res.status(400).json({ success: false, error: 'Invalid header Authorization' });
   }
 
-  const initData = authHeader.replace('twa-init-data ', '');
-   console.log('Received initData:', initData); 
+  initData = authHeader.replace('twa-init-data ', '');
+   console.log('Received initData:', initData); // Получаем инофрмацию в сыром виде
+  //дальше отсюда уже можно создавать базу или перебрасывать область видимости выше - let
   try {
-    // Выполняем валидацию данных initData
+    // Выполняем валидацию данных initData, но стоит учесть, что validate это функция из которой нельзя получить информацию
+    // тк она используется из другой библиотеки tma + hmac...
+    // Получается, что дергать данные пользователей можно будет в самом const initData
     validate(initData, token);
-     console.log('Received initData:', validate); 
+     
     // Если валидация успешна, вы можете выполнить необходимые действия
 
     res.json({ success: true, message: 'Authorized valid' });
