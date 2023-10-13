@@ -81,7 +81,6 @@ app.post('/web-data', async(req, res) => {
 
 Спасибо, что пользуетесь zipper app ! ⚡`
             }
-          console.log('Offer:', message_text);
         })
         return res.status(200).json({});
     } catch (e) {
