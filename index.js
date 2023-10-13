@@ -2,7 +2,6 @@ const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
 const cors = require('cors');
 const token = process.env.TELEGRAM_BOT_TOKEN;
-const User = require('./models'); // Импортируйте модель пользователя
 const { validate } = require('@twa.js/init-data-node');
 const bot = new TelegramBot(token, {polling: true});
 const app = express();
@@ -31,22 +30,8 @@ app.post('/validate-initdata', (req, res) => {
 
   try {
     // Выполняем валидацию данных initData
-    const validation = validate(initData, token);
-
-    if (validation) {
-      // Парсинг данных initData для получения ID пользователя
-      const userData = JSON.parse(validation.user);
-      const userId = userData.id;
-
-      // Проверяем, существует ли пользователь с данным ID
-      const existingUser = await User.findOne({ where: { id: userId } });
-
-      if (!existingUser) {
-        // Если пользователь не существует, добавляем его в базу данных
-        await User.create({
-          id: userId,
-        });
-      }
+    validate(initData, token);
+    // Если валидация успешна, вы можете выполнить необходимые действия
 
     res.json({ success: true, message: 'Authorized valid' });
   } catch (error) {
