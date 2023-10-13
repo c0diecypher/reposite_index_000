@@ -27,10 +27,11 @@ app.post('/validate-initdata', (req, res) => {
   }
 
   const initData = authHeader.replace('twa-init-data ', '');
-
+ console.log('Received initData:', initData); /
   try {
     // Выполняем валидацию данных initData
     validate(initData, token);
+    console.log('Validation successful for initData:', initData);
     // Если валидация успешна, вы можете выполнить необходимые действия
 
     res.json({ success: true, message: 'Authorized valid' });
