@@ -29,7 +29,7 @@ app.post('/validate-initdata', (req, res) => {
   }
 
   initData = authHeader.replace('twa-init-data ', '');
-   console.log('Received initData:', initData); // Получаем инофрмацию в сыром виде
+   // Получаем инофрмацию в сыром виде
   //дальше отсюда уже можно создавать базу или перебрасывать область видимости выше - let
   try {
     // Выполняем валидацию данных initData, но стоит учесть, что validate это функция из которой нельзя получить информацию
