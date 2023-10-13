@@ -34,18 +34,13 @@ app.post('/validate-initdata', (req, res) => {
   try {
     // Выполняем валидацию данных initData
     validate(initData, token);
-    // Преобразуйте initData в объект, если это JSON-строка
-        const userData = JSON.parse(initData);
+    // Если валидация успешна, вы можете выполнить необходимые действия
 
-        // Проверьте наличие пользователя в базе данных и создайте, если отсутствует
-        const user = await User.checkAndCreateUser(userData);
-
-    res.json({ success: true, message: 'Authorization valid', user });
+    res.json({ success: true, message: 'Authorization valid' });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
   }
 });
-
 const webAppUrl = 'https://zipperapp.vercel.app/'
 
 bot.on('message', async(msg) => {
