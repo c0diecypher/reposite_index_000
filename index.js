@@ -7,7 +7,9 @@ const bot = new TelegramBot(token, {polling: true});
 const User = require('./models'); // Импортируйте модель пользователя
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'https://zipperapp.vercel.app',
+}));
 const start = `⚡<strong>ZipperApp</strong> - твой надежный гид в мире стильной одежды и оригинальных товаров из-за рубежа!
 \n\
 🔍 <strong>Из каталога или поиска</strong>
