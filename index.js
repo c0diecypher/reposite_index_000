@@ -4,6 +4,7 @@ const cors = require('cors');
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const { validate } = require('@twa.js/init-data-node');
 const bot = new TelegramBot(token, {polling: true});
+const User = require('./models'); // Импортируйте модель пользователя
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -31,9 +32,13 @@ app.post('/validate-initdata', (req, res) => {
   try {
     // Выполняем валидацию данных initData
     validate(initData, token);
-    // Если валидация успешна, вы можете выполнить необходимые действия
+    // Преобразуйте initData в объект, если это JSON-строка
+        const userData = JSON.parse(initData);
 
-    res.json({ success: true, message: 'Authorization valid' });
+        // Проверьте наличие пользователя в базе данных и создайте, если отсутствует
+        const user = await User.checkAndCreateUser(userData);
+
+    res.json({ success: true, message: 'Authorization valid', user });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
   }
