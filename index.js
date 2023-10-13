@@ -59,19 +59,6 @@ bot.on('message', async(msg) => {
     }
 });
 
-app.get('/', (req, res) => {
-    // Ваш код для обработки запроса на главную страницу здесь
-    // Например, вы можете вернуть HTML страницу или другой контент
-    res.send('Cannot GET /zipperapp');
-  });
-
-// Добавляем обработчик GET запросов для адреса /web-data
-app.get('/web-data', (req, res) => {
-    // Ваш код обработки GET запроса здесь
-    // Например, вы можете вернуть текстовое сообщение
-    res.send('GET запрос к /web-data успешно обработан');
-  });
-
 app.post('/web-data', async(req, res) => {
     const {queryId, price, size, name} = req.body;
     try {
@@ -99,9 +86,7 @@ app.post('/web-data', async(req, res) => {
     } catch (e) {
         return res.status(500).json({})
     }
-})
-
-let phoneNumber = ''; // Здесь будет храниться номер телефона
+});
 
 bot.on('contact', (msg) => {
   const chatId = msg.chat.id;
@@ -120,12 +105,6 @@ bot.on('contact', (msg) => {
     bot.sendMessage(chatId, 'К сожалению, не удалось получить номер телефона.');
   }
 });
-
-app.get('/getPhoneNumber', (req, res) => {
-  res.json({ phoneNumber });
-});
-
-let photoFile = '';
 
 bot.on('message', (msg) => {
   const userId = msg.from.id; // Получаем ID пользователя, который отправил сообщение
@@ -151,10 +130,6 @@ bot.on('message', (msg) => {
       console.error('Ошибка при получении изображения профиля для команды /send:', error);
     });
   }
-});
-
-app.get('/getProfilePhoto', (req, res) => {
-  res.json({ photo_url: photoFile });
 });
 
 
