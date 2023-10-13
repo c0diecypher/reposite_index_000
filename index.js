@@ -4,12 +4,9 @@ const cors = require('cors');
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const { validate } = require('@twa.js/init-data-node');
 const bot = new TelegramBot(token, {polling: true});
-const User = require('./models'); // Импортируйте модель пользователя
 const app = express();
 app.use(express.json());
-app.use(cors({
-  origin: 'https://zipperapp.vercel.app',
-}));
+app.use(cors());
 const start = `⚡<strong>ZipperApp</strong> - твой надежный гид в мире стильной одежды и оригинальных товаров из-за рубежа!
 \n\
 🔍 <strong>Из каталога или поиска</strong>
@@ -36,11 +33,12 @@ app.post('/validate-initdata', (req, res) => {
     validate(initData, token);
     // Если валидация успешна, вы можете выполнить необходимые действия
 
-    res.json({ success: true, message: 'Authorization valid' });
+    res.json({ success: true, message: 'Authorized valid' });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
   }
 });
+
 const webAppUrl = 'https://zipperapp.vercel.app/'
 
 bot.on('message', async(msg) => {
