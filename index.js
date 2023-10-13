@@ -108,7 +108,7 @@ bot.on('contact', (msg) => {
 
 let phoneNumber = '';
 
-app.post('/getPhoneNumber', (req, res) => {
+app.get('/getPhoneNumber', (req, res) => {
   res.json({ phoneNumber });
 });
 
