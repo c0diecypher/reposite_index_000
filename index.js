@@ -33,16 +33,9 @@ app.post('/validate-initdata', async(req, res) => {
   
     validate(initData, token);
      
-    const userData = JSON.parse(decodeURIComponent(initData).replace(/^user=/, ''));
+    const decodedData = decodeURIComponent(initData);
 
-    await User.create({
-      userId: userData.id.toString(),
-      first_name: userData.first_name,
-      last_name: userData.last_name,
-      username: userData.username,
-    });
-
-    console.log('Запись в базе данных успешно создана:', userData);
+    console.log(decodedData);
 
     res.json({ success: true, message: 'Authorized valid' });
   } catch (error) {
