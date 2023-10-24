@@ -1,15 +1,14 @@
 const { Sequelize } = require('sequelize');
-require('dotenv').config(); // Загрузка переменных окружения из .env файла
 
 const sequelize = new Sequelize(
-    process.env.DB_NAME,
-    process.env.DB_USER,
-    process.env.DB_PASSWORD,
-  {
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    dialect: process.env.DB_DIALECT
-  }
+    'zipperconnect',
+    'gen_user',
+    '&=6_L1[1nktPv<',
+    {
+    host: '81.200.153.83',
+    port: 5432,
+    dialect: 'postgres'
+    }
 )
 
 module.exports = sequelize;
