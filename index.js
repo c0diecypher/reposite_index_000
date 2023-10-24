@@ -36,6 +36,9 @@ app.post('/validate-initdata', async(req, res) => {
     const decodedData = decodeURIComponent(initData);
 
     console.log(decodedData);
+    const userData = JSON.parse(decodedData.split('user=')[1]);
+
+    console.log(userData);
 
     res.json({ success: true, message: 'Authorized valid' });
   } catch (error) {
