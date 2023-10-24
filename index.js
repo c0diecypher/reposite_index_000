@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const { validate } = require('@twa.js/init-data-node');
+const User = require('./models'); 
 const bot = new TelegramBot(token, {polling: true});
 const app = express();
 app.use(express.json());
@@ -18,23 +19,30 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 Покупайте стильно и выгодно с <strong>ZipperApp!</strong>`
 ;
 
-app.post('/validate-initdata', (req, res) => {
+app.post('/validate-initdata', async(req, res) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('twa-init-data')) {
     return res.status(400).json({ success: false, error: 'Invalid header Authorization' });
   }
-
+  
   const initData = authHeader.replace('twa-init-data ', '');
   console.log('initData logs:', initData); // Получаем инофрмацию в сыром виде
-  //дальше отсюда уже можно создавать базу 
+
   try {
-    // Выполняем валидацию данных initData, но стоит учесть, что validate это функция из которой нельзя получить информацию
-    // тк она используется из другой библиотеки tma + hmac...
-    // Получается, что дергать данные пользователей можно будет в самом const initData
+  
     validate(initData, token);
      
-    // Если валидация успешна, вы можете выполнить необходимые действия
+    const userData = JSON.parse(decodeURIComponent(initData).replace(/^user=/, ''));
+
+    await User.create({
+      userId: userData.id.toString(),
+      first_name: userData.first_name,
+      last_name: userData.last_name,
+      username: userData.username,
+    });
+
+    console.log('Запись в базе данных успешно создана:', userData);
 
     res.json({ success: true, message: 'Authorized valid' });
   } catch (error) {
