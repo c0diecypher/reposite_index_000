@@ -38,44 +38,45 @@ app.post('/validate-initdata', async(req, res) => {
     console.log(decodedData);
     
     const userMatch = /user=([^&]+)/.exec(decodedData);
-
     if (userMatch) {
-      const userData = JSON.parse(userMatch[1]);
+  const userData = JSON.parse(userMatch[1]);
 
-      const existingUser = await User.findOne({ where: { userId: userData.id.toString() } });
+  // Получите существующую запись пользователя из базы данных
+  const existingUser = await User.findOne({ where: { userId: userData.id.toString() } });
 
-      if (existingUser) {
-        // Если пользователь существует, проверьте, изменились ли данные
-        if (
-          existingUser.first_name !== userData.first_name ||
-          existingUser.last_name !== userData.last_name ||
-          existingUser.username !== userData.username
-        ) {
-          // Если данные изменились, обновите запись
-          await existingUser.update({
-            first_name: userData.first_name,
-            last_name: userData.last_name,
-            username: userData.username,
-          });
-  
-          console.log(userData, 'Данные в базе данных успешно обновлены.');
-        } else {
-          // Если данные не изменились, ничего не делайте
-          console.log(userData, 'Данные в базе данных остались без изменений.');
-        }
-      } else {
-        // Если пользователь не существует, создайте новую запись
-        const user = {
-          userId: userData.id.toString(),
-          first_name: userData.first_name,
-          last_name: userData.last_name,
-          username: userData.username,
-        };
-  
-        await User.create(user);
-  
-        console.log('Новая запись создана в базе данных:', userData);
-      }
+  if (existingUser) {
+    // Если пользователь существует, проверьте, изменились ли данные
+    if (
+      existingUser.first_name !== userData.first_name ||
+      existingUser.last_name !== userData.last_name ||
+      existingUser.username !== userData.username
+    ) {
+      // Если данные изменились, обновите запись
+      await existingUser.update({
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        username: userData.username,
+      });
+
+      console.log(userData, 'Данные в базе данных успешно обновлены.');
+    } else {
+      // Если данные не изменились, ничего не делайте
+      console.log(userData, 'Данные в базе данных остались без изменений.');
+    }
+  } else {
+    // Если пользователь не существует, создайте новую запись
+    const user = {
+      userId: userData.id.toString(),
+      first_name: userData.first_name,
+      last_name: userData.last_name,
+      username: userData.username,
+    };
+
+    await User.create(user);
+
+    console.log('Новая запись создана в базе данных:', userData);
+  }
+   
 
     res.json({ success: true, message: 'Authorized valid' });
   } catch (error) {
