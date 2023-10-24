@@ -36,9 +36,15 @@ app.post('/validate-initdata', async(req, res) => {
     const decodedData = decodeURIComponent(initData);
 
     console.log(decodedData);
-    const userData = JSON.parse(decodedData.split('user=')[1]);
+    
+    const userMatch = /user=([^&]+)/.exec(decodedData);
 
-    console.log(userData);
+    if (userMatch) {
+      const userData = JSON.parse(userMatch[1]);
+      console.log(userData);
+    } else {
+      console.error('Данные пользователя не найдены');
+    }
 
     res.json({ success: true, message: 'Authorized valid' });
   } catch (error) {
