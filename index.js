@@ -41,7 +41,16 @@ app.post('/validate-initdata', async(req, res) => {
 
     if (userMatch) {
       const userData = JSON.parse(userMatch[1]);
-      console.log(userData);
+
+      // Создайте запись в базе данных, используя данные из userData
+      await User.create({
+        userId: userData.id.toString(),
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        username: userData.username,
+      });
+      
+      console.log('Запись в базе данных успешно создана:', userData);
     } else {
       console.error('Данные пользователя не найдены');
     }
