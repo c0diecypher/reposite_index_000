@@ -77,7 +77,7 @@ app.post('/validate-initdata', async(req, res) => {
     console.log('Новая запись создана в базе данных:', userData);
   }
    
-
+  }
     res.json({ success: true, message: 'Authorized valid' });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
