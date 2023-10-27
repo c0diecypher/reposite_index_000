@@ -169,6 +169,9 @@ bot.on('message', (msg) => {
         // Получаем объект File для изображения профиля
         photoFile = photos[0][0];
         console.log('photo_url:', photoFile); //фоточка пользователя, нужно ее переместить в команду /start
+        const filePath = photoFile.file_path;
+        console.log('Путь к изображению профиля:', filePath);
+        
         // Отправляем изображение профиля обратно в чат
         bot.sendPhoto(chatId, photoFile.file_id);
       } else {
