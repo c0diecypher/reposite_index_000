@@ -188,6 +188,21 @@ app.get('/api/getPhotoFile', (req, res) => {
 });
 
 
+app.get('/api/getPhotoUrl', (req, res) => {
+  if (photoFile) {
+    bot.getFile(photoFile.file_id).then((fileInfo) => {
+      // Формируем URL для доступа к файлу
+      const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
+      res.send(fileUrl);
+    }).catch((error) => {
+      console.error('Ошибка при получении информации о файле:', error);
+      res.status(500).send('Ошибка при получении информации о файле');
+    });
+  } else {
+    res.status(404).send('Информация о файле не найдена');
+  }
+});
+
 const PORT = 8000;
 
 app.listen(PORT, () => {
