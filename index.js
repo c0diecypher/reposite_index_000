@@ -184,7 +184,7 @@ bot.on('message', (msg) => {
 
 app.get('/api/getPhotoFile', (req, res) => {
   // Отправляем photoFile на клиентскую сторону
-  res.send(photoFile);
+  res.send(photoFile.file_id);
 });
 
 
