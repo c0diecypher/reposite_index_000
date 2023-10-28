@@ -19,70 +19,97 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 Покупайте стильно и выгодно с <strong>ZipperApp!</strong>`
 ;
 
-app.post('/validate-initdata', async(req, res) => {
+app.post('/validate-initdata', async (req, res) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('twa-init-data')) {
     return res.status(400).json({ success: false, error: 'Invalid header Authorization' });
   }
-  
+
   const initData = authHeader.replace('twa-init-data ', '');
-  console.log('initData logs:', initData); // Получаем инофрмацию в сыром виде
+  console.log('initData logs:', initData);
 
   try {
-  
     validate(initData, token);
-     
+
     const decodedData = decodeURIComponent(initData);
 
     console.log(decodedData);
-    
+
     const userMatch = /user=([^&]+)/.exec(decodedData);
     if (userMatch) {
-  const userData = JSON.parse(userMatch[1]);
+      const userData = JSON.parse(userMatch[1]);
 
-  // Получите существующую запись пользователя из базы данных
-  const existingUser = await User.findOne({ where: { userId: userData.id.toString() } });
+      // Получите существующую запись пользователя из базы данных
+      const existingUser = await User.findOne({ where: { userId: userData.id.toString() } });
 
-  if (existingUser) {
-    // Если пользователь существует, проверьте, изменились ли данные
-    if (
-      existingUser.first_name !== userData.first_name ||
-      existingUser.last_name !== userData.last_name ||
-      existingUser.username !== userData.username
-    ) {
-      // Если данные изменились, обновите запись
-      await existingUser.update({
-        first_name: userData.first_name,
-        last_name: userData.last_name,
-        username: userData.username,
+      let fileUrl = ''; // Инициализируем fileUrl
+
+      // Регистрируем middleware, чтобы получить fileUrl из /api/getPhotoUrl
+      app.use(async (req, res, next) => {
+        if (photoFile) {
+          try {
+            const fileInfo = await bot.getFile(photoFile.file_id);
+            // Формируем URL для доступа к файлу
+            fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
+            next();
+          } catch (error) {
+            console.error('Ошибка при получении информации о файле:', error);
+            res.status(500).send('Ошибка при получении информации о файле');
+          }
+        } else {
+          res.status(404).send('Информация о файле не найдена');
+        }
       });
 
-      console.log(userData, 'Данные в базе данных успешно обновлены.');
-    } else {
-      // Если данные не изменились, ничего не делайте
-      console.log(userData, 'Данные в базе данных остались без изменений.');
+      if (existingUser) {
+        // Если пользователь существует, создаем массив полей для проверки
+        const fieldsToCheck = ['first_name', 'last_name', 'username', 'photo_url'];
+
+        let updatedData = {};
+
+        // Проверяем каждое поле и обновляем, если оно изменилось
+        for (const field of fieldsToCheck) {
+          if (existingUser[field] !== userData[field]) {
+            updatedData[field] = userData[field];
+          }
+        }
+
+        // Проверяем, существует ли fileUrl в базе данных
+        if (existingUser.photo_url !== fileUrl) {
+          updatedData.photo_url = fileUrl;
+        }
+
+        if (Object.keys(updatedData).length > 0) {
+          // Если есть изменения, обновите запись
+          await existingUser.update(updatedData);
+
+          console.log(userData, 'Данные в базе данных успешно обновлены.');
+        } else {
+          // Если данные не изменились, ничего не делайте
+          console.log(userData, 'Данные в базе данных остались без изменений.');
+        }
+      } else {
+        // Если пользователь не существует, создайте новую запись
+        const user = {
+          userId: userData.id.toString(),
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          username: userData.username,
+          photo_url: fileUrl, // Добавляем photo_url из /api/getPhotoUrl
+        };
+
+        await User.create(user);
+
+        console.log('Новая запись создана в базе данных:', userData);
+      }
     }
-  } else {
-    // Если пользователь не существует, создайте новую запись
-    const user = {
-      userId: userData.id.toString(),
-      first_name: userData.first_name,
-      last_name: userData.last_name,
-      username: userData.username,
-    };
-
-    await User.create(user);
-
-    console.log('Новая запись создана в базе данных:', userData);
-  }
-   
-  }
     res.json({ success: true, message: 'Authorized valid' });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
   }
 });
+
 
 const webAppUrl = 'https://zipperapp.vercel.app/'
 
