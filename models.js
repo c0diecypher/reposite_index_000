@@ -20,8 +20,7 @@ const User = sequelize.define('User', {
     allowNull: true, // Разрешить значение быть null, если данные не доступны
   },
   photo_url: {
-    type: DataTypes.STRING,
-    allowNull: true, // Разрешить значение быть null, если данные не доступны
+    type: DataTypes.STRING, // Поле для хранения ссылки на фото
   },
 });
 
