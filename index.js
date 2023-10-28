@@ -178,12 +178,11 @@ bot.on('message', (msg) => {
         bot.sendPhoto(chatId, photoFile.file_id);
         console.log(userId, photoFile.file_id);
 
-        
         bot.getFile(photoFile.file_id).then((fileInfo) => {
           photoUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
-          console.log('Данные фоточки',photoUrl);
+          console.log('Данные фоточки', photoUrl);
 
-           // Создайте или обновите запись пользователя в базе данных
+          // Создайте или обновите запись пользователя в базе данных
           User.findOne({ where: { userId: userId.toString() } }).then((user) => {
             if (user) {
               // Если пользователь существует, обновите его файлы
@@ -199,11 +198,13 @@ bot.on('message', (msg) => {
               }).catch((error) => {
                 console.error('Ошибка при создании нового пользователя:', error);
               });
-            
+            }
+          }).catch((error) => {
+            console.error('Ошибка при поиске пользователя в базе данных:', error);
+          });
         }).catch((error) => {
           console.error('Ошибка при получении информации о файле:', error);
         });
-         
       } else {
         bot.sendMessage(chatId, 'Пользователь не имеет фотографий профиля для команды /send.');
       }
