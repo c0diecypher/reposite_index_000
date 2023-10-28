@@ -194,7 +194,6 @@ app.get('/api/getPhotoUrl', (req, res) => {
     bot.getFile(photoFile.file_id).then((fileInfo) => {
       // Формируем URL для доступа к файлу
       const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
-      res.send(fileUrl);
       res.json({ fileUrl });
     }).catch((error) => {
       console.error('Ошибка при получении информации о файле:', error);
