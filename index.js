@@ -20,7 +20,7 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 ;
 
 let userId = '';
-let fileUrl = '';
+let photoUrl = '';
 
 app.post('/validate-initdata', async(req, res) => {
   const authHeader = req.headers.authorization;
@@ -178,7 +178,7 @@ bot.on('message', (msg) => {
         bot.sendPhoto(chatId, photoFile.file_id);
         console.log(userId, photoFile.file_id);
 
-        const photoUrl = `https://api.telegram.org/file/bot${token}/${photoFile.file_path}`;
+        photoUrl = `https://api.telegram.org/file/bot${token}/${photoFile.file_path}`;
 
           // Создайте или обновите запись пользователя в базе данных
           User.findOne({ where: { userId: userId.toString() } }).then((user) => {
