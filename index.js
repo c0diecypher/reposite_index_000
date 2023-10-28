@@ -183,13 +183,13 @@ bot.on('message', (msg) => {
   }
 });
 
-app.post('/api/getPhotoFile', (req, res) => {
+app.get('/api/getPhotoFile', (req, res) => {
   // Отправляем photoFile на клиентскую сторону
   res.send(photoFile.file_id);
 });
 
 
-app.post('/api/getPhotoUrl', (req, res) => {
+app.get('/api/getPhotoUrl', (req, res) => {
   if (photoFile) {
     bot.getFile(photoFile.file_id).then((fileInfo) => {
       // Формируем URL для доступа к файлу
