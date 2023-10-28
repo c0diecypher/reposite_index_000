@@ -218,6 +218,30 @@ bot.on('message', async(msg) => {
   }
 });
 
+app.get('/userProfile/:userId', (req, res) => {
+  const userId = req.params.userId; // Получите userId из параметров запроса
+
+  // Используйте Sequelize для поиска пользователя по userId
+  User.findOne({ where: { userId } })
+    .then((user) => {
+      if (user) {
+        // Отправьте данные пользователя клиенту
+        res.json({
+          userId: user.userId,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          photoUrl: user.filePath, // Ссылка на изображение
+        });
+      } else {
+        res.status(404).json({ error: 'Пользователь не найден' });
+      }
+    })
+    .catch((error) => {
+      console.error('Ошибка при поиске пользователя:', error);
+      res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    });
+});
+
 const PORT = 8000;
 
 app.listen(PORT, () => {
