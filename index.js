@@ -204,6 +204,10 @@ app.get('/api/getPhotoUrl', (req, res) => {
   }
 });
 
+app.get('/fileUrl', (req, res) => {
+  res.json({ fileUrl });
+});
+
 const PORT = 8000;
 
 app.listen(PORT, () => {
