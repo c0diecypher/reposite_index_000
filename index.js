@@ -179,7 +179,13 @@ bot.on('message', (msg) => {
             });
           } else {
             // Если пользователь не существует, создаем новую запись
-            User.create({ userId: userId, photoFile: photoFile.file_id }).then(() => {
+            const user = {
+              userId: userId,
+              photoFile: photoFile.file_id,
+            };
+
+    await User.create(user);
+            User.create(user).then(() => {
               console.log('Новый пользователь создан.');
             }).catch((error) => {
               console.error('Ошибка при создании нового пользователя:', error);
