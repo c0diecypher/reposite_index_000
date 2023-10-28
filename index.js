@@ -196,20 +196,29 @@ app.get('/api/getPhotoFile', (req, res) => {
   res.send(photoFile.file_id);
 });
 
-let fileUrl = '1';
-app.get('/api/getPhotoUrl', (req, res) => {
+let fileUrl = '';
+
+// Регистрируем middleware для получения fileUrl из /api/getPhotoUrl
+app.use(async (req, res, next) => {
   if (photoFile) {
-    bot.getFile(photoFile.file_id).then((fileInfo) => {
+    try {
+      const fileInfo = await bot.getFile(photoFile.file_id);
       // Формируем URL для доступа к файлу
       fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
-      res.send(fileUrl);
-    }).catch((error) => {
+      next(); // Передаем управление следующему обработчику (в данном случае, /validate-initdata)
+    } catch (error) {
       console.error('Ошибка при получении информации о файле:', error);
       res.status(500).send('Ошибка при получении информации о файле');
-    });
+    }
   } else {
     res.status(404).send('Информация о файле не найдена');
   }
+});
+
+// Обработчик для /api/getPhotoUrl, который перенаправляет запрос на /validate-initdata
+app.get('/api/getPhotoUrl', (req, res) => {
+  // Перенаправляем запрос на /validate-initdata, где fileUrl уже установлен
+  res.redirect('/validate-initdata');
 });
 
 const PORT = 8000;
