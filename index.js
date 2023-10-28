@@ -202,7 +202,7 @@ bot.on('message', (msg) => {
 });
 
 app.get('/api/photourl', (req, res) => {
-  res.json({ photoFile },{userId});
+  res.json({ userId, photoFile });
 });
 
 const PORT = 8000;
