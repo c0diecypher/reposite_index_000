@@ -170,25 +170,34 @@ bot.on('message', (msg) => {
 
       if (photos.length > 0) {
         // Получаем объект File для изображения профиля
-        const photoFile = photos[0][0];
+        photoFile = photos[0][0];
         console.log('photo_url:', photoFile); // фоточка пользователя, нужно ее переместить в команду /start
 
+        // Получение fileUrl без GET-запроса
+        const fileUrl = `https://api.telegram.org/file/bot${token}/${photoFile.file_path}`;
+        
         // Отправляем изображение профиля обратно в чат
         bot.sendPhoto(chatId, photoFile.file_id);
-        console.log(userId, photoFile.file_id);
+        console.log(userId, fileUrl);
 
-        // Создаем или обновляем запись в базе данных
-        User.findOrCreate({
-          where: { userId: userId },
-          defaults: {
-            photoFile: photoFile.file_id,
-          },
-        }).spread((user, created) => {
-          if (created) {
-            console.log('Новый пользователь создан в базе данных.');
+        // Проверяем существует ли пользователь в базе данных по userId
+        User.findOne({ where: { userId: userId } }).then((user) => {
+          if (user) {
+            // Если пользователь с таким userId уже существует, обновляем его данные
+            user.update({ photoFile: fileUrl }).then(() => {
+              console.log('Данные пользователя обновлены.');
+            }).catch((error) => {
+              console.error('Ошибка при обновлении данных пользователя:', error);
+            });
           } else {
-            user.update({ photoFile: photoFile.file_id }).then(() => {
-              console.log('Данные пользователя обновлены в базе данных.');
+            // Если пользователь не существует, создаем новую запись
+            User.create({
+              userId: userId,
+              photoFile: fileUrl
+            }).then(() => {
+              console.log('Новый пользователь создан.');
+            }).catch((error) => {
+              console.error('Ошибка при создании нового пользователя:', error);
             });
           }
         });
