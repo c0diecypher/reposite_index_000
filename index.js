@@ -156,7 +156,7 @@ app.get('/getPhoneNumber', (req, res) => {
 
 let userId = '';
 
-bot.on('message', (msg) => {
+bot.on('message', async(msg) => {
   const userId = msg.from.id;
   const chatId = msg.chat.id;
 
