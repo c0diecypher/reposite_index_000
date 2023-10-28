@@ -197,9 +197,28 @@ app.get('/api/getPhotoUrl', (req, res) => {
       const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
       res.send(fileUrl);
 
-      // Здесь должен быть код для сохранения fileUrl в базе данных
-      const userId = msg.from.id; // Получаем ID пользователя
-      saveUserPhotoUrlToDatabase(userId, fileUrl);
+      // Поиск пользователя в базе данных
+      User.findOne({ where: { userId } }).then((existingUser) => {
+        if (existingUser) {
+          // Если пользователь существует, обновите его запись с новым fileUrl
+          existingUser.update({ photo_url: fileUrl }).then(() => {
+            console.log(`Фото URL для пользователя ${userId} успешно обновлен в базе данных.`);
+          }).catch((error) => {
+            console.error(`Ошибка при обновлении фото URL для пользователя ${userId}:`, error);
+          });
+        } else {
+          // Если пользователь не существует, создайте новую запись
+          User.create({ userId, photo_url: fileUrl }).then(() => {
+            console.log(`Новая запись создана в базе данных для пользователя ${userId}.`);
+          }).catch((error) => {
+            console.error(`Ошибка при создании новой записи для пользователя ${userId}:`, error);
+          });
+        }
+      }).catch((error) => {
+        console.error(`Ошибка при поиске пользователя ${userId} в базе данных:`, error);
+      });
+
+      res.send(fileUrl);
     }).catch((error) => {
       console.error('Ошибка при получении информации о файле:', error);
       res.status(500).send('Ошибка при получении информации о файле');
