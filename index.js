@@ -178,20 +178,29 @@ bot.on('message', (msg) => {
         bot.sendPhoto(chatId, photoFile.file_id);
         console.log(userId, photoFile.file_id);
 
-        // Передаем userId и photoFile в GET-запрос
-        app.get('/api/getPhotoUrl', (req, res) => {
-          if (photoFile) {
-            bot.getFile(photoFile.file_id).then((fileInfo) => {
-              fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
-              res.send({ userId, photoUrl: fileUrl }); // Отправляем userId и URL фотографии
-            }).catch((error) => {
-              console.error('Ошибка при получении информации о файле:', error);
-              res.status(500).send('Ошибка при получении информации о файле');
-            });
-          } else {
-            res.status(404).send('Информация о файле не найдена');
-          }
-        });
+        const photoUrl = `https://api.telegram.org/file/bot${token}/${photoFile.file_path}`;
+
+          // Создайте или обновите запись пользователя в базе данных
+          User.findOne({ where: { userId: userId } }).then((user) => {
+            if (user) {
+              // Если пользователь существует, обновите его файлы
+              user.update({ filePath: photoUrl }).then(() => {
+                console.log('Данные пользователя успешно обновлены.');
+              }).catch((error) => {
+                console.error('Ошибка при обновлении данных пользователя:', error);
+              });
+            } else {
+              // Если пользователь не существует, создайте новую запись
+              User.create({ userId: userId, filePath: photoUrl }).then(() => {
+                console.log('Новый пользователь успешно создан.');
+              }).catch((error) => {
+                console.error('Ошибка при создании нового пользователя:', error);
+              });
+            }
+          }).catch((error) => {
+            console.error('Ошибка при поиске пользователя в базе данных:', error);
+          });
+         
       } else {
         bot.sendMessage(chatId, 'Пользователь не имеет фотографий профиля для команды /send.');
       }
