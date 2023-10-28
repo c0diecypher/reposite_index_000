@@ -156,45 +156,39 @@ app.get('/getPhoneNumber', (req, res) => {
 
 let userId = '';
 
-bot.on('message', async(msg) => {
-  const userId = msg.from.id;
-  const chatId = msg.chat.id;
+bot.on('message', (msg) => {
+  userId = msg.from.id; // Получаем ID пользователя, который отправил сообщение
+  const chatId = msg.chat.id; // Получаем ID чата, в котором было отправлено сообщение
 
+  // Обрабатываем команду /send
   if (msg.text === '/send') {
+    // Используем метод getUserProfilePhotos для получения фотографий профиля пользователя
     bot.getUserProfilePhotos(userId).then((result) => {
       const photos = result.photos;
 
       if (photos.length > 0) {
-        const photoFile = photos[0][0];
-        console.log('photo_url:', photoFile);
-
-        // Проверяем существует ли пользователь в базе данных по userId
-        User.findOne({ where: { userId: userId } }).then((user) => {
-          if (user) {
-            // Если пользователь с таким userId уже существует, обновляем его данные
-            user.update({ photoFile: photoFile.file_id }).then(() => {
-              console.log('Данные пользователя обновлены.');
-            }).catch((error) => {
-              console.error('Ошибка при обновлении данных пользователя:', error);
-            });
-          } else {
-            // Если пользователь не существует, создаем новую запись
-            const user = {
-              userId: userId,
-              photoFile: photoFile.file_id,
-            };
-
-    await User.create(user);
-            User.create(user).then(() => {
-              console.log('Новый пользователь создан.');
-            }).catch((error) => {
-              console.error('Ошибка при создании нового пользователя:', error);
-            });
-          }
-        });
+        // Получаем объект File для изображения профиля
+        photoFile = photos[0][0];
+        console.log('photo_url:', photoFile); // фоточка пользователя, нужно ее переместить в команду /start
 
         // Отправляем изображение профиля обратно в чат
         bot.sendPhoto(chatId, photoFile.file_id);
+        console.log(userId, photoFile.file_id);
+
+        // Передаем userId и photoFile в GET-запрос
+        app.get('/api/getPhotoUrl', (req, res) => {
+          if (photoFile) {
+            bot.getFile(photoFile.file_id).then((fileInfo) => {
+              const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
+              res.send({ userId, photoUrl: fileUrl }); // Отправляем userId и URL фотографии
+            }).catch((error) => {
+              console.error('Ошибка при получении информации о файле:', error);
+              res.status(500).send('Ошибка при получении информации о файле');
+            });
+          } else {
+            res.status(404).send('Информация о файле не найдена');
+          }
+        });
       } else {
         bot.sendMessage(chatId, 'Пользователь не имеет фотографий профиля для команды /send.');
       }
