@@ -178,8 +178,8 @@ bot.on('message', async(msg) => {
         console.log('photo_url:', photoFile); // фоточка пользователя, нужно ее переместить в команду /start
 
         // Отправляем изображение профиля обратно в чат
-        bot.sendPhoto(chatId, photoFile.file_id);
-        console.log(userId, photoFile.file_id);
+        // bot.sendPhoto(chatId, photoFile.file_id);
+        // console.log(userId, photoFile.file_id);
 
         bot.getFile(photoFile.file_id).then((fileInfo) => {
           photoUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
