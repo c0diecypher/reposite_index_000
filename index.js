@@ -155,7 +155,7 @@ app.get('/getPhoneNumber', (req, res) => {
 });
 
 let userId = '';
-let photoFile = '';
+let fileUrl = '';
 
 
 bot.on('message', (msg) => {
@@ -181,7 +181,7 @@ bot.on('message', (msg) => {
         app.get('/api/getPhotoUrl', (req, res) => {
           if (photoFile) {
             bot.getFile(photoFile.file_id).then((fileInfo) => {
-              const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
+              fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
               res.send({ userId, photoUrl: fileUrl }); // Отправляем userId и URL фотографии
             }).catch((error) => {
               console.error('Ошибка при получении информации о файле:', error);
@@ -202,7 +202,7 @@ bot.on('message', (msg) => {
 });
 
 app.get('/api/photourl', (req, res) => {
-  res.json({ userId, photoFile });
+  res.json({ userId, fileUrl });
 });
 
 const PORT = 8000;
