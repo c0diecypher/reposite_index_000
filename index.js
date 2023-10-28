@@ -156,56 +156,40 @@ app.get('/getPhoneNumber', (req, res) => {
 
 let userId = '';
 
-bot.on('message', async(msg) => {
-  const userId = msg.from.id; // Получаем ID пользователя, который отправил сообщение
-  const chatId = msg.chat.id; // Получаем ID чата, в котором было отправлено сообщение
+bot.on('message', async (msg) => {
+  const userId = msg.from.id;
+  const chatId = msg.chat.id;
 
   if (msg.text === '/send') {
-    // Используем метод getUserProfilePhotos для получения фотографий профиля пользователя
-    bot.getUserProfilePhotos(userId).then((result) => {
+    try {
+      const result = await bot.getUserProfilePhotos(userId);
       const photos = result.photos;
 
       if (photos.length > 0) {
-        // Получаем объект File для изображения профиля
         const photoFile = photos[0][0];
-        console.log('photo_url:', photoFile); // фоточка пользователя
+        console.log('photo_url:', photoFile);
 
-        // Проверяем существует ли пользователь в базе данных по userId
-        User.findOne({ where: { userId: userId } }).then((user) => {
-          if (user) {
-            // Если пользователь с таким userId уже существует, обновляем его данные
-            user.update({ photoFile: photoFile.file_id }).then(() => {
-              console.log('Данные пользователя обновлены.');
-            }).catch((error) => {
-              console.error('Ошибка при обновлении данных пользователя:', error);
-            });
-          } else {
-            // Если пользователь не существует, создаем новую запись
-            const userData = {
-              userId: userId,
-              first_name: msg.from.first_name,
-              last_name: msg.from.last_name,
-              username: msg.from.username,
-              photoFile: photoFile.file_id
-            };
+        const user = await User.findOne({ where: { userId: userId } });
 
-            User.create(userData).then(() => {
-              console.log('Новый пользователь создан.');
-            }).catch((error) => {
-              console.error('Ошибка при создании нового пользователя:', error);
-            });
-          }
-        });
+        if (user) {
+          await user.update({ photoFile: photoFile.file_id });
+          console.log('Данные пользователя обновлены.');
+        } else {
+          const userData = {
+            userId: userId,
+            first_name: msg.from.first_name,
+            last_name: msg.from.last_name,
+            username: msg.from.username,
+            photoFile: photoFile.file_id,
+          };
 
-        // Отправляем изображение профиля обратно в чат
-        bot.sendPhoto(chatId, photoFile.file_id);
-      } else {
-        bot.sendMessage(chatId, 'Пользователь не имеет фотографий профиля для команды /send.');
+          await User.create(userData);
+          console.log('Новый пользователь создан.');
+        }
       }
-    }).catch((error) => {
-      bot.sendMessage(chatId, 'Произошла ошибка при получении изображения профиля для команды /send.');
-      console.error('Ошибка при получении изображения профиля для команды /send:', error);
-    });
+    } catch (error) {
+      console.error('Ошибка:', error);
+    }
   }
 });
 
