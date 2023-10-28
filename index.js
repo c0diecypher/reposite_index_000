@@ -18,6 +18,25 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 \n\
 Покупайте стильно и выгодно с <strong>ZipperApp!</strong>`
 ;
+const fileUrl = '';
+
+// Регистрируем middleware, чтобы получить fileUrl из /api/getPhotoUrl
+app.use(async (req, res, next) => {
+  if (photoFile) {
+    try {
+      const fileInfo = await bot.getFile(photoFile.file_id);
+      // Формируем URL для доступа к файлу
+      fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
+      next();
+    } catch (error) {
+      console.error('Ошибка при получении информации о файле:', error);
+      res.status(500).send('Ошибка при получении информации о файле');
+    }
+  } else {
+    res.status(404).send('Информация о файле не найдена');
+  }
+});
+
 
 app.post('/validate-initdata', async(req, res) => {
   const authHeader = req.headers.authorization;
@@ -56,6 +75,7 @@ app.post('/validate-initdata', async(req, res) => {
         first_name: userData.first_name,
         last_name: userData.last_name,
         username: userData.username,
+        photo_url: fileUrl, // Добавляем photo_url из /api/getPhotoUrl
       });
 
       console.log(userData, 'Данные в базе данных успешно обновлены.');
@@ -70,6 +90,7 @@ app.post('/validate-initdata', async(req, res) => {
       first_name: userData.first_name,
       last_name: userData.last_name,
       username: userData.username,
+      photo_url: fileUrl, // Добавляем photo_url из /api/getPhotoUrl
     };
 
     await User.create(user);
@@ -81,23 +102,6 @@ app.post('/validate-initdata', async(req, res) => {
     res.json({ success: true, message: 'Authorized valid' });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-// Регистрируем middleware, чтобы получить fileUrl из /api/getPhotoUrl
-app.use(async (req, res, next) => {
-  if (photoFile) {
-    try {
-      const fileInfo = await bot.getFile(photoFile.file_id);
-      // Формируем URL для доступа к файлу
-      fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
-      next();
-    } catch (error) {
-      console.error('Ошибка при получении информации о файле:', error);
-      res.status(500).send('Ошибка при получении информации о файле');
-    }
-  } else {
-    res.status(404).send('Информация о файле не найдена');
   }
 });
 
