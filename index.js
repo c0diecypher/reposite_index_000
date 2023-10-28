@@ -218,7 +218,7 @@ app.use(async (req, res, next) => {
 // Обработчик для /api/getPhotoUrl, который перенаправляет запрос на /validate-initdata
 app.get('/api/getPhotoUrl', (req, res) => {
   // Перенаправляем запрос на /validate-initdata, где fileUrl уже установлен
-  res.redirect('/validate-initdata');
+  res.redirect('/validate-initdata?fileUrl=${fileUrl}');
 });
 
 const PORT = 8000;
