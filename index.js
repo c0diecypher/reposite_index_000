@@ -177,25 +177,29 @@ bot.on('message', (msg) => {
         // Отправляем изображение профиля обратно в чат
         bot.sendPhoto(chatId, photoFile.file_id);
         console.log(userId, photoFile.file_id);
-        bot.getFile(photoFile.file_id).then((fileInfo) => {
-              photoUrl = `https://api.telegram.org/file/bot${token}/${photoFile.file_path}`;
-              User.findOne({ where: { userId: userId.toString() } }).then((user) => {
-                if (user) {
-                  // Если пользователь существует, обновите его файлы
-                  user.update({ filePath: photoUrl }).then(() => {
-                    console.log('Данные пользователя успешно обновлены.');
-                }).catch((error) => {
-                  console.error('Ошибка при обновлении данных пользователя:', error);
-                });
-              } else {
-                // Если пользователь не существует, создайте новую запись
-                  User.create({ userId: userId.toString(), filePath: photoUrl }).then(() => {
-                    console.log('Новый пользователь успешно создан.');
-                  }).catch((error) => {
-                    console.error('Ошибка при создании нового пользователя:', error);
-                  });
-              }
-            });
+
+        photoUrl = `https://api.telegram.org/file/bot${token}/${photoFile.file_path}`;
+
+          // Создайте или обновите запись пользователя в базе данных
+          User.findOne({ where: { userId: userId.toString() } }).then((user) => {
+            if (user) {
+              // Если пользователь существует, обновите его файлы
+              user.update({ filePath: photoUrl }).then(() => {
+                console.log('Данные пользователя успешно обновлены.');
+              }).catch((error) => {
+                console.error('Ошибка при обновлении данных пользователя:', error);
+              });
+            } else {
+              // Если пользователь не существует, создайте новую запись
+              User.create({ userId: userId.toString(), filePath: photoUrl }).then(() => {
+                console.log('Новый пользователь успешно создан.');
+              }).catch((error) => {
+                console.error('Ошибка при создании нового пользователя:', error);
+              });
+            }
+          }).catch((error) => {
+            console.error('Ошибка при поиске пользователя в базе данных:', error);
+          });
          
       } else {
         bot.sendMessage(chatId, 'Пользователь не имеет фотографий профиля для команды /send.');
