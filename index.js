@@ -184,9 +184,6 @@ bot.on('message', async(msg) => {
         
             // Если данные изменились, обновите запись
         await existingUser.update({
-              first_name: userData.first_name,
-              last_name: userData.last_name,
-              username: userData.username,
               filePath: fileUrl,
             });
         
