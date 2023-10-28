@@ -156,9 +156,6 @@ app.get('/getPhoneNumber', (req, res) => {
 
 let userId = '';
 
-
-let userId = '';
-
 bot.on('message', (msg) => {
   userId = msg.from.id; // Получаем ID пользователя, который отправил сообщение
   const chatId = msg.chat.id; // Получаем ID чата, в котором было отправлено сообщение
