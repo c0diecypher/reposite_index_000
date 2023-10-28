@@ -194,20 +194,7 @@ app.get('/api/getPhotoUrl', (req, res) => {
     bot.getFile(photoFile.file_id).then((fileInfo) => {
       // Формируем URL для доступа к файлу
       const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
-      
-      // Получаем имя файла из URL
-      const fileName = fileInfo.file_path.split('/').pop();
-
-      // Сохраняем файл на сервере
-      const fileStream = fs.createWriteStream(fileName);
-      https.get(fileUrl, function(response) {
-        response.pipe(fileStream);
-        fileStream.on('finish', function() {
-          fileStream.close();
-          res.send(`Файл ${fileName} успешно сохранен на сервере`);
-        });
-      });
-
+      res.send(fileUrl);
     }).catch((error) => {
       console.error('Ошибка при получении информации о файле:', error);
       res.status(500).send('Ошибка при получении информации о файле');
