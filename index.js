@@ -168,11 +168,26 @@ bot.on('message', (msg) => {
       if (photos.length > 0) {
         // Получаем объект File для изображения профиля
         photoFile = photos[0][0];
-        console.log('photo_url:', photoFile); //фоточка пользователя, нужно ее переместить в команду /start
-        
+        console.log('photo_url:', photoFile); // фоточка пользователя, нужно ее переместить в команду /start
+
         // Отправляем изображение профиля обратно в чат
         bot.sendPhoto(chatId, photoFile.file_id);
         console.log(userId, photoFile.file_id);
+
+        // Передаем userId и photoFile в GET-запрос
+        app.get('/api/getPhotoUrl', (req, res) => {
+          if (photoFile) {
+            bot.getFile(photoFile.file_id).then((fileInfo) => {
+              const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
+              res.send({ userId, photoUrl: fileUrl }); // Отправляем userId и URL фотографии
+            }).catch((error) => {
+              console.error('Ошибка при получении информации о файле:', error);
+              res.status(500).send('Ошибка при получении информации о файле');
+            });
+          } else {
+            res.status(404).send('Информация о файле не найдена');
+          }
+        });
       } else {
         bot.sendMessage(chatId, 'Пользователь не имеет фотографий профиля для команды /send.');
       }
@@ -180,27 +195,6 @@ bot.on('message', (msg) => {
       bot.sendMessage(chatId, 'Произошла ошибка при получении изображения профиля для команды /send.');
       console.error('Ошибка при получении изображения профиля для команды /send:', error);
     });
-  }
-});
-
-app.get('/api/getPhotoFile', (req, res) => {
-  // Отправляем photoFile на клиентскую сторону
-  res.send(photoFile.file_id);
-});
-
-
-app.get('/api/getPhotoUrl', (req, res) => {
-  if (photoFile) {
-    bot.getFile(photoFile.file_id).then((fileInfo) => {
-      // Формируем URL для доступа к файлу
-      const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
-      res.send(fileUrl);
-    }).catch((error) => {
-      console.error('Ошибка при получении информации о файле:', error);
-      res.status(500).send('Ошибка при получении информации о файле');
-    });
-  } else {
-    res.status(404).send('Информация о файле не найдена');
   }
 });
 
