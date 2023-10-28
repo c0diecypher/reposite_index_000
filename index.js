@@ -19,74 +19,65 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 Покупайте стильно и выгодно с <strong>ZipperApp!</strong>`
 ;
 
-
-app.post('/validate-initdata', async (req, res) => {
+app.post('/validate-initdata', async(req, res) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('twa-init-data')) {
     return res.status(400).json({ success: false, error: 'Invalid header Authorization' });
   }
-
+  
   const initData = authHeader.replace('twa-init-data ', '');
-  console.log('initData logs:', initData);
+  console.log('initData logs:', initData); // Получаем инофрмацию в сыром виде
 
   try {
+  
     validate(initData, token);
-
+     
     const decodedData = decodeURIComponent(initData);
 
     console.log(decodedData);
-
+    
     const userMatch = /user=([^&]+)/.exec(decodedData);
     if (userMatch) {
-      const userData = JSON.parse(userMatch[1]);
+  const userData = JSON.parse(userMatch[1]);
 
-      // Получите существующую запись пользователя из базы данных
-      const existingUser = await User.findOne({ where: { userId: userData.id.toString() } });
+  // Получите существующую запись пользователя из базы данных
+  const existingUser = await User.findOne({ where: { userId: userData.id.toString() } });
 
-      if (existingUser) {
-        // Если пользователь существует, проверьте, изменились ли данные
-        if (
-          existingUser.first_name !== userData.first_name ||
-          existingUser.last_name !== userData.last_name ||
-          existingUser.username !== userData.username
-        ) {
-          // Если данные изменились, обновите запись
-          await existingUser.update({
-            first_name: userData.first_name,
-            last_name: userData.last_name,
-            username: userData.username,
-          });
+  if (existingUser) {
+    // Если пользователь существует, проверьте, изменились ли данные
+    if (
+      existingUser.first_name !== userData.first_name ||
+      existingUser.last_name !== userData.last_name ||
+      existingUser.username !== userData.username
+    ) {
+      // Если данные изменились, обновите запись
+      await existingUser.update({
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        username: userData.username,
+      });
 
-           // Проверяем, если fileUrl существует
-          if (fileUrl) {
-            updateData.photo_url = fileUrl;
-          }
-
-          console.log(userData, 'Данные в базе данных успешно обновлены.');
-        } else {
-          // Если данные не изменились, ничего не делайте
-          console.log(userData, 'Данные в базе данных остались без изменений.');
-        }
-      } else {
-        // Если пользователь не существует, создайте новую запись
-        const user = {
-          userId: userData.id.toString(),
-          first_name: userData.first_name,
-          last_name: userData.last_name,
-          username: userData.username,
-        };
-      
-        // Проверяем, если fileUrl существует
-        if (fileUrl) {
-          user.photo_url = fileUrl;
-        }
-
-        await User.create(user);
-
-        console.log('Новая запись создана в базе данных:', userData);
-      }
+      console.log(userData, 'Данные в базе данных успешно обновлены.');
+    } else {
+      // Если данные не изменились, ничего не делайте
+      console.log(userData, 'Данные в базе данных остались без изменений.');
     }
+  } else {
+    // Если пользователь не существует, создайте новую запись
+    const user = {
+      userId: userData.id.toString(),
+      first_name: userData.first_name,
+      last_name: userData.last_name,
+      username: userData.username,
+    };
+
+    await User.create(user);
+
+    console.log('Новая запись создана в базе данных:', userData);
+  }
+   
+  }
     res.json({ success: true, message: 'Authorized valid' });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
@@ -178,7 +169,6 @@ bot.on('message', (msg) => {
         // Получаем объект File для изображения профиля
         photoFile = photos[0][0];
         console.log('photo_url:', photoFile); //фоточка пользователя, нужно ее переместить в команду /start
-        
         // Отправляем изображение профиля обратно в чат
         bot.sendPhoto(chatId, photoFile.file_id);
       } else {
@@ -191,35 +181,7 @@ bot.on('message', (msg) => {
   }
 });
 
-app.get('/api/getPhotoFile', (req, res) => {
-  // Отправляем photoFile на клиентскую сторону
-  res.send(photoFile.file_id);
-});
 
-let fileUrl = '';
-
-// Регистрируем middleware для получения fileUrl из /api/getPhotoUrl
-app.use(async (req, res, next) => {
-  if (photoFile) {
-    try {
-      const fileInfo = await bot.getFile(photoFile.file_id);
-      // Формируем URL для доступа к файлу
-      fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
-      next(); // Передаем управление следующему обработчику (в данном случае, /validate-initdata)
-    } catch (error) {
-      console.error('Ошибка при получении информации о файле:', error);
-      res.status(500).send('Ошибка при получении информации о файле');
-    }
-  } else {
-    res.status(404).send('Информация о файле не найдена');
-  }
-});
-
-// Обработчик для /api/getPhotoUrl, который перенаправляет запрос на /validate-initdata
-app.get('/api/getPhotoUrl', (req, res) => {
-  // Перенаправляем запрос на /validate-initdata, где fileUrl уже установлен
-  res.redirect('/validate-initdata?fileUrl=${fileUrl}');
-});
 
 const PORT = 8000;
 
