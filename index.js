@@ -179,6 +179,7 @@ bot.on('message', (msg) => {
           if (photoFile) {
             bot.getFile(photoFile.file_id).then((fileInfo) => {
               const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
+              const userId = `${userId}`;
               res.send({ userId, photoUrl: fileUrl }); // Отправляем userId и URL фотографии
             }).catch((error) => {
               console.error('Ошибка при получении информации о файле:', error);
