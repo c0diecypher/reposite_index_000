@@ -19,26 +19,7 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 Покупайте стильно и выгодно с <strong>ZipperApp!</strong>`
 ;
 
-let fileUrl = ''; // Объявляем fileUrl в области видимости
 
-// Регистрируем middleware, чтобы получить fileUrl из /api/getPhotoUrl
-app.use(async (req, res, next) => {
-  if (photoFile) {
-    try {
-      const fileInfo = await bot.getFile(photoFile.file_id);
-      // Формируем URL для доступа к файлу
-      fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
-      next();
-    } catch (error) {
-      console.error('Ошибка при получении информации о файле:', error);
-      res.status(500).send('Ошибка при получении информации о файле');
-    }
-  } else {
-    res.status(404).send('Информация о файле не найдена');
-  }
-});
-
-// Обработчик /validate-initdata, вызывается после получения fileUrl
 app.post('/validate-initdata', async (req, res) => {
   const authHeader = req.headers.authorization;
 
@@ -75,7 +56,7 @@ app.post('/validate-initdata', async (req, res) => {
             first_name: userData.first_name,
             last_name: userData.last_name,
             username: userData.username,
-            photo_url: fileUrl, // Добавляем photo_url из /api/getPhotoUrl
+            photo_url: fileUrl,
           });
 
           console.log(userData, 'Данные в базе данных успешно обновлены.');
@@ -207,12 +188,12 @@ app.get('/api/getPhotoFile', (req, res) => {
   res.send(photoFile.file_id);
 });
 
-
+let fileUrl = '';
 app.get('/api/getPhotoUrl', (req, res) => {
   if (photoFile) {
     bot.getFile(photoFile.file_id).then((fileInfo) => {
       // Формируем URL для доступа к файлу
-      const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
+      fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
       res.send(fileUrl);
     }).catch((error) => {
       console.error('Ошибка при получении информации о файле:', error);
