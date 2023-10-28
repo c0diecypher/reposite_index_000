@@ -169,7 +169,7 @@ bot.on('message', async(msg) => {
   // Обрабатываем команду /send
   if (msg.text === '/start') {
     // Используем метод getUserProfilePhotos для получения фотографий профиля пользователя
-    await bot.getUserProfilePhotos(userId).then((result) => {
+    await bot.getUserProfilePhotos(userId, { limit: 1 }).then((result) => {
       const photos = result.photos;
 
       if (photos.length > 0) {
