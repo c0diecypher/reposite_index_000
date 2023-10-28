@@ -196,7 +196,7 @@ app.get('/api/getPhotoFile', (req, res) => {
   res.send(photoFile.file_id);
 });
 
-let fileUrl = '';
+let fileUrl = '1';
 app.get('/api/getPhotoUrl', (req, res) => {
   if (photoFile) {
     bot.getFile(photoFile.file_id).then((fileInfo) => {
