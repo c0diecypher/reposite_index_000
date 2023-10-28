@@ -169,6 +169,7 @@ bot.on('message', (msg) => {
         // Получаем объект File для изображения профиля
         photoFile = photos[0][0];
         console.log('photo_url:', photoFile); //фоточка пользователя, нужно ее переместить в команду /start
+        
         // Отправляем изображение профиля обратно в чат
         bot.sendPhoto(chatId, photoFile.file_id);
       } else {
@@ -181,7 +182,26 @@ bot.on('message', (msg) => {
   }
 });
 
+app.get('/api/getPhotoFile', (req, res) => {
+  // Отправляем photoFile на клиентскую сторону
+  res.send(photoFile.file_id);
+});
 
+
+app.get('/api/getPhotoUrl', (req, res) => {
+  if (photoFile) {
+    bot.getFile(photoFile.file_id).then((fileInfo) => {
+      // Формируем URL для доступа к файлу
+      const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
+      res.sendFile(fileUrl);
+    }).catch((error) => {
+      console.error('Ошибка при получении информации о файле:', error);
+      res.status(500).send('Ошибка при получении информации о файле');
+    });
+  } else {
+    res.status(404).send('Информация о файле не найдена');
+  }
+});
 
 const PORT = 8000;
 
