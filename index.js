@@ -94,6 +94,7 @@ const webAppUrl = 'https://zipperapp.vercel.app/'
 bot.on('message', async(msg) => {
   const chatId = msg.chat.id;
   const text = msg.text;
+  
     if(text === '/start'){
         await bot.sendMessage(chatId,start,{
             reply_markup: {
@@ -103,6 +104,8 @@ bot.on('message', async(msg) => {
             },
             parse_mode: 'HTML'
         })
+
+      
     }
 });
 
@@ -159,14 +162,14 @@ app.get('/getPhoneNumber', (req, res) => {
   res.json({ phoneNumber });
 });
 
-bot.on('message', (msg) => {
+bot.on('message', async(msg) => {
   userId = msg.from.id; // Получаем ID пользователя, который отправил сообщение
   const chatId = msg.chat.id; // Получаем ID чата, в котором было отправлено сообщение
 
   // Обрабатываем команду /send
-  if (msg.text === '/send') {
+  if (msg.text === '/start') {
     // Используем метод getUserProfilePhotos для получения фотографий профиля пользователя
-    bot.getUserProfilePhotos(userId).then((result) => {
+    await bot.getUserProfilePhotos(userId).then((result) => {
       const photos = result.photos;
 
       if (photos.length > 0) {
