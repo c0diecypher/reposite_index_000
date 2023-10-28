@@ -19,6 +19,9 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 Покупайте стильно и выгодно с <strong>ZipperApp!</strong>`
 ;
 
+let userId = '';
+let fileUrl = '';
+
 app.post('/validate-initdata', async(req, res) => {
   const authHeader = req.headers.authorization;
 
@@ -56,6 +59,7 @@ app.post('/validate-initdata', async(req, res) => {
         first_name: userData.first_name,
         last_name: userData.last_name,
         username: userData.username,
+        filePath: fileUrl,
       });
 
       console.log(userData, 'Данные в базе данных успешно обновлены.');
@@ -70,6 +74,7 @@ app.post('/validate-initdata', async(req, res) => {
       first_name: userData.first_name,
       last_name: userData.last_name,
       username: userData.username,
+      filePath: fileUrl,
     };
 
     await User.create(user);
@@ -153,9 +158,6 @@ let phoneNumber = '';
 app.get('/getPhoneNumber', (req, res) => {
   res.json({ phoneNumber });
 });
-
-let userId = '';
-let fileUrl = '';
 
 bot.on('message', (msg) => {
   userId = msg.from.id; // Получаем ID пользователя, который отправил сообщение
