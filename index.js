@@ -181,7 +181,7 @@ bot.on('message', (msg) => {
         const photoUrl = `https://api.telegram.org/file/bot${token}/${photoFile.file_path}`;
 
           // Создайте или обновите запись пользователя в базе данных
-          User.findOne({ where: { userId: userId } }).then((user) => {
+          User.findOne({ where: { userId: userId.toString() } }).then((user) => {
             if (user) {
               // Если пользователь существует, обновите его файлы
               user.update({ filePath: photoUrl }).then(() => {
@@ -191,7 +191,7 @@ bot.on('message', (msg) => {
               });
             } else {
               // Если пользователь не существует, создайте новую запись
-              User.create({ userId: userId, filePath: photoUrl }).then(() => {
+              User.create({ userId: userId.toString(), filePath: photoUrl }).then(() => {
                 console.log('Новый пользователь успешно создан.');
               }).catch((error) => {
                 console.error('Ошибка при создании нового пользователя:', error);
