@@ -154,12 +154,11 @@ app.get('/getPhoneNumber', (req, res) => {
   res.json({ phoneNumber });
 });
 
-let currentUserId = 0; // Исходное значение для userId
 
 bot.on('message', (msg) => {
   const userId = msg.from.id; // Получаем ID пользователя, который отправил сообщение
   const chatId = msg.chat.id; // Получаем ID чата, в котором было отправлено сообщение
-   currentUserId = userId;
+
   // Обрабатываем команду /send
   if (msg.text === '/send') {
     // Используем метод getUserProfilePhotos для получения фотографий профиля пользователя
@@ -172,7 +171,7 @@ bot.on('message', (msg) => {
         console.log('photo_url:', photoFile); //фоточка пользователя, нужно ее переместить в команду /start
         
         // Отправляем изображение профиля обратно в чат
-        bot.sendPhoto(chatId, photoFile.file_id);
+        bot.sendPhoto(chatId, `тебя зовут ${userId}, а вот твоя фотография ${photoFile.file_id}`);
       } else {
         bot.sendMessage(chatId, 'Пользователь не имеет фотографий профиля для команды /send.');
       }
@@ -191,33 +190,9 @@ app.get('/api/getPhotoFile', (req, res) => {
 
 app.get('/api/getPhotoUrl', (req, res) => {
   if (photoFile) {
-    const userId = currentUserId;
     bot.getFile(photoFile.file_id).then((fileInfo) => {
       // Формируем URL для доступа к файлу
       const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
-      res.send(fileUrl);
-
-      // Поиск пользователя в базе данных
-      User.findOne({ where: { userId } }).then((existingUser) => {
-        if (existingUser) {
-          // Если пользователь существует, обновите его запись с новым fileUrl
-          existingUser.update({ photo_url: fileUrl }).then(() => {
-            console.log(`Фото URL для пользователя ${userId} успешно обновлен в базе данных.`);
-          }).catch((error) => {
-            console.error(`Ошибка при обновлении фото URL для пользователя ${userId}:`, error);
-          });
-        } else {
-          // Если пользователь не существует, создайте новую запись
-          User.create({ userId, photo_url: fileUrl }).then(() => {
-            console.log(`Новая запись создана в базе данных для пользователя ${userId}.`);
-          }).catch((error) => {
-            console.error(`Ошибка при создании новой записи для пользователя ${userId}:`, error);
-          });
-        }
-      }).catch((error) => {
-        console.error(`Ошибка при поиске пользователя ${userId} в базе данных:`, error);
-      });
-
       res.send(fileUrl);
     }).catch((error) => {
       console.error('Ошибка при получении информации о файле:', error);
@@ -227,29 +202,6 @@ app.get('/api/getPhotoUrl', (req, res) => {
     res.status(404).send('Информация о файле не найдена');
   }
 });
-
-function saveUserPhotoUrlToDatabase(userId, fileUrl) {
-  // Поиск пользователя в базе данных
-  User.findOne({ where: { userId } }).then((existingUser) => {
-    if (existingUser) {
-      // Если пользователь существует, обновите его запись с новым fileUrl
-      existingUser.update({ photo_url: fileUrl }).then(() => {
-        console.log(`Фото URL для пользователя ${userId} успешно обновлен в базе данных.`);
-      }).catch((error) => {
-        console.error(`Ошибка при обновлении фото URL для пользователя ${userId}:`, error);
-      });
-    } else {
-      // Если пользователь не существует, создайте новую запись
-      User.create({ userId, photo_url: fileUrl }).then(() => {
-        console.log(`Новая запись создана в базе данных для пользователя ${userId}.`);
-      }).catch((error) => {
-        console.error(`Ошибка при создании новой записи для пользователя ${userId}:`, error);
-      });
-    }
-  }).catch((error) => {
-    console.error(`Ошибка при поиске пользователя ${userId} в базе данных:`, error);
-  });
-}
 
 const PORT = 8000;
 
