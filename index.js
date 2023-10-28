@@ -157,7 +157,6 @@ app.get('/getPhoneNumber', (req, res) => {
 let userId = '';
 let fileUrl = '';
 
-
 bot.on('message', (msg) => {
   userId = msg.from.id; // Получаем ID пользователя, который отправил сообщение
   const chatId = msg.chat.id; // Получаем ID чата, в котором было отправлено сообщение
@@ -173,32 +172,22 @@ bot.on('message', (msg) => {
         photoFile = photos[0][0];
         console.log('photo_url:', photoFile); // фоточка пользователя, нужно ее переместить в команду /start
 
-        // Получение fileUrl без GET-запроса
-        const fileUrl = `https://api.telegram.org/file/bot${token}/${photoFile.file_path}`;
-        
         // Отправляем изображение профиля обратно в чат
         bot.sendPhoto(chatId, photoFile.file_id);
-        console.log(userId, fileUrl);
+        console.log(userId, photoFile.file_id);
 
-        // Проверяем существует ли пользователь в базе данных по userId
-        User.findOne({ where: { userId: userId } }).then((user) => {
-          if (user) {
-            // Если пользователь с таким userId уже существует, обновляем его данные
-            user.update({ photoFile: fileUrl }).then(() => {
-              console.log('Данные пользователя обновлены.');
+        // Передаем userId и photoFile в GET-запрос
+        app.get('/api/getPhotoUrl', (req, res) => {
+          if (photoFile) {
+            bot.getFile(photoFile.file_id).then((fileInfo) => {
+              fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
+              res.send({ userId, photoUrl: fileUrl }); // Отправляем userId и URL фотографии
             }).catch((error) => {
-              console.error('Ошибка при обновлении данных пользователя:', error);
+              console.error('Ошибка при получении информации о файле:', error);
+              res.status(500).send('Ошибка при получении информации о файле');
             });
           } else {
-            // Если пользователь не существует, создаем новую запись
-            User.create({
-              userId: userId,
-              photoFile: fileUrl
-            }).then(() => {
-              console.log('Новый пользователь создан.');
-            }).catch((error) => {
-              console.error('Ошибка при создании нового пользователя:', error);
-            });
+            res.status(404).send('Информация о файле не найдена');
           }
         });
       } else {
