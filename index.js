@@ -177,16 +177,21 @@ bot.on('message', (msg) => {
         // Отправляем изображение профиля обратно в чат
         bot.sendPhoto(chatId, photoFile.file_id);
         console.log(userId, photoFile.file_id);
-        
+
         // Передаем userId и photoFile в GET-запрос
-        const photoUrl = `https://api.telegram.org/file/bot${token}/${photoFile.file_path}`;
-        const existingUser = User.findOne({ where: { userId: userId } });
-        
-            // Если данные изменились, обновите запись
-         existingUser.update({
-              filePath: fileUrl,
+        app.get('/api/getPhotoUrl', (req, res) => {
+          if (photoFile) {
+            bot.getFile(photoFile.file_id).then((fileInfo) => {
+              fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
+              res.send({ userId, photoUrl: fileUrl }); // Отправляем userId и URL фотографии
+            }).catch((error) => {
+              console.error('Ошибка при получении информации о файле:', error);
+              res.status(500).send('Ошибка при получении информации о файле');
             });
-        
+          } else {
+            res.status(404).send('Информация о файле не найдена');
+          }
+        });
       } else {
         bot.sendMessage(chatId, 'Пользователь не имеет фотографий профиля для команды /send.');
       }
