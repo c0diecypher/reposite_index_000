@@ -178,8 +178,13 @@ bot.on('message', (msg) => {
         bot.sendPhoto(chatId, photoFile.file_id);
         console.log(userId, photoFile.file_id);
 
-        photoUrl = `https://api.telegram.org/file/bot${token}/${photoFile.file_path}`;
-
+        
+        bot.getFile(photoFile.file_id).then((fileInfo) => {
+          photoUrl = `https://api.telegram.org/file/bot${token}/${photoFile.file_path}`;
+          console.log('Данные фоточки',photoUrl);
+        }).catch((error) => {
+          console.error('Ошибка при получении информации о файле:', error);
+        });
           // Создайте или обновите запись пользователя в базе данных
           User.findOne({ where: { userId: userId.toString() } }).then((user) => {
             if (user) {
