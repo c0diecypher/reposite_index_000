@@ -199,7 +199,7 @@ bot.on('message', (msg) => {
               }).catch((error) => {
                 console.error('Ошибка при создании нового пользователя:', error);
               });
-            }
+            
         }).catch((error) => {
           console.error('Ошибка при получении информации о файле:', error);
         });
