@@ -170,25 +170,26 @@ bot.on('message', (msg) => {
 
       if (photos.length > 0) {
         // Получаем объект File для изображения профиля
-        photoFile = photos[0][0];
+        const photoFile = photos[0][0];
         console.log('photo_url:', photoFile); // фоточка пользователя, нужно ее переместить в команду /start
 
         // Отправляем изображение профиля обратно в чат
         bot.sendPhoto(chatId, photoFile.file_id);
         console.log(userId, photoFile.file_id);
 
-        // Передаем userId и photoFile в GET-запрос
-        app.get('/api/getPhotoUrl', (req, res) => {
-          if (photoFile) {
-            bot.getFile(photoFile.file_id).then((fileInfo) => {
-              fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
-              res.send({ userId, photoUrl: fileUrl }); // Отправляем userId и URL фотографии
-            }).catch((error) => {
-              console.error('Ошибка при получении информации о файле:', error);
-              res.status(500).send('Ошибка при получении информации о файле');
-            });
+        // Создаем или обновляем запись в базе данных
+        User.findOrCreate({
+          where: { userId: userId },
+          defaults: {
+            photoFile: photoFile.file_id,
+          },
+        }).spread((user, created) => {
+          if (created) {
+            console.log('Новый пользователь создан в базе данных.');
           } else {
-            res.status(404).send('Информация о файле не найдена');
+            user.update({ photoFile: photoFile.file_id }).then(() => {
+              console.log('Данные пользователя обновлены в базе данных.');
+            });
           }
         });
       } else {
@@ -199,10 +200,6 @@ bot.on('message', (msg) => {
       console.error('Ошибка при получении изображения профиля для команды /send:', error);
     });
   }
-});
-
-app.get('/api/photourl', (req, res) => {
-  res.json({ userId, fileUrl });
 });
 
 const PORT = 8000;
