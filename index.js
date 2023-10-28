@@ -155,6 +155,8 @@ app.get('/getPhoneNumber', (req, res) => {
 });
 
 let userId = '';
+let photoFile = '';
+
 
 bot.on('message', (msg) => {
   userId = msg.from.id; // Получаем ID пользователя, который отправил сообщение
@@ -197,6 +199,10 @@ bot.on('message', (msg) => {
       console.error('Ошибка при получении изображения профиля для команды /send:', error);
     });
   }
+});
+
+app.get('/api/photourl', (req, res) => {
+  res.json({ photoFile },{userId});
 });
 
 const PORT = 8000;
