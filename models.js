@@ -19,6 +19,10 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: true, // Разрешить значение быть null, если данные не доступны
   },
+  photo_url: {
+    type: DataTypes.STRING,
+    allowNull: true, // Разрешить значение быть null, если данные не доступны
+  },
 });
 
 User.sync({ force: false });
