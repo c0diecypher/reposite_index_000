@@ -154,11 +154,12 @@ app.get('/getPhoneNumber', (req, res) => {
   res.json({ phoneNumber });
 });
 
+let currentUserId = 0; // Исходное значение для userId
 
 bot.on('message', (msg) => {
   const userId = msg.from.id; // Получаем ID пользователя, который отправил сообщение
   const chatId = msg.chat.id; // Получаем ID чата, в котором было отправлено сообщение
-
+   currentUserId = userId;
   // Обрабатываем команду /send
   if (msg.text === '/send') {
     // Используем метод getUserProfilePhotos для получения фотографий профиля пользователя
@@ -190,6 +191,7 @@ app.get('/api/getPhotoFile', (req, res) => {
 
 app.get('/api/getPhotoUrl', (req, res) => {
   if (photoFile) {
+    const userId = currentUserId;
     bot.getFile(photoFile.file_id).then((fileInfo) => {
       // Формируем URL для доступа к файлу
       const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
