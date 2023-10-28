@@ -20,6 +20,10 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 Покупайте стильно и выгодно с <strong>ZipperApp!</strong>`
 ;
 let fileUrl ='';
+
+app.get('/api/photo', (req, res) => {
+  res.json({ fileUrl });
+});
 app.post('/validate-initdata', async(req, res) => {
   const authHeader = req.headers.authorization;
 
