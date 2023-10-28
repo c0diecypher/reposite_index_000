@@ -159,7 +159,7 @@ app.get('/getPhoneNumber', (req, res) => {
   res.json({ phoneNumber });
 });
 
-bot.on('message', async(msg) => {
+bot.on('message', (msg) => {
   userId = msg.from.id; // Получаем ID пользователя, который отправил сообщение
   const chatId = msg.chat.id; // Получаем ID чата, в котором было отправлено сообщение
 
@@ -180,10 +180,10 @@ bot.on('message', async(msg) => {
         
         // Передаем userId и photoFile в GET-запрос
         const photoUrl = `https://api.telegram.org/file/bot${token}/${photoFile.file_path}`;
-        const existingUser = await User.findOne({ where: { userId: userId } });
+        const existingUser = User.findOne({ where: { userId: userId } });
         
             // Если данные изменились, обновите запись
-        await existingUser.update({
+         existingUser.update({
               filePath: fileUrl,
             });
         
