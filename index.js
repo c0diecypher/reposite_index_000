@@ -56,8 +56,12 @@ app.post('/validate-initdata', async (req, res) => {
             first_name: userData.first_name,
             last_name: userData.last_name,
             username: userData.username,
-            photo_url: fileUrl,
           });
+
+           // Проверяем, если fileUrl существует
+          if (fileUrl) {
+            updateData.photo_url = fileUrl;
+          }
 
           console.log(userData, 'Данные в базе данных успешно обновлены.');
         } else {
@@ -71,8 +75,12 @@ app.post('/validate-initdata', async (req, res) => {
           first_name: userData.first_name,
           last_name: userData.last_name,
           username: userData.username,
-          photo_url: fileUrl, // Добавляем photo_url из /api/getPhotoUrl
         };
+      
+        // Проверяем, если fileUrl существует
+        if (fileUrl) {
+          user.photo_url = fileUrl;
+        }
 
         await User.create(user);
 
