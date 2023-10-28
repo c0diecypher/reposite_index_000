@@ -187,12 +187,13 @@ app.get('/api/getPhotoFile', (req, res) => {
   res.send(photoFile.file_id);
 });
 
-
+let fileUrl = '';
+console.log('photo_url:', fileUrl);
 app.get('/api/getPhotoUrl', (req, res) => {
   if (photoFile) {
     bot.getFile(photoFile.file_id).then((fileInfo) => {
       // Формируем URL для доступа к файлу
-      const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
+      fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
       res.send(fileUrl);
     }).catch((error) => {
       console.error('Ошибка при получении информации о файле:', error);
