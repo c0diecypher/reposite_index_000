@@ -171,7 +171,7 @@ bot.on('message', (msg) => {
         console.log('photo_url:', photoFile); //фоточка пользователя, нужно ее переместить в команду /start
         
         // Отправляем изображение профиля обратно в чат
-        bot.sendPhoto(chatId, `тебя зовут ${userId}, а вот твоя фотография ${photoFile.file_id}`);
+        bot.sendPhoto(chatId, photoFile.file_id,`твой ID: ${userId}, а вот твоя фотография}`);
       } else {
         bot.sendMessage(chatId, 'Пользователь не имеет фотографий профиля для команды /send.');
       }
