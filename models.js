@@ -25,7 +25,7 @@ const User = sequelize.define('User', {
     unique: true,
   },
   phoneNumber: {
-    type: DataTypes.STRING, // Поле для хранения ссылки на фото
+    type: DataTypes.STRING, 
     allowNull: true,
     unique: true,
   }
