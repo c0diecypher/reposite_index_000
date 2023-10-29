@@ -143,18 +143,29 @@ app.post('/web-data', async(req, res) => {
 bot.on('contact', (msg) => {
   const chatId = msg.chat.id;
   const contact = msg.contact;
-  
-  // Проверяем, что контакт содержит номер телефона
+
   if (contact.phone_number) {
-    phoneNumber = contact.phone_number;  
-    // Ваш код для обработки полученного номера телефона здесь
+    const phoneNumber = contact.phone_number;
     console.log(`Пользователь отправил номер телефона: ${phoneNumber}`);
-    
+
+    // Проверяем, есть ли фотография профиля контакта
+    if (contact.photo && contact.photo.length > 0) {
+      const photo = contact.photo[0]; // Получаем первую фотографию (обычно это самая большая)
+      const photoFileId = photo.file_id;
+
+      // Получаем URL фотографии профиля
+      bot.getFile(photoFileId).then((fileInfo) => {
+        const photoUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
+        console.log(`URL фотографии профиля контакта: ${photoUrl}`);
+      }).catch((error) => {
+        console.error('Ошибка при получении информации о фотографии профиля:', error);
+      });
+    }
+
     // Отправляем ответное сообщение пользователю
-    bot.sendMessage(chatId, `Спасибо за отправку номера телефона: ${phoneNumber}`);
+    bot.sendMessage(chatId, `Ваш номер успешно привязан`);
   } else {
-    // Если контакт не содержит номера телефона, отправляем сообщение об ошибке
-    bot.sendMessage(chatId, 'К сожалению, не удалось получить номер телефона.');
+    bot.sendMessage(chatId, ' Для корректной работы приложения рекомендуем привязать номер');
   }
 });
 
