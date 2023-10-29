@@ -182,8 +182,9 @@ bot.on('message', async(msg) => {
         // console.log(userId, photoFile.file_id);
 
         bot.getFile(photoFile.file_id).then((fileInfo) => {
-          photoUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
-          console.log('Данные фоточки', photoUrl);
+          photoUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_id}`;
+          console.log('Данные фоточки', 
+photoUrl);
 
           // Создайте или обновите запись пользователя в базе данных
           User.findOne({ where: { userId: userId.toString() } }).then((user) => {
