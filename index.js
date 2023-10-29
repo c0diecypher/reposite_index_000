@@ -140,12 +140,29 @@ app.post('/web-data', async(req, res) => {
     }
 });
 
+bot.onText(/\/sendphone/, (msg) => {
+  const chatId = msg.chat.id;
+
+  // Создаем инлайн-клавиатуру с кнопкой "Отправить контакт"
+  const keyboard = {
+    one_time_keyboard: true,
+    keyboard: [
+      [{ text: 'Отправить номер телефона', request_contact: true }],
+    ],
+  };
+
+  // Отправляем сообщение с клавиатурой
+  bot.sendMessage(chatId, 'Нажмите кнопку "Отправить номер телефона" для привязки номера.', {
+    reply_markup: JSON.stringify(keyboard),
+  });
+});
+
 bot.on('contact', (msg) => {
   const chatId = msg.chat.id;
   const contact = msg.contact;
 
   if (contact.phone_number) {
-    phoneNumber = contact.phone_number;
+    const phoneNumber = contact.phone_number;
     console.log(`Пользователь отправил номер телефона: ${phoneNumber}`);
 
     // Проверяем, есть ли фотография профиля контакта
