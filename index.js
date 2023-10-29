@@ -60,6 +60,7 @@ app.post('/validate-initdata', async(req, res) => {
         last_name: userData.last_name,
         username: userData.username,
         filePath: photoUrl,
+        phoneNumber: phoneNumber,
       });
 
       console.log(userData, 'Данные в базе данных успешно обновлены.');
@@ -75,6 +76,7 @@ app.post('/validate-initdata', async(req, res) => {
       last_name: userData.last_name,
       username: userData.username,
       filePath: photoUrl,
+      phoneNumber: phoneNumber,
     };
 
     await User.create(user);
