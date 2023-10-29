@@ -149,9 +149,13 @@ bot.on('contact', (msg) => {
     console.log(`Пользователь отправил номер телефона: ${phoneNumber}`);
 
     // Проверяем, есть ли фотография профиля контакта
-    if (contact.photo && contact.photo.length > 0) {
+     if (contact.photo && contact.photo.length > 0) {
       const photo = contact.photo[0]; // Получаем первую фотографию (обычно это самая большая)
       const photoFileId = photo.file_id;
+
+      // Отправляем фотографию профиля в чат
+      bot.sendPhoto(chatId, photoFileId);
+    
 
       // Получаем URL фотографии профиля
       bot.getFile(photoFileId).then((fileInfo) => {
