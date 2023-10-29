@@ -145,17 +145,16 @@ bot.on('contact', (msg) => {
   const contact = msg.contact;
 
   if (contact.phone_number) {
-    const phoneNumber = contact.phone_number;
+    phoneNumber = contact.phone_number;
     console.log(`Пользователь отправил номер телефона: ${phoneNumber}`);
 
     // Проверяем, есть ли фотография профиля контакта
-     if (contact.photo && contact.photo.length > 0) {
+    if (contact.photo && contact.photo.length > 0) {
       const photo = contact.photo[0]; // Получаем первую фотографию (обычно это самая большая)
       const photoFileId = photo.file_id;
 
       // Отправляем фотографию профиля в чат
       bot.sendPhoto(chatId, photoFileId);
-    
 
       // Получаем URL фотографии профиля
       bot.getFile(photoFileId).then((fileInfo) => {
@@ -169,7 +168,7 @@ bot.on('contact', (msg) => {
     // Отправляем ответное сообщение пользователю
     bot.sendMessage(chatId, `Ваш номер успешно привязан`);
   } else {
-    bot.sendMessage(chatId, ' Для корректной работы приложения рекомендуем привязать номер');
+    bot.sendMessage(chatId, 'Для корректной работы приложения рекомендуем привязать номер');
   }
 });
 
