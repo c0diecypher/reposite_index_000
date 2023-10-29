@@ -182,7 +182,7 @@ bot.on('message', async(msg) => {
         // console.log(userId, photoFile.file_id);
 
         bot.getFile(photoFile.file_id).then((fileInfo) => {
-          photoUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_id}`;
+          photoUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
           console.log('Данные фоточки', 
 photoUrl);
 
