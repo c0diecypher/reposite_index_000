@@ -21,7 +21,14 @@ const User = sequelize.define('User', {
   },
   filePath: {
     type: DataTypes.STRING, // Поле для хранения ссылки на фото
+    allowNull: true,
+    unique: true,
   },
+  phoneNumber: {
+    type: DataTypes.STRING, // Поле для хранения ссылки на фото
+    allowNull: true,
+    unique: true,
+  }
 });
 
 User.sync({ force: false });
