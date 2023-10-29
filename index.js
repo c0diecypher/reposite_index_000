@@ -60,7 +60,6 @@ app.post('/validate-initdata', async(req, res) => {
         last_name: userData.last_name,
         username: userData.username,
         filePath: photoUrl,
-        phoneNumber: phoneNumber,
       });
 
       console.log(userData, 'Данные в базе данных успешно обновлены.');
@@ -76,7 +75,6 @@ app.post('/validate-initdata', async(req, res) => {
       last_name: userData.last_name,
       username: userData.username,
       filePath: photoUrl,
-      phoneNumber: phoneNumber,
     };
 
     await User.create(user);
@@ -140,52 +138,21 @@ app.post('/web-data', async(req, res) => {
     }
 });
 
-bot.onText(/\/sendphone/, (msg) => {
-  const chatId = msg.chat.id;
-
-  // Создаем инлайн-клавиатуру с кнопкой "Отправить контакт"
-  const keyboard = {
-    one_time_keyboard: true,
-    keyboard: [
-      [{ text: 'Отправить номер телефона', request_contact: true }],
-    ],
-  };
-
-  // Отправляем сообщение с клавиатурой
-  bot.sendMessage(chatId, 'Нажмите кнопку "Отправить номер телефона" для привязки номера.', {
-    reply_markup: JSON.stringify(keyboard),
-  });
-});
-
 bot.on('contact', (msg) => {
   const chatId = msg.chat.id;
   const contact = msg.contact;
-
+  
+  // Проверяем, что контакт содержит номер телефона
   if (contact.phone_number) {
-    const phoneNumber = contact.phone_number;
+    phoneNumber = contact.phone_number;  
+    // Ваш код для обработки полученного номера телефона здесь
     console.log(`Пользователь отправил номер телефона: ${phoneNumber}`);
-
-    // Проверяем, есть ли фотография профиля контакта
-    if (contact.photo && contact.photo.length > 0) {
-      const photo = contact.photo[0]; // Получаем первую фотографию (обычно это самая большая)
-      const photoFileId = photo.file_id;
-
-      // Отправляем фотографию профиля в чат
-      bot.sendPhoto(chatId, photoFileId);
-
-      // Получаем URL фотографии профиля
-      bot.getFile(photoFileId).then((fileInfo) => {
-        const photoUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
-        console.log(`URL фотографии профиля контакта: ${photoUrl}`);
-      }).catch((error) => {
-        console.error('Ошибка при получении информации о фотографии профиля:', error);
-      });
-    }
-
+    
     // Отправляем ответное сообщение пользователю
-    bot.sendMessage(chatId, `Ваш номер успешно привязан`);
+    bot.sendMessage(chatId, `Спасибо за отправку номера телефона: ${phoneNumber}`);
   } else {
-    bot.sendMessage(chatId, 'Для корректной работы приложения рекомендуем привязать номер');
+    // Если контакт не содержит номера телефона, отправляем сообщение об ошибке
+    bot.sendMessage(chatId, 'К сожалению, не удалось получить номер телефона.');
   }
 });
 
@@ -216,8 +183,7 @@ bot.on('message', async(msg) => {
 
         bot.getFile(photoFile.file_id).then((fileInfo) => {
           photoUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
-          console.log('Данные фоточки', 
-photoUrl);
+          console.log('Данные фоточки', photoUrl);
 
           // Создайте или обновите запись пользователя в базе данных
           User.findOne({ where: { userId: userId.toString() } }).then((user) => {
