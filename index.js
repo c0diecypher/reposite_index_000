@@ -59,10 +59,10 @@ app.post('/validate-initdata', async(req, res) => {
         first_name: userData.first_name,
         last_name: userData.last_name,
         username: userData.username,
-        userFio: userFio,
-        userCity: userCity,
-        userAdress: userAdress,
-        userDelivery: userDelivery,
+        userFio: null,
+        userCity: null,
+        userAdress: null,
+        userDelivery: null,
         filePath: photoUrl,
       });
 
@@ -78,11 +78,11 @@ app.post('/validate-initdata', async(req, res) => {
       first_name: userData.first_name,
       last_name: userData.last_name,
       username: userData.username,
-      userFio: userFio,
-      userCity: userCity,
-      userAdress: userAdress,
-      userDelivery: userDelivery,
-      filePath: photoUrl,
+      userFio: null,
+        userCity: null,
+        userAdress: null,
+        userDelivery: null,
+        filePath: photoUrl,
     };
 
     await User.create(user);
