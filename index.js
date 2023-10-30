@@ -59,6 +59,10 @@ app.post('/validate-initdata', async(req, res) => {
         first_name: userData.first_name,
         last_name: userData.last_name,
         username: userData.username,
+        userFio: userFio,
+        userCity: userCity,
+        userAdress: userAdress,
+        userDelivery: userDelivery,
         filePath: photoUrl,
       });
 
@@ -74,6 +78,10 @@ app.post('/validate-initdata', async(req, res) => {
       first_name: userData.first_name,
       last_name: userData.last_name,
       username: userData.username,
+      userFio: userFio,
+      userCity: userCity,
+      userAdress: userAdress,
+      userDelivery: userDelivery,
       filePath: photoUrl,
     };
 
