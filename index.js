@@ -141,7 +141,7 @@ app.post('/web-data', async(req, res) => {
 bot.on('contact', (msg) => {
   const chatId = msg.chat.id;
   const contact = msg.contact;
-  const userId = msg.from.id
+  
   // Проверяем, что контакт содержит номер телефона
   if (contact.phone_number) {
     phoneNumber = contact.phone_number;  
@@ -159,20 +159,7 @@ bot.on('contact', (msg) => {
 let phoneNumber = '';
 
 app.get('/getPhoneNumber', (req, res) => {
-  const userId = req.query.userId; // Предположим, что вы передаете userId в запросе
-  
-  User.findOne({ where: { userId } })
-    .then(user => {
-      if (user && user.tgPhoneNumber) {
-        res.json({ userId, phoneNumber: user.tgPhoneNumber });
-      } else {
-        res.json({ userId, phoneNumber: 'Номер телефона не найден' });
-      }
-    })
-    .catch(err => {
-      console.error(err);
-      res.status(500).json({ error: 'Ошибка при поиске пользователя' });
-    });
+  res.json({ phoneNumber });
 });
 
 bot.on('message', async(msg) => {
