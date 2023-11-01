@@ -74,7 +74,6 @@ app.post('/validate-initdata', async(req, res) => {
       first_name: userData.first_name,
       last_name: userData.last_name,
       username: userData.username,
-      userFio: userFio,
         filePath: photoUrl,
     };
 
@@ -272,7 +271,7 @@ app.post('/customer/settings', async (req, res) => {
       await User.create(newUser);
       console.log('Новый пользователь успешно создан.');
       console.log(userId);
-      console.log(userfio);
+      console.log(userFio);
       console.log(userAdress);
     }
 
