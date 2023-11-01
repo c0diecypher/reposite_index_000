@@ -174,6 +174,31 @@ bot.on('contact', async (msg) => {
   }
 });
 
+app.get('/customer/settings/client/get/:userId', async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    // Здесь используйте ваш метод или ORM для поиска пользователя по userId
+    const user = await User.findOne({ where: { userId } });
+
+    if (user) {
+      // Если пользователь найден, получите userAdress и userFio из базы данных
+      const userCity = user.userCity;
+
+      // Отправьте userAdress и userFio на клиентскую сторону
+      res.json({
+        userId,
+        userCity,
+      });
+    } else {
+      res.status(404).json({ message: 'Пользователь не найден' });
+    }
+  } catch (error) {
+    console.error('Ошибка при запросе данных из базы данных:', error);
+    res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+  }
+});
+
 app.get('/getPhoneNumber', (req, res) => {
   // Здесь вы можете выполнить запрос к базе данных, чтобы получить данные
   // В данном контексте, просто возвращаем пустой объект, но обычно это будет запрос к базе данных
