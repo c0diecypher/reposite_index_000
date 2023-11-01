@@ -276,6 +276,33 @@ app.post('/customer/settings', async (req, res) => {
   }
 });
 
+app.get('/customer/settings/client/:userId', async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    // Здесь используйте ваш метод или ORM для поиска пользователя по userId
+    const user = await User.findOne({ where: { userId } });
+
+    if (user) {
+      // Если пользователь найден, получите userAdress и userFio из базы данных
+      const userAdress = user.userAdress;
+      const userFio = user.userFio;
+
+      // Отправьте userAdress и userFio на клиентскую сторону
+      res.json({
+        userId,
+        userAdress,
+        userFio,
+      });
+    } else {
+      res.status(404).json({ message: 'Пользователь не найден' });
+    }
+  } catch (error) {
+    console.error('Ошибка при запросе данных из базы данных:', error);
+    res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+  }
+});
+
 const PORT = 8000;
 
 app.listen(PORT, () => {
