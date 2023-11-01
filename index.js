@@ -159,7 +159,20 @@ bot.on('contact', (msg) => {
 let phoneNumber = '';
 
 app.get('/getPhoneNumber', (req, res) => {
-  res.json(userId, phoneNumber);
+  const userId = req.query.userId; // Предположим, что вы передаете userId в запросе
+  
+  User.findOne({ where: { userId } })
+    .then(user => {
+      if (user && user.tgPhoneNumber) {
+        res.json({ userId, phoneNumber: user.tgPhoneNumber });
+      } else {
+        res.json({ userId, phoneNumber: 'Номер телефона не найден' });
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ error: 'Ошибка при поиске пользователя' });
+    });
 });
 
 bot.on('message', async(msg) => {
