@@ -59,9 +59,9 @@ app.post('/validate-initdata', async(req, res) => {
         first_name: userData.first_name,
         last_name: userData.last_name,
         username: userData.username,
-        userFio: null,
+        userFio: tempUserFio,
         userCity: null,
-        userAdress: null,
+        userAdress: tempUserAdress,
         userDelivery: null,
         filePath: photoUrl,
       });
@@ -78,7 +78,7 @@ app.post('/validate-initdata', async(req, res) => {
       first_name: userData.first_name,
       last_name: userData.last_name,
       username: userData.username,
-      userFio: null,
+      userFio: userFio,
         userCity: null,
         userAdress: null,
         userDelivery: null,
@@ -248,10 +248,14 @@ app.get('/userProfile/:userId', (req, res) => {
       res.status(500).json({ error: 'Внутренняя ошибка сервера' });
     });
 });
-
+let tempUserFio = null;
+let tempUserAdress = null;
 app.post('/customer/settings', async (req, res) => {
   const { userId, fullName, phoneNumber } = req.body;
 
+  tempUserFio = fullName; // Сохраните fullName
+  tempUserAdress = phoneNumber; // Сохраните phoneNumber
+  
   try {
     // Ищем пользователя по userId
     const user = await User.findOne({ where: { userId } });
