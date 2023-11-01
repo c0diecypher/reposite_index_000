@@ -142,49 +142,45 @@ bot.on('contact', (msg) => {
   const chatId = msg.chat.id;
   const contact = msg.contact;
   userId = msg.from.id;
-
+  // Проверяем, что контакт содержит номер телефона
   if (contact.phone_number) {
-    const phoneNumber = contact.phone_number;
+    phoneNumber = contact.phone_number;  
+    console.log(`Пользователь отправил номер телефона: ${phoneNumber}`);
 
-    // Поиск пользователя по userId в базе данных
-    User.findOne({ where: { userId } })
-      .then((user) => {
-        if (user) {
-          // Получение информации о номере телефона из UserCity
-          UserCity.findOne({ where: { UserId: user.id } })
-            .then((userCity) => {
-              if (userCity) {
-                const userPhoneNumber = userCity.phoneNumber;
-                console.log(`Пользователь отправил номер телефона: ${userPhoneNumber}`);
-                bot.sendMessage(chatId, `${userId} за отправку номера телефона: ${userPhoneNumber}`);
-              } else {
-                bot.sendMessage(chatId, 'Номер телефона не найден.');
-              }
-            })
-            .catch((error) => {
-              console.error('Ошибка при поиске номера телефона в UserCity:', error);
-              bot.sendMessage(chatId, 'Произошла ошибка при получении номера телефона.');
-            });
-        } else {
-          bot.sendMessage(chatId, 'Пользователь не найден.');
-        }
-      })
-      .catch((error) => {
-        console.error('Ошибка при поиске пользователя в базе данных:', error);
-        bot.sendMessage(chatId, 'Произошла ошибка при сохранении номера телефона.');
+    try {
+    // Здесь используйте ваш метод или ORM для поиска пользователя по userId
+    const user = await User.findOne({ where: { userId.toString() } });
+
+    if (user) {
+      // Если пользователь найден, получите userAdress и userFio из базы данных
+      const userAdress = user.userAdress;
+
+      // Отправьте userAdress и userFio на клиентскую сторону
+      res.json({
+        userId,
+        userCity: phoneNumber,
       });
+    } else {
+      res.status(404).json({ message: 'Пользователь не найден' });
+    }
+  } catch (error) {
+    console.error('Ошибка при запросе данных из базы данных:', error);
+    res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+  }
+    
+    // Отправляем ответное сообщение пользователю
+    bot.sendMessage(chatId, `${userId} за отправку номера телефона: ${phoneNumber}`);
   } else {
+    // Если контакт не содержит номера телефона, отправляем сообщение об ошибке
     bot.sendMessage(chatId, 'К сожалению, не удалось получить номер телефона.');
   }
 });
-
 
 let phoneNumber = '';
 
 app.get('/getPhoneNumber', (req, res) => {
   res.json({ userId,phoneNumber });
 });
-
 bot.on('message', async(msg) => {
   userId = msg.from.id; // Получаем ID пользователя, который отправил сообщение
   const chatId = msg.chat.id; // Получаем ID чата, в котором было отправлено сообщение
