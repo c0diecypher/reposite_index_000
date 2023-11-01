@@ -59,10 +59,6 @@ app.post('/validate-initdata', async(req, res) => {
         first_name: userData.first_name,
         last_name: userData.last_name,
         username: userData.username,
-        userFio: tempUserFio,
-        userCity: null,
-        userAdress: tempUserAdress,
-        userDelivery: null,
         filePath: photoUrl,
       });
 
@@ -79,9 +75,6 @@ app.post('/validate-initdata', async(req, res) => {
       last_name: userData.last_name,
       username: userData.username,
       userFio: userFio,
-        userCity: null,
-        userAdress: null,
-        userDelivery: null,
         filePath: photoUrl,
     };
 
@@ -248,28 +241,34 @@ app.get('/userProfile/:userId', (req, res) => {
       res.status(500).json({ error: 'Внутренняя ошибка сервера' });
     });
 });
-let tempUserFio = null;
-let tempUserAdress = null;
+
+
 app.post('/customer/settings', async (req, res) => {
   const { userId, fullName, phoneNumber } = req.body;
 
-  tempUserFio = fullName; // Сохраните fullName
-  tempUserAdress = phoneNumber; // Сохраните phoneNumber
-  
   try {
     // Ищем пользователя по userId
     const user = await User.findOne({ where: { userId } });
 
-    if (!user) {
-      return res.status(404).json({ message: 'Пользователь не найден' });
+    if (user) {
+      // Если пользователь существует, обновляем его данные
+      await user.update({
+        userFio: fullName,
+        userAdress: phoneNumber,
+        // Другие поля, которые вы хотите обновить
+      });
+      console.log('Данные пользователя успешно обновлены.');
+    } else {
+      // Если пользователь не существует, создаем нового пользователя
+      const newUser = {
+        userId,
+        userFio: fullName,
+        userAdress: phoneNumber,
+        // Другие поля, которые вы хотите сохранить
+      };
+      await User.create(newUser);
+      console.log('Новый пользователь успешно создан.');
     }
-
-    // Обновляем данные пользователя
-    user.userFio = fullName;
-    user.userAdress = phoneNumber;
-
-    // Сохраняем обновленного пользователя
-    await user.save();
 
     return res.status(200).json({ message: 'Данные успешно сохранены' });
   } catch (error) {
