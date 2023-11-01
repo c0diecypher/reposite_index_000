@@ -142,19 +142,42 @@ bot.on('contact', (msg) => {
   const chatId = msg.chat.id;
   const contact = msg.contact;
   userId = msg.from.id;
-  // Проверяем, что контакт содержит номер телефона
+
   if (contact.phone_number) {
-    phoneNumber = contact.phone_number;  
-    // Ваш код для обработки полученного номера телефона здесь
-    console.log(`Пользователь отправил номер телефона: ${phoneNumber}`);
-    
-    // Отправляем ответное сообщение пользователю
-    bot.sendMessage(chatId, `{userId} за отправку номера телефона: ${phoneNumber}`);
+    const phoneNumber = contact.phone_number;
+
+    // Поиск пользователя по userId в базе данных
+    User.findOne({ where: { userId } })
+      .then((user) => {
+        if (user) {
+          // Получение информации о номере телефона из UserCity
+          UserCity.findOne({ where: { UserId: user.id } })
+            .then((userCity) => {
+              if (userCity) {
+                const userPhoneNumber = userCity.phoneNumber;
+                console.log(`Пользователь отправил номер телефона: ${userPhoneNumber}`);
+                bot.sendMessage(chatId, `${userId} за отправку номера телефона: ${userPhoneNumber}`);
+              } else {
+                bot.sendMessage(chatId, 'Номер телефона не найден.');
+              }
+            })
+            .catch((error) => {
+              console.error('Ошибка при поиске номера телефона в UserCity:', error);
+              bot.sendMessage(chatId, 'Произошла ошибка при получении номера телефона.');
+            });
+        } else {
+          bot.sendMessage(chatId, 'Пользователь не найден.');
+        }
+      })
+      .catch((error) => {
+        console.error('Ошибка при поиске пользователя в базе данных:', error);
+        bot.sendMessage(chatId, 'Произошла ошибка при сохранении номера телефона.');
+      });
   } else {
-    // Если контакт не содержит номера телефона, отправляем сообщение об ошибке
     bot.sendMessage(chatId, 'К сожалению, не удалось получить номер телефона.');
   }
 });
+
 
 let phoneNumber = '';
 
