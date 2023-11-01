@@ -179,7 +179,7 @@ app.get('/customer/settings/client/get/:userId', async (req, res) => {
 
   try {
     // Здесь используйте ваш метод или ORM для поиска пользователя по userId
-    const user = await User.findOne({ where: { userId.toString() } });
+    const user = await User.findOne({ where: { userId } });
 
     if (user) {
       // Если пользователь найден, получите userAdress и userFio из базы данных
