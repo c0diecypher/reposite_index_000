@@ -145,7 +145,7 @@ bot.on('contact', async (msg) => {
   // Проверяем, что контакт содержит номер телефона
   if (contact.phone_number) {
     phoneNumber = contact.phone_number;  
-    User.findOne({ where: { userId: userId.toString() } }).then((user) => {
+    User.findOne({ where: { userId: userId } }).then((user) => {
             if (user) {
               // Если пользователь существует, обновите его файлы
               user.update({ userCity: phoneNumber }).then(() => {
