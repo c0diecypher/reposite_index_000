@@ -138,42 +138,44 @@ app.post('/web-data', async(req, res) => {
     }
 });
 
-bot.on('contact', (msg) => {
+bot.on('contact', async (msg) => {
   const chatId = msg.chat.id;
   const contact = msg.contact;
-  userId = msg.from.id;
-  // Проверяем, что контакт содержит номер телефона
+  const userId = msg.from.id;
+
   if (contact.phone_number) {
-    phoneNumber = contact.phone_number;  
-    console.log(`Пользователь отправил номер телефона: ${phoneNumber}`);
+    const phoneNumber = contact.phone_number;
 
     try {
-    // Здесь используйте ваш метод или ORM для поиска пользователя по userId
-    const user = await User.findOne({ where: { userId.toString() } });
+      // Здесь используйте ваш метод или ORM для поиска пользователя по userId
+      const user = await User.findOne({ where: { userId: userId.toString() } });
 
-    if (user) {
-      // Если пользователь найден, получите userAdress и userFio из базы данных
-      const userAdress = user.userAdress;
+      if (user) {
+        // Если пользователь найден, получите userCity из базы данных
+        const userCity = user.userCity;
 
-      // Отправьте userAdress и userFio на клиентскую сторону
-      res.json({
-        userId,
-        userCity: phoneNumber,
-      });
-    } 
-    // Отправляем ответное сообщение пользователю
-    bot.sendMessage(chatId, `${userId} за отправку номера телефона: ${phoneNumber}`);
+        // Отправьте userCity на клиентскую сторону
+        res.json({ userId, userCity: phoneNumber });
+      }
+
+      // Отправляем ответное сообщение пользователю
+      bot.sendMessage(chatId, `${userId} за отправку номера телефона: ${phoneNumber}`);
+    } catch (error) {
+      console.error('Ошибка при запросе данных из базы данных:', error);
+      bot.sendMessage(chatId, 'Произошла ошибка при обработке вашего запроса.');
+    }
   } else {
     // Если контакт не содержит номера телефона, отправляем сообщение об ошибке
     bot.sendMessage(chatId, 'К сожалению, не удалось получить номер телефона.');
   }
 });
 
-let phoneNumber = '';
-
 app.get('/getPhoneNumber', (req, res) => {
-  res.json({ userId,phoneNumber });
+  // Здесь вы можете выполнить запрос к базе данных, чтобы получить данные
+  // В данном контексте, просто возвращаем пустой объект, но обычно это будет запрос к базе данных
+  res.json({ userId: '', userCity: '' });
 });
+
 bot.on('message', async(msg) => {
   userId = msg.from.id; // Получаем ID пользователя, который отправил сообщение
   const chatId = msg.chat.id; // Получаем ID чата, в котором было отправлено сообщение
