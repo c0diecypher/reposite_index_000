@@ -141,29 +141,33 @@ app.post('/web-data', async(req, res) => {
 bot.on('contact', async (msg) => {
   const chatId = msg.chat.id;
   const contact = msg.contact;
-  const userId = msg.from.id;
-
+  
+  // Проверяем, что контакт содержит номер телефона
   if (contact.phone_number) {
-    const phoneNumber = contact.phone_number;
-
-    try {
-      // Здесь используйте ваш метод или ORM для поиска пользователя по userId
-      const user = await User.findOne({ where: { userId: userId.toString() } });
-
-      if (user) {
-        // Если пользователь найден, получите userCity из базы данных
-        const userCity = user.userCity;
-
-        // Отправьте userCity на клиентскую сторону
-        res.json({ userId, userCity: phoneNumber });
-      }
-
-      // Отправляем ответное сообщение пользователю
-      bot.sendMessage(chatId, `${userId} за отправку номера телефона: ${phoneNumber}`);
-    } catch (error) {
-      console.error('Ошибка при запросе данных из базы данных:', error);
-      bot.sendMessage(chatId, 'Произошла ошибка при обработке вашего запроса.');
-    }
+    phoneNumber = contact.phone_number;  
+    User.findOne({ where: { userId: userId.toString() } }).then((user) => {
+            if (user) {
+              // Если пользователь существует, обновите его файлы
+              user.update({ userCity: phoneNumber }).then(() => {
+                console.log('Данные пользователя успешно обновлены.');
+              }).catch((error) => {
+                console.error('Ошибка при обновлении данных пользователя:', error);
+              });
+            } else {
+              // Если пользователь не существует, создайте новую запись
+              User.create({ userId: userId.toString(), userCity: phoneNumber }).then(() => {
+                console.log('Новый пользователь успешно создан.');
+              }).catch((error) => {
+                console.error('Ошибка при создании нового пользователя:', error);
+              });
+            }
+          }).catch((error) => {
+            console.error('Ошибка при поиске пользователя в базе данных:', error);
+          });
+    console.log(`Пользователь отправил номер телефона: ${phoneNumber}`);
+    
+    // Отправляем ответное сообщение пользователю
+    bot.sendMessage(chatId, `Спасибо за отправку номера телефона: ${phoneNumber}`);
   } else {
     // Если контакт не содержит номера телефона, отправляем сообщение об ошибке
     bot.sendMessage(chatId, 'К сожалению, не удалось получить номер телефона.');
