@@ -276,7 +276,7 @@ app.post('/customer/settings', async (req, res) => {
   }
 });
 
-app.get('/userProfile/:userId', async (req, res) => {
+app.get('/customer/settings/client/:userId', async (req, res) => {
   const userId = req.params.userId;
 
   try {
