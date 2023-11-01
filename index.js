@@ -160,14 +160,7 @@ bot.on('contact', (msg) => {
         userId,
         userCity: phoneNumber,
       });
-    } else {
-      res.status(404).json({ message: 'Пользователь не найден' });
-    }
-  } catch (error) {
-    console.error('Ошибка при запросе данных из базы данных:', error);
-    res.status(500).json({ message: 'Внутренняя ошибка сервера' });
-  }
-    
+    } 
     // Отправляем ответное сообщение пользователю
     bot.sendMessage(chatId, `${userId} за отправку номера телефона: ${phoneNumber}`);
   } else {
