@@ -257,9 +257,6 @@ app.post('/customer/settings', async (req, res) => {
         // Другие поля, которые вы хотите обновить
       });
       console.log('Данные пользователя успешно обновлены.');
-      console.log(userId);
-      console.log(userFio);
-      console.log(userAdress);
     } else {
       // Если пользователь не существует, создаем нового пользователя
       const newUser = {
@@ -270,9 +267,6 @@ app.post('/customer/settings', async (req, res) => {
       };
       await User.create(newUser);
       console.log('Новый пользователь успешно создан.');
-      console.log(userId);
-      console.log(userFio);
-      console.log(userAdress);
     }
 
     return res.status(200).json({ message: 'Данные успешно сохранены' });
