@@ -249,6 +249,31 @@ app.get('/userProfile/:userId', (req, res) => {
     });
 });
 
+app.post('/customer/settings', async (req, res) => {
+  const { userId, fullName, phoneNumber } = req.body;
+
+  try {
+    // Ищем пользователя по userId
+    const user = await User.findOne({ where: { userId } });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Пользователь не найден' });
+    }
+
+    // Обновляем данные пользователя
+    user.userFio = fullName;
+    user.userAdress = phoneNumber;
+
+    // Сохраняем обновленного пользователя
+    await user.save();
+
+    return res.status(200).json({ message: 'Данные успешно сохранены' });
+  } catch (error) {
+    console.error('Ошибка при обновлении данных:', error);
+    return res.status(500).json({ message: 'Ошибка при обновлении данных' });
+  }
+});
+
 const PORT = 8000;
 
 app.listen(PORT, () => {
