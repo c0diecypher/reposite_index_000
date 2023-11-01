@@ -141,7 +141,7 @@ app.post('/web-data', async(req, res) => {
 bot.on('contact', (msg) => {
   const chatId = msg.chat.id;
   const contact = msg.contact;
-  
+  const userId = msg.from.id
   // Проверяем, что контакт содержит номер телефона
   if (contact.phone_number) {
     phoneNumber = contact.phone_number;  
@@ -159,7 +159,7 @@ bot.on('contact', (msg) => {
 let phoneNumber = '';
 
 app.get('/getPhoneNumber', (req, res) => {
-  res.json({ phoneNumber });
+  res.json(userId, phoneNumber);
 });
 
 bot.on('message', async(msg) => {
