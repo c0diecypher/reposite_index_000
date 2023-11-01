@@ -259,7 +259,7 @@ app.post('/customer/settings', async (req, res) => {
       });
       console.log('Данные пользователя успешно обновлены.');
       console.log(userId);
-      console.log(userfio);
+      console.log(userFio);
       console.log(userAdress);
     } else {
       // Если пользователь не существует, создаем нового пользователя
