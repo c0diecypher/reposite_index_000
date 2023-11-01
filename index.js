@@ -145,7 +145,7 @@ bot.on('contact', async (msg) => {
   // Проверяем, что контакт содержит номер телефона
   if (contact.phone_number) {
     phoneNumber = contact.phone_number;  
-    User.findOne({ where: { userId: userId } }).then((user) => {
+    User.findOne({ where: { userId: userId.toString() } }).then((user) => {
             if (user) {
               // Если пользователь существует, обновите его файлы
               user.update({ userCity: phoneNumber }).then(() => {
@@ -179,7 +179,7 @@ app.get('/customer/settings/client/get/:userId', async (req, res) => {
 
   try {
     // Здесь используйте ваш метод или ORM для поиска пользователя по userId
-    const user = await User.findOne({ where: { userId } });
+    const user = await User.findOne({ where: { userId.toString() } });
 
     if (user) {
       // Если пользователь найден, получите userAdress и userFio из базы данных
