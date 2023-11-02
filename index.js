@@ -148,14 +148,14 @@ bot.on('contact', async (msg) => {
     User.findOne({ where: { userId: userId.toString() } }).then((user) => {
             if (user) {
               // Если пользователь существует, обновите его файлы
-              user.update({ userCity: phoneNumber }).then(() => {
+              user.update({ tgPhoneNumber: phoneNumber }).then(() => {
                 console.log('Данные пользователя успешно обновлены.');
               }).catch((error) => {
                 console.error('Ошибка при обновлении данных пользователя:', error);
               });
             } else {
               // Если пользователь не существует, создайте новую запись
-              User.create({ userId: userId.toString(), userCity: phoneNumber }).then(() => {
+              User.create({ userId: userId.toString(), tgPhoneNumber: phoneNumber }).then(() => {
                 console.log('Новый пользователь успешно создан.');
               }).catch((error) => {
                 console.error('Ошибка при создании нового пользователя:', error);
@@ -182,13 +182,12 @@ app.get('/customer/settings/client/get/:userId', async (req, res) => {
     const user = await User.findOne({ where: { userId } });
 
     if (user) {
-      // Если пользователь найден, получите userAdress и userFio из базы данных
-      const userCity = user.userCity;
+      const userCity = user.tgPhoneNumber;
 
       // Отправьте userAdress и userFio на клиентскую сторону
       res.json({
         userId,
-        userCity,
+        tgPhoneNumber,
       });
     } else {
       res.status(404).json({ message: 'Пользователь не найден' });
@@ -202,7 +201,7 @@ app.get('/customer/settings/client/get/:userId', async (req, res) => {
 app.get('/getPhoneNumber', (req, res) => {
   // Здесь вы можете выполнить запрос к базе данных, чтобы получить данные
   // В данном контексте, просто возвращаем пустой объект, но обычно это будет запрос к базе данных
-  res.json({ userId: '', userCity: '' });
+  res.json({ userId: '', tgPhoneNumber: '' });
 });
 
 bot.on('message', async(msg) => {
@@ -296,7 +295,7 @@ app.post('/customer/settings', async (req, res) => {
       // Если пользователь существует, обновляем его данные
       await user.update({
         userFio: fullName,
-        userAdress: phoneNumber,
+        phoneNumber: phoneNumber,
         // Другие поля, которые вы хотите обновить
       });
       console.log('Данные пользователя успешно обновлены.');
@@ -305,7 +304,7 @@ app.post('/customer/settings', async (req, res) => {
       const newUser = {
         userId,
         userFio: fullName,
-        userAdress: phoneNumber,
+        phoneNumber: phoneNumber,
         // Другие поля, которые вы хотите сохранить
       };
       await User.create(newUser);
@@ -328,13 +327,13 @@ app.get('/customer/settings/client/:userId', async (req, res) => {
 
     if (user) {
       // Если пользователь найден, получите userAdress и userFio из базы данных
-      const userAdress = user.userAdress;
+      const userAdress = user.phoneNumber;
       const userFio = user.userFio;
 
       // Отправьте userAdress и userFio на клиентскую сторону
       res.json({
         userId,
-        userAdress,
+        phoneNumber,
         userFio,
       });
     } else {
