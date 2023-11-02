@@ -285,7 +285,7 @@ app.get('/userProfile/:userId', (req, res) => {
 
 
 app.post('/customer/settings', async (req, res) => {
-  const { userId, fullName, phoneNumber } = req.body;
+  const { userId, fullName, userPhone } = req.body;
 
   try {
     // Ищем пользователя по userId
@@ -295,7 +295,7 @@ app.post('/customer/settings', async (req, res) => {
       // Если пользователь существует, обновляем его данные
       await user.update({
         userFio: fullName,
-        phoneNumber: phoneNumber,
+        phoneNumber: userPhone,
         // Другие поля, которые вы хотите обновить
       });
       console.log('Данные пользователя успешно обновлены.');
@@ -304,7 +304,7 @@ app.post('/customer/settings', async (req, res) => {
       const newUser = {
         userId,
         userFio: fullName,
-        phoneNumber: phoneNumber,
+        phoneNumber: userPhone,
         // Другие поля, которые вы хотите сохранить
       };
       await User.create(newUser);
@@ -327,7 +327,7 @@ app.get('/customer/settings/client/:userId', async (req, res) => {
 
     if (user) {
       // Если пользователь найден, получите userAdress и userFio из базы данных
-      const userAdress = user.phoneNumber;
+      const userNumber = user.phoneNumber;
       const userFio = user.userFio;
 
       // Отправьте userAdress и userFio на клиентскую сторону
