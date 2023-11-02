@@ -167,7 +167,7 @@ bot.on('contact', async (msg) => {
     console.log(`Пользователь отправил номер телефона: ${phoneNumber}`);
     
     // Отправляем ответное сообщение пользователю
-    bot.sendMessage(chatId, `Спасибо за отправку номера телефона: ${phoneNumber}`);
+    bot.sendMessage(chatId, `Спасибо за отправку номера телефона: ${user.tgPhoneNumber}`);
   } else {
     // Если контакт не содержит номера телефона, отправляем сообщение об ошибке
     bot.sendMessage(chatId, 'К сожалению, не удалось получить номер телефона.');
@@ -182,7 +182,7 @@ app.get('/customer/settings/client/get/:userId', async (req, res) => {
     const user = await User.findOne({ where: { userId } });
 
     if (user) {
-      const userCity = user.tgPhoneNumber;
+      const tgPhoneNumber = user.tgPhoneNumber;
 
       // Отправьте userAdress и userFio на клиентскую сторону
       res.json({
