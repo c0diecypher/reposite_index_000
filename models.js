@@ -19,6 +19,11 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: true, // Разрешить значение быть null, если данные не доступны
   },
+  phoneNumber: {
+    type: DataTypes.STRING, 
+    allowNull: true,
+    unique: true,
+  },
   tgPhoneNumber: {
     type: DataTypes.STRING, 
     allowNull: true,
