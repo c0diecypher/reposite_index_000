@@ -90,7 +90,7 @@ app.post('/validate-initdata', async(req, res) => {
 });
 
 const webAppUrl = 'https://zipperapp.vercel.app/'
-
+let phoneNumber = '';
 bot.on('message', async(msg) => {
   const chatId = msg.chat.id;
   const text = msg.text;
