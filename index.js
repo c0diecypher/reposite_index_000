@@ -327,7 +327,7 @@ app.get('/customer/settings/client/:userId', async (req, res) => {
 
     if (user) {
       // Если пользователь найден, получите userAdress и userFio из базы данных
-      const userNumber = user.phoneNumber;
+      const phoneNumber = user.phoneNumber;
       const userFio = user.userFio;
 
       // Отправьте userAdress и userFio на клиентскую сторону
