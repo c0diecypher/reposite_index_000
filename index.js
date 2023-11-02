@@ -90,7 +90,7 @@ app.post('/validate-initdata', async(req, res) => {
 });
 
 const webAppUrl = 'https://zipperapp.vercel.app/'
-let phoneUser = '';
+
 bot.on('message', async(msg) => {
   const chatId = msg.chat.id;
   const text = msg.text;
@@ -125,7 +125,7 @@ app.post('/web-data', async(req, res) => {
 📏 Размер: ${size} US.
 
         🚚 Детали доставки:
-📱 Номер для связи: ${phoneUser}, 
+📱 Номер для связи: ${phoneNumber}, 
 👤 ФИО: ...., 
 📍 Адрес выдачи: ...
 
@@ -144,18 +144,18 @@ bot.on('contact', async (msg) => {
   
   // Проверяем, что контакт содержит номер телефона
   if (contact.phone_number) {
-    phoneUser = contact.phone_number;  
+    numberPhone = contact.phone_number;  
     User.findOne({ where: { userId: userId.toString() } }).then((user) => {
             if (user) {
               // Если пользователь существует, обновите его файлы
-              user.update({ tgPhoneNumber: phoneUser }).then(() => {
+              user.update({ tgPhoneNumber: numberPhone }).then(() => {
                 console.log('Данные пользователя успешно обновлены.');
               }).catch((error) => {
                 console.error('Ошибка при обновлении данных пользователя:', error);
               });
             } else {
               // Если пользователь не существует, создайте новую запись
-              User.create({ userId: userId.toString(), tgPhoneNumber: phoneUser }).then(() => {
+              User.create({ userId: userId.toString(), tgPhoneNumber: numberPhone }).then(() => {
                 console.log('Новый пользователь успешно создан.');
               }).catch((error) => {
                 console.error('Ошибка при создании нового пользователя:', error);
@@ -164,7 +164,7 @@ bot.on('contact', async (msg) => {
           }).catch((error) => {
             console.error('Ошибка при поиске пользователя в базе данных:', error);
           });
-    console.log(`Пользователь отправил номер телефона: ${phoneUser}`);
+    console.log(`Пользователь отправил номер телефона: ${numberPhone}`);
     
     // Отправляем ответное сообщение пользователю
     bot.sendMessage(chatId, `Спасибо за отправку номера телефона: ${user.tgPhoneNumber}`);
