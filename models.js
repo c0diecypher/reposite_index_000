@@ -19,6 +19,11 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: true, // Разрешить значение быть null, если данные не доступны
   },
+  tgPhoneNumber: {
+    type: DataTypes.STRING, 
+    allowNull: true,
+    unique: true,
+  },
   userAdress: {
     type: DataTypes.STRING,
     allowNull: true, // Разрешить значение быть null, если данные не доступны
@@ -33,6 +38,31 @@ const User = sequelize.define('User', {
     unique: true,
   },
   userDelivery: {
+    type: DataTypes.STRING, 
+    allowNull: true,
+    unique: true,
+  },
+  userOrder: {
+    type: DataTypes.STRING, 
+    allowNull: true,
+    unique: true,
+  },
+  latestOrders: {
+    type: DataTypes.STRING, 
+    allowNull: true,
+    unique: true,
+  },
+  userBonus: {
+    type: DataTypes.STRING, 
+    allowNull: true,
+    unique: true,
+  },
+  userRank: {
+    type: DataTypes.STRING, 
+    allowNull: true,
+    unique: true,
+  },
+  userSplit: {
     type: DataTypes.STRING, 
     allowNull: true,
     unique: true,
