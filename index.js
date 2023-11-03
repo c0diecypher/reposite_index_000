@@ -285,7 +285,7 @@ app.get('/userProfile/:userId', (req, res) => {
 
 
 app.post('/customer/settings', async (req, res) => {
-  const { userId, fullName, userPhone, address } = req.body;
+  const { userId, fullName, userPhone, address, userCity } = req.body;
 
   try {
     // Ищем пользователя по userId
@@ -297,6 +297,7 @@ app.post('/customer/settings', async (req, res) => {
         userFio: fullName,
         phoneNumber: userPhone,
         userAdress : address,
+        userCity: userCity,
         // Другие поля, которые вы хотите обновить
       });
       console.log('Данные пользователя успешно обновлены.');
@@ -307,6 +308,7 @@ app.post('/customer/settings', async (req, res) => {
         userFio: fullName,
         phoneNumber: userPhone,
         userAdress : address,
+        userCity: userCity,
         // Другие поля, которые вы хотите сохранить
       };
       await User.create(newUser);
@@ -331,7 +333,8 @@ app.get('/customer/settings/client/:userId', async (req, res) => {
       // Если пользователь найден, получите userAdress и userFio из базы данных
       const phoneNumber = user.phoneNumber;
       const userFio = user.userFio;
-      const userAdress = user.userAdress
+      const userAdress = user.userAdress;
+      const userCity = user.userCity;
 
       // Отправьте userAdress и userFio на клиентскую сторону
       res.json({
@@ -339,6 +342,7 @@ app.get('/customer/settings/client/:userId', async (req, res) => {
         phoneNumber,
         userFio,
         userAdress,
+        userCity,
       });
     } else {
       res.status(404).json({ message: 'Пользователь не найден' });
