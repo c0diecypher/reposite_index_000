@@ -285,7 +285,7 @@ app.get('/userProfile/:userId', (req, res) => {
 
 
 app.post('/customer/settings', async (req, res) => {
-  const { userId, fullName, userPhone } = req.body;
+  const { userId, fullName, userPhone, address } = req.body;
 
   try {
     // Ищем пользователя по userId
@@ -296,6 +296,7 @@ app.post('/customer/settings', async (req, res) => {
       await user.update({
         userFio: fullName,
         phoneNumber: userPhone,
+        userAdress : address,
         // Другие поля, которые вы хотите обновить
       });
       console.log('Данные пользователя успешно обновлены.');
@@ -305,6 +306,7 @@ app.post('/customer/settings', async (req, res) => {
         userId,
         userFio: fullName,
         phoneNumber: userPhone,
+        userAdress : address,
         // Другие поля, которые вы хотите сохранить
       };
       await User.create(newUser);
@@ -329,12 +331,14 @@ app.get('/customer/settings/client/:userId', async (req, res) => {
       // Если пользователь найден, получите userAdress и userFio из базы данных
       const phoneNumber = user.phoneNumber;
       const userFio = user.userFio;
+      const userAdress = user.userAdress
 
       // Отправьте userAdress и userFio на клиентскую сторону
       res.json({
         userId,
         phoneNumber,
         userFio,
+        userAdress,
       });
     } else {
       res.status(404).json({ message: 'Пользователь не найден' });
