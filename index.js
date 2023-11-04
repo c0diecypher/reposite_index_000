@@ -5,6 +5,7 @@ const token = process.env.TELEGRAM_BOT_TOKEN;
 const { validate } = require('@twa.js/init-data-node');
 const User = require('./models'); 
 const fs = require('fs');
+const axios = require('axios');
 const path = require('path'); // Импортируем библиотеку path
 const bot = new TelegramBot(token, {polling: true});
 const app = express();
@@ -167,33 +168,43 @@ bot.on('message', async (msg) => {
 
           const filePath = path.join(downloadDir, `photo_${userId}.jpg`);
 
-          const fileStream = bot.downloadFile(fileInfo.file_id, filePath);
-          fileStream.on('end', () => {
-            console.log('Файл сохранен на сервере:', filePath);
+          // Скачивание файла с использованием axios
+          axios({
+            method: 'get',
+            url: fileUrl,
+            responseType: 'stream',
+          }).then((response) => {
+            response.data.pipe(fs.createWriteStream(filePath));
 
-            // Теперь у вас есть фактический файл на сервере
-            // Сохраните путь к файлу в базе данных
-            User.findOne({ where: { userId: userId.toString() } }).then((user) => {
-              if (user) {
-                // Если пользователь существует, обновите его путь к файлу в базе данных
-                user.update({ filePath: filePath }).then(() => {
-                  console.log('Путь к файлу пользователя успешно обновлен в базе данных.');
-                }).catch((error) => {
-                  console.error('Ошибка при обновлении пути к файлу пользователя:', error);
-                });
-              } else {
-                // Если пользователь не существует, создайте новую запись с путем к файлу
-                User.create({ userId: userId.toString(), filePath: filePath }).then(() => {
-                  console.log('Новый пользователь с путем к файлу успешно создан в базе данных.');
-                }).catch((error) => {
-                  console.error('Ошибка при создании нового пользователя с путем к файлу:', error);
-                });
-              }
-            }).catch((error) => {
-              console.error('Ошибка при поиске пользователя в базе данных:', error);
+            response.data.on('end', () => {
+              console.log('Файл сохранен на сервере:', filePath);
+
+              // Теперь у вас есть фактический файл на сервере
+              // Сохраните путь к файлу в базе данных
+              User.findOne({ where: { userId: userId.toString() } }).then((user) => {
+                if (user) {
+                  // Если пользователь существует, обновите его путь к файлу в базе данных
+                  user.update({ filePath: filePath }).then(() => {
+                    console.log('Путь к файлу пользователя успешно обновлен в базе данных.');
+                  }).catch((error) => {
+                    console.error('Ошибка при обновлении пути к файлу пользователя:', error);
+                  });
+                } else {
+                  // Если пользователь не существует, создайте новую запись с путем к файлу
+                  User.create({ userId: userId.toString(), filePath: filePath }).then(() => {
+                    console.log('Новый пользователь с путем к файлу успешно создан в базе данных.');
+                  }).catch((error) => {
+                    console.error('Ошибка при создании нового пользователя с путем к файлу:', error);
+                  });
+                }
+              }).catch((error) => {
+                console.error('Ошибка при поиске пользователя в базе данных:', error);
+              });
             });
-          }).on('error', (error) => {
-            console.error('Ошибка при загрузке файла:', error);
+
+            response.data.on('error', (error) => {
+              console.error('Ошибка при скачивании файла:', error);
+            });
           });
         }).catch((error) => {
           console.error('Ошибка при получении информации о файле:', error);
