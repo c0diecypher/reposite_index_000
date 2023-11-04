@@ -4,6 +4,8 @@ const cors = require('cors');
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const { validate } = require('@twa.js/init-data-node');
 const User = require('./models'); 
+const fs = require('fs');
+const path = require('path'); // Импортируем библиотеку path
 const bot = new TelegramBot(token, {polling: true});
 const app = express();
 app.use(express.json());
@@ -215,7 +217,6 @@ bot.on('message', async (msg) => {
     });
   }
 });
-
 app.get('/customer/settings/client/get/:userId', async (req, res) => {
   const userId = req.params.userId;
 
