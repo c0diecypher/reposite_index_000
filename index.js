@@ -284,7 +284,7 @@ bot.on('message', async (msg) => {
   }
 });
 
-app.get('/photo/:userId', (req, res) => {
+app.get('/customer/settings/client/photo/:userId', (req, res) => {
   const userId = req.params.userId;
 
   // Получите путь к фотографии из базы данных
@@ -328,7 +328,7 @@ app.get('/userProfile/:userId', (req, res) => {
 });
 
 
-app.post('/customer/settings', async (req, res) => {
+app.post('/customer/settings/client', async (req, res) => {
   const { userId, fullName, userPhone, address, userCity } = req.body;
 
   try {
