@@ -227,7 +227,7 @@ app.get('/photo/:userId', (req, res) => {
       const filePath = user.filePath;
 
       // Отправьте фотографию как ответ на запрос, используя только относительный путь
-      res.sendFile(filePath, { root: __dirname + '/downloads' });
+      res.sendFile(filePath);
     } else {
       res.status(404).send('Фотография не найдена');
     }
