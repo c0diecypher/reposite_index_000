@@ -170,7 +170,7 @@ bot.on('contact', async (msg) => {
     console.log(`Пользователь отправил номер телефона: ${numberPhone}`);
     
     // Отправляем ответное сообщение пользователю
-    bot.sendMessage(chatId, `Спасибо за отправку номера телефона: ${user.tgPhoneNumber}`);
+    bot.sendMessage(chatId, `Спасибо за отправку номера телефона: ${tgPhoneNumber}`);
   } else {
     // Если контакт не содержит номера телефона, отправляем сообщение об ошибке
     bot.sendMessage(chatId, 'К сожалению, не удалось получить номер телефона.');
