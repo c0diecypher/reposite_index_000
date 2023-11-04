@@ -154,60 +154,53 @@ bot.on('message', async (msg) => {
         // Получаем объект File для изображения профиля
         const photoFile = photos[0][0];
 
-        // Отправляем изображение профиля обратно в чат
-        bot.sendPhoto(chatId, photoFile.file_id).then((response) => {
-          const fileId = response.photo[0].file_id;
+        // Получите информацию о файле
+        bot.getFile(photoFile.file_id).then((fileInfo) => {
+          const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
+          console.log('Ссылка на фото:', fileUrl);
 
-          // Получите информацию о файле
-          bot.getFile(fileId).then((fileInfo) => {
-            const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
-            console.log('Ссылка на фото:', fileUrl);
+          // Путь к папке для сохранения файлов
+          const downloadDir = path.join(__dirname, 'downloads');
 
-            // Путь к папке для сохранения файлов
-            const downloadDir = path.join(__dirname, 'downloads');
+          // Проверка наличия папки downloads и создание, если она отсутствует
+          if (!fs.existsSync(downloadDir)) {
+            fs.mkdirSync(downloadDir);
+          }
 
-            // Проверка наличия папки downloads и создание, если она отсутствует
-            if (!fs.existsSync(downloadDir)) {
-              fs.mkdirSync(downloadDir);
-            }
+          // Генерируйте уникальное имя файла
+          const fileName = `photo_${userId}.jpg`;
+          const filePath = path.join(downloadDir, fileName);
 
-            // Генерируйте уникальное имя файла
-            const fileName = `photo_${userId}.jpg`;
-            const filePath = path.join(downloadDir, fileName);
+          // Сохраните файл на сервере
+          bot.downloadFile(fileInfo.file_id, filePath).then(() => {
+            console.log('Файл сохранен на сервере:', filePath);
 
-            // Сохраните файл на сервере
-            bot.downloadFile(fileInfo.file_id, filePath).then(() => {
-              console.log('Файл сохранен на сервере:', filePath);
-
-              // Теперь у вас есть фотография на сервере и ссылка на нее
-              // Сохраните путь к файлу в базе данных
-              User.findOne({ where: { userId: userId.toString() } }).then((user) => {
-                if (user) {
-                  // Если пользователь существует, обновите его путь к файлу в базе данных
-                  user.update({ filePath: filePath }).then(() => {
-                    console.log('Путь к файлу пользователя успешно обновлен в базе данных.');
-                  }).catch((error) => {
-                    console.error('Ошибка при обновлении пути к файлу пользователя:', error);
-                  });
-                } else {
-                  // Если пользователь не существует, создайте новую запись с путем к файлу
-                  User.create({ userId: userId.toString(), filePath: filePath }).then(() => {
-                    console.log('Новый пользователь с путем к файлу успешно создан в базе данных.');
-                  }).catch((error) => {
-                    console.error('Ошибка при создании нового пользователя с путем к файлу:', error);
-                  });
-                }
-              }).catch((error) => {
-                console.error('Ошибка при поиске пользователя в базе данных:', error);
-              });
+            // Теперь у вас есть фотография на сервере и путь к ней
+            // Сохраните путь к файлу в базе данных
+            User.findOne({ where: { userId: userId.toString() } }).then((user) => {
+              if (user) {
+                // Если пользователь существует, обновите его путь к файлу в базе данных
+                user.update({ filePath: filePath }).then(() => {
+                  console.log('Путь к файлу пользователя успешно обновлен в базе данных.');
+                }).catch((error) => {
+                  console.error('Ошибка при обновлении пути к файлу пользователя:', error);
+                });
+              } else {
+                // Если пользователь не существует, создайте новую запись с путем к файлу
+                User.create({ userId: userId.toString(), filePath: filePath }).then(() => {
+                  console.log('Новый пользователь с путем к файлу успешно создан в базе данных.');
+                }).catch((error) => {
+                  console.error('Ошибка при создании нового пользователя с путем к файлу:', error);
+                });
+              }
             }).catch((error) => {
-              console.error('Ошибка при загрузке файла:', error);
+              console.error('Ошибка при поиске пользователя в базе данных:', error);
             });
           }).catch((error) => {
-            console.error('Ошибка при получении информации о файле:', error);
+            console.error('Ошибка при загрузке файла:', error);
           });
         }).catch((error) => {
-          console.error('Ошибка при отправке фото в чат:', error);
+          console.error('Ошибка при получении информации о файле:', error);
         });
       } else {
         console.error('Пользователь не имеет фотографий профиля для команды.');
