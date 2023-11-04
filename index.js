@@ -159,23 +159,19 @@ bot.on('message', async (msg) => {
           const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
           console.log('Ссылка на фото:', fileUrl);
 
-          // Путь к папке для сохранения файлов
+          // Скачайте файл и сохраните его на сервере
           const downloadDir = path.join(__dirname, 'downloads');
-
-          // Проверка наличия папки downloads и создание, если она отсутствует
           if (!fs.existsSync(downloadDir)) {
             fs.mkdirSync(downloadDir);
           }
 
-          // Генерируйте уникальное имя файла
-          const fileName = `photo_${userId}.jpg`;
-          const filePath = path.join(downloadDir, fileName);
+          const filePath = path.join(downloadDir, `photo_${userId}.jpg`);
 
-          // Сохраните файл на сервере
-          bot.downloadFile(fileInfo.file_id, filePath).then(() => {
+          const fileStream = bot.downloadFile(fileInfo.file_id, filePath);
+          fileStream.on('end', () => {
             console.log('Файл сохранен на сервере:', filePath);
 
-            // Теперь у вас есть фотография на сервере и путь к ней
+            // Теперь у вас есть фактический файл на сервере
             // Сохраните путь к файлу в базе данных
             User.findOne({ where: { userId: userId.toString() } }).then((user) => {
               if (user) {
@@ -196,7 +192,7 @@ bot.on('message', async (msg) => {
             }).catch((error) => {
               console.error('Ошибка при поиске пользователя в базе данных:', error);
             });
-          }).catch((error) => {
+          }).on('error', (error) => {
             console.error('Ошибка при загрузке файла:', error);
           });
         }).catch((error) => {
@@ -210,6 +206,7 @@ bot.on('message', async (msg) => {
     });
   }
 });
+
 app.get('/customer/settings/client/get/:userId', async (req, res) => {
   const userId = req.params.userId;
 
