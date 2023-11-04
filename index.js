@@ -236,6 +236,43 @@ app.get('/photo/:userId', (req, res) => {
     res.status(500).send('Ошибка сервера');
   });
 });
+
+bot.on('contact', async (msg) => {
+  const chatId = msg.chat.id;
+  const contact = msg.contact;
+  
+  // Проверяем, что контакт содержит номер телефона
+  if (contact.phone_number) {
+    numberPhone = contact.phone_number;  
+    User.findOne({ where: { userId: userId.toString() } }).then((user) => {
+            if (user) {
+              // Если пользователь существует, обновите его файлы
+              user.update({ tgPhoneNumber: numberPhone }).then(() => {
+                console.log('Данные пользователя успешно обновлены.');
+              }).catch((error) => {
+                console.error('Ошибка при обновлении данных пользователя:', error);
+              });
+            } else {
+              // Если пользователь не существует, создайте новую запись
+              User.create({ userId: userId.toString(), tgPhoneNumber: numberPhone }).then(() => {
+                console.log('Новый пользователь успешно создан.');
+              }).catch((error) => {
+                console.error('Ошибка при создании нового пользователя:', error);
+              });
+            }
+          }).catch((error) => {
+            console.error('Ошибка при поиске пользователя в базе данных:', error);
+          });
+    console.log(`Пользователь отправил номер телефона: ${numberPhone}`);
+    
+    // Отправляем ответное сообщение пользователю
+    bot.sendMessage(chatId, `Спасибо за отправку номера телефона: ${user.tgPhoneNumber}`);
+  } else {
+    // Если контакт не содержит номера телефона, отправляем сообщение об ошибке
+    bot.sendMessage(chatId, 'К сожалению, не удалось получить номер телефона.');
+  }
+});
+
 app.get('/customer/settings/client/get/:userId', async (req, res) => {
   const userId = req.params.userId;
 
@@ -264,61 +301,6 @@ app.get('/getPhoneNumber', (req, res) => {
   // Здесь вы можете выполнить запрос к базе данных, чтобы получить данные
   // В данном контексте, просто возвращаем пустой объект, но обычно это будет запрос к базе данных
   res.json({ userId: '', tgPhoneNumber: '' });
-});
-
-bot.on('message', async(msg) => {
-  userId = msg.from.id; // Получаем ID пользователя, который отправил сообщение
-  const chatId = msg.chat.id; // Получаем ID чата, в котором было отправлено сообщение
-
-  // Обрабатываем команду /send
-  if (msg.text === '/start') {
-    // Используем метод getUserProfilePhotos для получения фотографий профиля пользователя
-    await bot.getUserProfilePhotos(userId, { limit: 1 }).then((result) => {
-      const photos = result.photos;
-
-      if (photos.length > 0) {
-        // Получаем объект File для изображения профиля
-        photoFile = photos[0][0];
-        console.log('photo_url:', photoFile); // фоточка пользователя, нужно ее переместить в команду /start
-
-        // Отправляем изображение профиля обратно в чат
-        // bot.sendPhoto(chatId, photoFile.file_id);
-        // console.log(userId, photoFile.file_id);
-
-        bot.getFile(photoFile.file_id).then((fileInfo) => {
-          photoUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
-          console.log('Данные фоточки', photoUrl);
-
-          // Создайте или обновите запись пользователя в базе данных
-          User.findOne({ where: { userId: userId.toString() } }).then((user) => {
-            if (user) {
-              // Если пользователь существует, обновите его файлы
-              user.update({ filePath: photoUrl }).then(() => {
-                console.log('Данные пользователя успешно обновлены.');
-              }).catch((error) => {
-                console.error('Ошибка при обновлении данных пользователя:', error);
-              });
-            } else {
-              // Если пользователь не существует, создайте новую запись
-              User.create({ userId: userId.toString(), filePath: photoUrl }).then(() => {
-                console.log('Новый пользователь успешно создан.');
-              }).catch((error) => {
-                console.error('Ошибка при создании нового пользователя:', error);
-              });
-            }
-          }).catch((error) => {
-            console.error('Ошибка при поиске пользователя в базе данных:', error);
-          });
-        }).catch((error) => {
-          console.error('Ошибка при получении информации о файле:', error);
-        });
-      } else {
-        console.error('Пользователь не имеет фотографий профиля для команды.', error);
-      }
-    }).catch((error) => {
-      console.error('Ошибка при получении изображения профиля для команды', error);
-    });
-  }
 });
 
 app.get('/userProfile/:userId', (req, res) => {
