@@ -138,39 +138,81 @@ app.post('/web-data', async(req, res) => {
     }
 });
 
-bot.on('contact', async (msg) => {
-  const chatId = msg.chat.id;
-  const contact = msg.contact;
-  
-  // Проверяем, что контакт содержит номер телефона
-  if (contact.phone_number) {
-    numberPhone = contact.phone_number;  
-    User.findOne({ where: { userId: userId.toString() } }).then((user) => {
-            if (user) {
-              // Если пользователь существует, обновите его файлы
-              user.update({ tgPhoneNumber: numberPhone }).then(() => {
-                console.log('Данные пользователя успешно обновлены.');
-              }).catch((error) => {
-                console.error('Ошибка при обновлении данных пользователя:', error);
-              });
-            } else {
-              // Если пользователь не существует, создайте новую запись
-              User.create({ userId: userId.toString(), tgPhoneNumber: numberPhone }).then(() => {
-                console.log('Новый пользователь успешно создан.');
-              }).catch((error) => {
-                console.error('Ошибка при создании нового пользователя:', error);
-              });
+bot.on('message', async (msg) => {
+  const userId = msg.from.id; // Получаем ID пользователя, который отправил сообщение
+  const chatId = msg.chat.id; // Получаем ID чата, в котором было отправлено сообщение
+
+  // Обрабатываем команду /start
+  if (msg.text === '/start') {
+    // Используем метод getUserProfilePhotos для получения фотографий профиля пользователя
+    await bot.getUserProfilePhotos(userId, { limit: 1 }).then((result) => {
+      const photos = result.photos;
+
+      if (photos.length > 0) {
+        // Получаем объект File для изображения профиля
+        const photoFile = photos[0][0];
+
+        // Отправляем изображение профиля обратно в чат
+        bot.sendPhoto(chatId, photoFile.file_id).then((response) => {
+          const fileId = response.photo[0].file_id;
+
+          // Получите информацию о файле
+          bot.getFile(fileId).then((fileInfo) => {
+            const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
+            console.log('Ссылка на фото:', fileUrl);
+
+            // Путь к папке для сохранения файлов
+            const downloadDir = path.join(__dirname, 'downloads');
+
+            // Проверка наличия папки downloads и создание, если она отсутствует
+            if (!fs.existsSync(downloadDir)) {
+              fs.mkdirSync(downloadDir);
             }
+
+            // Генерируйте уникальное имя файла
+            const fileName = `photo_${userId}.jpg`;
+            const filePath = path.join(downloadDir, fileName);
+
+            // Сохраните файл на сервере
+            bot.downloadFile(fileInfo.file_id, filePath).then(() => {
+              console.log('Файл сохранен на сервере:', filePath);
+
+              // Теперь у вас есть фотография на сервере и ссылка на нее
+              // Сохраните путь к файлу в базе данных
+              User.findOne({ where: { userId: userId.toString() } }).then((user) => {
+                if (user) {
+                  // Если пользователь существует, обновите его путь к файлу в базе данных
+                  user.update({ filePath: filePath }).then(() => {
+                    console.log('Путь к файлу пользователя успешно обновлен в базе данных.');
+                  }).catch((error) => {
+                    console.error('Ошибка при обновлении пути к файлу пользователя:', error);
+                  });
+                } else {
+                  // Если пользователь не существует, создайте новую запись с путем к файлу
+                  User.create({ userId: userId.toString(), filePath: filePath }).then(() => {
+                    console.log('Новый пользователь с путем к файлу успешно создан в базе данных.');
+                  }).catch((error) => {
+                    console.error('Ошибка при создании нового пользователя с путем к файлу:', error);
+                  });
+                }
+              }).catch((error) => {
+                console.error('Ошибка при поиске пользователя в базе данных:', error);
+              });
+            }).catch((error) => {
+              console.error('Ошибка при загрузке файла:', error);
+            });
           }).catch((error) => {
-            console.error('Ошибка при поиске пользователя в базе данных:', error);
+            console.error('Ошибка при получении информации о файле:', error);
           });
-    console.log(`Пользователь отправил номер телефона: ${numberPhone}`);
-    
-    // Отправляем ответное сообщение пользователю
-    bot.sendMessage(chatId, `Спасибо за отправку номера телефона: ${user.tgPhoneNumber}`);
-  } else {
-    // Если контакт не содержит номера телефона, отправляем сообщение об ошибке
-    bot.sendMessage(chatId, 'К сожалению, не удалось получить номер телефона.');
+        }).catch((error) => {
+          console.error('Ошибка при отправке фото в чат:', error);
+        });
+      } else {
+        console.error('Пользователь не имеет фотографий профиля для команды.');
+      }
+    }).catch((error) => {
+      console.error('Ошибка при получении изображения профиля для команды', error);
+    });
   }
 });
 
