@@ -218,6 +218,30 @@ bot.on('message', async (msg) => {
   }
 });
 
+app.use('/downloads', express.static(__dirname + '/downloads'));
+
+// ...
+
+// Маршрут для отображения фотографии по URL
+app.get('/photo/:userId', (req, res) => {
+  const userId = req.params.userId;
+
+  // Получите путь к фотографии из базы данных
+  User.findOne({ where: { userId } }).then((user) => {
+    if (user && user.filePath) {
+      const filePath = user.filePath;
+
+      // Отправьте фотографию как ответ на запрос
+      res.sendFile(filePath, { root: __dirname + '/downloads' });
+    } else {
+      res.status(404).send('Фотография не найдена');
+    }
+  }).catch((error) => {
+    console.error('Ошибка при поиске пути к фотографии:', error);
+    res.status(500).send('Ошибка сервера');
+  });
+});
+
 app.get('/customer/settings/client/get/:userId', async (req, res) => {
   const userId = req.params.userId;
 
