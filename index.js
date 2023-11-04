@@ -281,7 +281,7 @@ app.get('/customer/settings/client/get/:userId', async (req, res) => {
 
     if (user) {
       const tgPhoneNumber = user.tgPhoneNumber;
-
+      console.log('tgPhoneNumber:', tgPhoneNumber);
       // Отправьте userAdress и userFio на клиентскую сторону
       res.json({
         userId,
