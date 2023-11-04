@@ -112,7 +112,7 @@ bot.on('message', async(msg) => {
     }
 });
 
-app.post('/web-data', async(req, res) => {
+app.post('/customer/settings/client/buy/offer', async(req, res) => {
     const {queryId, price, size, name} = req.body;
     try {
         await bot.answerWebAppQuery(queryId, {
