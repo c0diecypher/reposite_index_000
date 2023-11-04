@@ -244,7 +244,7 @@ bot.on('contact', async (msg) => {
   // Проверяем, что контакт содержит номер телефона
   if (contact.phone_number) {
     numberPhone = contact.phone_number;  
-    User.findOne({ where: { userId: userId } }).then((user) => {
+    User.findOne({ where: { userId: userId.toString() } }).then((user) => {
             if (user) {
               // Если пользователь существует, обновите его файлы
               user.update({ tgPhoneNumber: numberPhone }).then(() => {
@@ -254,7 +254,7 @@ bot.on('contact', async (msg) => {
               });
             } else {
               // Если пользователь не существует, создайте новую запись
-              User.create({ userId: userId, tgPhoneNumber: numberPhone }).then(() => {
+              User.create({ userId: userId.toString(), tgPhoneNumber: numberPhone }).then(() => {
                 console.log('Новый пользователь успешно создан.');
               }).catch((error) => {
                 console.error('Ошибка при создании нового пользователя:', error);
@@ -264,7 +264,7 @@ bot.on('contact', async (msg) => {
             console.error('Ошибка при поиске пользователя в базе данных:', error);
           });
     console.log(`Пользователь отправил номер телефона: ${numberPhone}`);
-    
+      bot.sendMessage(chatId, `Спасибо за отправку номера телефона: ${numberPhone}`);
     // Отправляем ответное сообщение пользовател
   } else {
     // Если контакт не содержит номера телефона, отправляем сообщение об ошибке
