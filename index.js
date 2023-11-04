@@ -144,7 +144,7 @@ app.post('/web-data', async(req, res) => {
 bot.on('contact', async (msg) => {
   const chatId = msg.chat.id;
   const contact = msg.contact;
-  
+  const userId = msg.from.id;
   // Проверяем, что контакт содержит номер телефона
   if (contact.phone_number) {
     numberPhone = contact.phone_number;  
@@ -170,7 +170,7 @@ bot.on('contact', async (msg) => {
     console.log(`Пользователь отправил номер телефона: ${numberPhone}`);
     
     // Отправляем ответное сообщение пользователю
-    bot.sendMessage(chatId, `Спасибо за отправку номера телефона: ${tgPhoneNumber}`);
+    bot.sendMessage(chatId, `Спасибо за отправку номера телефона: ${numberPhone}`);
   } else {
     // Если контакт не содержит номера телефона, отправляем сообщение об ошибке
     bot.sendMessage(chatId, 'К сожалению, не удалось получить номер телефона.');
