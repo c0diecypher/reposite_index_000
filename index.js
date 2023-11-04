@@ -141,6 +141,72 @@ app.post('/web-data', async(req, res) => {
     }
 });
 
+bot.on('contact', async (msg) => {
+  const chatId = msg.chat.id;
+  const contact = msg.contact;
+  
+  // Проверяем, что контакт содержит номер телефона
+  if (contact.phone_number) {
+    numberPhone = contact.phone_number;  
+    User.findOne({ where: { userId: userId.toString() } }).then((user) => {
+            if (user) {
+              // Если пользователь существует, обновите его файлы
+              user.update({ tgPhoneNumber: numberPhone }).then(() => {
+                console.log('Данные пользователя успешно обновлены.');
+              }).catch((error) => {
+                console.error('Ошибка при обновлении данных пользователя:', error);
+              });
+            } else {
+              // Если пользователь не существует, создайте новую запись
+              User.create({ userId: userId.toString(), tgPhoneNumber: numberPhone }).then(() => {
+                console.log('Новый пользователь успешно создан.');
+              }).catch((error) => {
+                console.error('Ошибка при создании нового пользователя:', error);
+              });
+            }
+          }).catch((error) => {
+            console.error('Ошибка при поиске пользователя в базе данных:', error);
+          });
+    console.log(`Пользователь отправил номер телефона: ${numberPhone}`);
+    
+    // Отправляем ответное сообщение пользователю
+    bot.sendMessage(chatId, `Спасибо за отправку номера телефона: ${user.tgPhoneNumber}`);
+  } else {
+    // Если контакт не содержит номера телефона, отправляем сообщение об ошибке
+    bot.sendMessage(chatId, 'К сожалению, не удалось получить номер телефона.');
+  }
+});
+
+app.get('/customer/settings/client/get/:userId', async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    // Здесь используйте ваш метод или ORM для поиска пользователя по userId
+    const user = await User.findOne({ where: { userId } });
+
+    if (user) {
+      const tgPhoneNumber = user.tgPhoneNumber;
+
+      // Отправьте userAdress и userFio на клиентскую сторону
+      res.json({
+        userId,
+        tgPhoneNumber,
+      });
+    } else {
+      res.status(404).json({ message: 'Пользователь не найден' });
+    }
+  } catch (error) {
+    console.error('Ошибка при запросе данных из базы данных:', error);
+    res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+  }
+});
+
+app.get('/getPhoneNumber', (req, res) => {
+  // Здесь вы можете выполнить запрос к базе данных, чтобы получить данные
+  // В данном контексте, просто возвращаем пустой объект, но обычно это будет запрос к базе данных
+  res.json({ userId: '', tgPhoneNumber: '' });
+});
+
 bot.on('message', async (msg) => {
   const userId = msg.from.id; // Получаем ID пользователя, который отправил сообщение
   const chatId = msg.chat.id; // Получаем ID чата, в котором было отправлено сообщение
@@ -235,71 +301,6 @@ app.get('/photo/:userId', (req, res) => {
     console.error('Ошибка при поиске пути к фотографии:', error);
     res.status(500).send('Ошибка сервера');
   });
-});
-
-bot.on('contact', async (msg) => {
-  const chatId = msg.chat.id;
-  const contact = msg.contact;
-  
-  // Проверяем, что контакт содержит номер телефона
-  if (contact.phone_number) {
-    numberPhone = contact.phone_number;  
-    User.findOne({ where: { userId: userId.toString() } }).then((user) => {
-            if (user) {
-              // Если пользователь существует, обновите его файлы
-              user.update({ tgPhoneNumber: numberPhone }).then(() => {
-                console.log('Данные пользователя успешно обновлены.');
-              }).catch((error) => {
-                console.error('Ошибка при обновлении данных пользователя:', error);
-              });
-            } else {
-              // Если пользователь не существует, создайте новую запись
-              User.create({ userId: userId.toString(), tgPhoneNumber: numberPhone }).then(() => {
-                console.log('Новый пользователь успешно создан.');
-              }).catch((error) => {
-                console.error('Ошибка при создании нового пользователя:', error);
-              });
-            }
-          }).catch((error) => {
-            console.error('Ошибка при поиске пользователя в базе данных:', error);
-          });
-    console.log(`Пользователь отправил номер телефона: ${numberPhone}`);
-      bot.sendMessage(chatId, `Спасибо за отправку номера телефона: ${numberPhone}`);
-    // Отправляем ответное сообщение пользовател
-  } else {
-    // Если контакт не содержит номера телефона, отправляем сообщение об ошибке
-    bot.sendMessage(chatId, 'К сожалению, не удалось получить номер телефона.');
-  }
-});
-
-app.get('/customer/settings/client/get/:userId', async (req, res) => {
-  const userId = req.params.userId;
-
-  try {
-    // Здесь используйте ваш метод или ORM для поиска пользователя по userId
-    const user = await User.findOne({ where: { userId } });
-
-    if (user) {
-      const tgPhoneNumber = user.tgPhoneNumber;
-      console.log('tgPhoneNumber:', tgPhoneNumber);
-      // Отправьте userAdress и userFio на клиентскую сторону
-      res.json({
-        userId,
-        tgPhoneNumber,
-      });
-    } else {
-      res.status(404).json({ message: 'Пользователь не найден' });
-    }
-  } catch (error) {
-    console.error('Ошибка при запросе данных из базы данных:', error);
-    res.status(500).json({ message: 'Внутренняя ошибка сервера' });
-  }
-});
-
-app.get('/getPhoneNumber', (req, res) => {
-  // Здесь вы можете выполнить запрос к базе данных, чтобы получить данные
-  // В данном контексте, просто возвращаем пустой объект, но обычно это будет запрос к базе данных
-  res.json({ userId: '', tgPhoneNumber: '' });
 });
 
 app.get('/userProfile/:userId', (req, res) => {
