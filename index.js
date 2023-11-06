@@ -401,7 +401,7 @@ const apikey = '123asdasd1';
 const project_id = process.env.IDP2P;
 
 app.post('/create_payment', async (req, res) => {
-  const {queryId, price, size, name} = req.body;
+  const {queryId, price, size, name, order_id} = req.body;
   const data = {
     project_id,
     apikey,
