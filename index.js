@@ -405,7 +405,7 @@ app.post('/create_payment', async (req, res) => {
   const data = {
     project_id,
     apikey,
-    order_id,
+    order_id: {order_id},
     amount : {price},
     desc: `Название: ${name}, размер: ${size}, сумма: ${price}, ФИО: ${userFio}, Номер для связи: ${PhoneNumber}`,
   };
