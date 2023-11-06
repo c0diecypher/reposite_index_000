@@ -402,12 +402,11 @@ const project_id = process.env.IDP2P;
 
 app.post('/create_payment', async (req, res) => {
   const {queryId, price, size, name} = req.body;
-  const amount = ${price};
   const data = {
     project_id,
     apikey,
     order_id,
-    amount,
+    amount : {price},
     desc: `Название: ${name}, размер: ${size}, сумма: ${price}, ФИО: ${userFio}, Номер для связи: ${PhoneNumber}`,
   };
   console.log('payment_create:', data)
