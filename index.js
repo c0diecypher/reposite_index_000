@@ -113,7 +113,7 @@ bot.on('message', async(msg) => {
 });
 
 app.post('/customer/settings/client/buy/offer', async(req, res) => {
-    const {queryId, price, size, name} = req.body;
+    const {queryId, price, size, name, order_id, userId} = req.body;
     try {
         await bot.answerWebAppQuery(queryId, {
             type: 'article',
@@ -122,13 +122,14 @@ app.post('/customer/settings/client/buy/offer', async(req, res) => {
             input_message_content: {
                 message_text: `
             Поздравляем с покупкой! 
-        📋 Детали заказа: 
+        📋 Детали заказа: ${order_id}
 🧾 Название: ${name}
 💎 Цена: ${price}, 
 📏 Размер: ${size} EU.
 
+
         🚚 Детали доставки:
-📱 Номер для связи: , 
+📱 Номер для связи: ${userId}, 
 👤 ФИО: ...., 
 📍 Адрес выдачи: ...
 
