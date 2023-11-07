@@ -179,20 +179,8 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
             const phoneNumber = user.phoneNumber || 'Не указано';
             const userCity = user.userCity || 'Не указано';
 
-            const dataToSend = {
-                project_id: project_id,
-                order_id: ProductOrder, // Используйте order_id из req.body
-                amount: ProductPrice,
-                apikey: apikey,
-                desc: `Название товара: ${ProductName}, 
-                номер доставки: ${ProductOrder},
-                размер: ${ProductSize}, 
-                ФИО: ${userFio}, 
-                Номер для связи ${phoneNumber}
-                Город: ${userCity},
-                Адрес доставки: ${userAdress}`,
-            };
-            const paymentResponse = await axios.post('https://p2pkassa.online/api/v1/link', dataToSend);
+            
+            const paymentResponse = await axios.post('https://p2pkassa.online/api/v1/link');
 
             const { id, link } = paymentResponse.data;
             return res.json({ id, link });
