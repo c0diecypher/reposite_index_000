@@ -146,7 +146,7 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
 
         return res.status(200).json({});
     } catch (e) {
-      console.error(error);
+      console.error(e);
         return res.status(500).json({});
     }
 });
