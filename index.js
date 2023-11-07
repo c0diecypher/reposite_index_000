@@ -106,13 +106,11 @@ bot.on('message', async(msg) => {
 
 app.post('/customer/settings/client/buy/offer', async (req, res) => {
     const { queryId, price, size, name, order_id, userId } = req.body;
-   console.log(`userID: ${userId}`)
+    console.log(`userID: ${userId}`);
     
     try {
-        const userId = userId;
-       console.log(`userI2D: ${userId}`)
-        // Поиск пользователя в базе данных
-        const user = await User.findOne({ where: { userId } });
+        // Используем userId из тела запроса
+        const user = await User.findOne({ where: { userId: userId } });
 
         if (user) {
             // Извлекаем данные пользователя
@@ -148,6 +146,7 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
 
         return res.status(200).json({});
     } catch (e) {
+      console.error(error);
         return res.status(500).json({});
     }
 });
