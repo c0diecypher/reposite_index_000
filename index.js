@@ -120,7 +120,7 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
         try {
             await bot.answerWebAppQuery(queryId, {
                 type: 'article',
-                id: queryId,
+                id: userId,
                 title: 'Успешная покупка',
                 input_message_content: {
                     message_text: `
