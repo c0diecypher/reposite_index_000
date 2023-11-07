@@ -118,8 +118,8 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
             const userAdress = user.userAdress;
             const userDelivery = user.userDelivery;
             const phoneNumber = user.phoneNumber;
-
-            await bot.answerWebAppQuery(queryId, {
+        }
+      await bot.answerWebAppQuery(queryId, {
                 type: 'article',
                 id: queryId,
                 title: 'Успешная покупка',
@@ -142,7 +142,6 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
             `
                 }
             });
-        }
 
         return res.status(200).json({});
     } catch (e) {
