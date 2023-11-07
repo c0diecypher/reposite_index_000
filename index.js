@@ -25,7 +25,7 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 let userId = '';
 let photoUrl = '';
 
-app.post('/validate-initdata', async(req, res) => {
+app.post('/customers/client/validate', async(req, res) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('twa-init-data')) {
