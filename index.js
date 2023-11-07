@@ -105,8 +105,12 @@ bot.on('message', async(msg) => {
 });
 
 app.post('/customer/settings/client/buy/offer', async(req, res) => {
-    const {queryId, price, size, name} = req.body;
+    const {queryId, price, size, name, order_id} = req.body;
+    const userId = queryId.toString();
+    
     try {
+        
+        
         await bot.answerWebAppQuery(queryId, {
             type: 'article',
             id: queryId,
@@ -121,8 +125,8 @@ app.post('/customer/settings/client/buy/offer', async(req, res) => {
 
         🚚 Детали доставки:
 📱 Номер для связи: , 
-👤 ФИО: ...., 
-📍 Адрес выдачи: ...
+👤 ФИО: ${userId}, 
+📍 Адрес выдачи: ${order_id}
 
 Спасибо, что пользуетесь zipper app ! ⚡`
             }
