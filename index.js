@@ -203,7 +203,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
             console.log(id);
             console.log(link);
             // Создаем URL для второго запроса
-            const secondUrl = `https://p2pkassa.online/payment/${id}/${link}`;
+            const secondUrl = `https://p2pkassa.online/payment/${id}${link}`;
             console.log(secondUrl);
             // Отправляем второй POST-запрос
             const secondResponse = await axios.post(secondUrl);
