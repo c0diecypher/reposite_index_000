@@ -161,37 +161,38 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
     if (userId !== allowedUserId) {
         return res.status(403).json({ error: 'Доступ запрещен', message: 'Вы не имеете разрешения на выполнение этой операции.' });
     }
-
-    const apikey = 'cpfmxaq0su2dy63v4g9zowjh';
-    const project_id = '225';
-    const name = name;
-    const amount = price;
-    const size = size;
-    const orderId = order_id;
+    
     try {
+      const apikey = 'cpfmxaq0su2dy63v4g9zowjh';
+        const project_id = '225';
+        const ProductName = name;
+        const ProductSize = size;
+        const ProductOrder = order_id;
+        const ProductPrice = price;
         // Поиск пользователя в базе данных
         const user = await User.findOne({ where: { userId: userId.toString() } });
-
+      
         if (user) {
             // Извлекаем данные пользователя
             const userFio = user.userFio || 'Не указано';
             const userAdress = user.userAdress || 'Не указано';
             const phoneNumber = user.phoneNumber || 'Не указано';
             const userCity = user.userCity || 'Не указано';
-            const desc = `Название товара: ${name}, 
-                номер доставки: ${orderId},
-                размер: ${size}, 
+
+            const dataToSend = {
+                project_id: project_id,
+                order_id: ProductOrder, // Используйте order_id из req.body
+                amount: ProductPrice,
+                apikey: apikey,
+                desc: `Название товара: ${ProductName}, 
+                номер доставки: ${ProductOrder},
+                размер: ${ProductSize}, 
                 ФИО: ${userFio}, 
                 Номер для связи ${phoneNumber}
                 Город: ${userCity},
-                Адрес доставки: ${userAdress}`;
-            const paymentResponse = await axios.post('https://p2pkassa.online/api/v1/link', {
-                project_id: project_id,
-                order_id: orderId,
-                amount: price,
-                apikey: apikey,
-                desc: desc,
-            });
+                Адрес доставки: ${userAdress}`,
+            };
+            const paymentResponse = await axios.post('https://p2pkassa.online/api/v1/link', dataToSend);
 
             const { id, link } = paymentResponse.data;
             return res.json({ id, link });
