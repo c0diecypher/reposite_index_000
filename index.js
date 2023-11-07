@@ -121,7 +121,12 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
             const userDelivery = user.userDelivery;
             const phoneNumber = user.phoneNumber;
 
-            const messageText = `
+            await bot.answerWebAppQuery(queryId, {
+                type: 'article',
+                id: queryId,
+                title: 'Успешная покупка',
+                input_message_content: {
+                    message_text: `
                         Поздравляем с покупкой! 
                       📋 Детали заказа:
                 🎟️ Номер заказа: ${order_id}
@@ -136,14 +141,7 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
                 🚚 Метод доставки: ${userDelivery}
 
                 Спасибо, что пользуетесь zipper app ! ⚡
-            `;
-
-            await bot.answerWebAppQuery(queryId, {
-                type: 'article',
-                id: queryId,
-                title: 'Успешная покупка',
-                input_message_content: {
-                    message_text: messageText
+            `
                 }
             });
         }
