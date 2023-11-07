@@ -153,6 +153,55 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
     }
 });
 
+app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
+    const { queryId, price, size, name, userId, order_id } = req.body;
+
+    // Проверьте, что userId совпадает с ожидаемым
+    const allowedUserId = userId;
+    if (userId !== allowedUserId) {
+        return res.status(403).json({ error: 'Доступ запрещен', message: 'Вы не имеете разрешения на выполнение этой операции.' });
+    }
+
+    const apikey = 'cpfmxaq0su2dy63v4g9zowjh';
+    const project_id = '225';
+
+    try {
+        // Поиск пользователя в базе данных
+        const user = await User.findOne({ where: { userId: userId.toString() } });
+
+        if (user) {
+            // Извлекаем данные пользователя
+            const userFio = user.userFio || 'Не указано';
+            const userAdress = user.userAdress || 'Не указано';
+            const phoneNumber = user.phoneNumber || 'Не указано';
+            const userCity = user.userCity || 'Не указано';
+
+            const paymentResponse = await axios.post('https://p2pkassa.online/api/v1/link', {
+                project_id,
+                order_id,
+                amount: price,
+                apikey,
+                desc: `Название товара: ${name}, 
+                размер: ${size}, 
+                ФИО: ${userFio}, 
+                Номер для связи ${phoneNumber}
+                Город: ${userCity},
+                Адрес доставки: ${userAdress}`,
+            });
+
+            const { id, link } = paymentResponse.data;
+            return res.json({ id, link });
+        } else {
+            // Если пользователь не найден, обработка ошибки или возврат 404
+            return res.status(400).json({ error: 'Ошибка', message: 'Пользователь не найден.' });
+        }
+    } catch (error) {
+        // Обработка ошибки
+        console.error(error);
+        return res.status(500).json({ error: 'Ошибка', message: 'Внутренняя ошибка сервера.' });
+    }
+});
+
 bot.on('contact', async (msg) => {
   const chatId = msg.chat.id;
   const contact = msg.contact;
