@@ -105,8 +105,7 @@ bot.on('message', async(msg) => {
 });
 
 app.post('/customer/settings/client/buy/offer', async(req, res) => {
-    const {queryId, price, size, name, order_id} = req.body;
-    const userId = queryId.toString();
+    const {queryId, userId, price, size, name, order_id,} = req.body;
     
     try {
         
