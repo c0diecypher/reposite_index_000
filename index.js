@@ -143,14 +143,23 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
             });
         } else {
             // Обработка, если пользователь не найден в базе данных
-            // Вы можете отправить другой ответ или сообщение об ошибке
+            await bot.answerWebAppQuery(queryId, {
+                type: 'article',
+                id: queryId,
+                title: 'Ошибка',
+                input_message_content: {
+                    message_text: `
+                    Произошла ошибка при обработке заказа.
+                    Пожалуйста, свяжитесь с нашей поддержкой для дальнейшей помощи.
+                    `
+                }
+            });
         }
 
         return res.status(200).json({});
     } catch (e) {
         return res.status(500).json({});
     }
-});
 
 bot.on('contact', async (msg) => {
   const chatId = msg.chat.id;
