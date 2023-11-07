@@ -112,10 +112,10 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
 
     if (user) {
         // Извлекаем данные пользователя
-        const userFio = user.userFio;
-        const userAdress = user.userAdress;
-        const phoneNumber = user.phoneNumber;
-        const userCity = user.userCity;
+        const userFio = user.userFio || 'Не указано';
+        const userAdress = user.userAdress || 'Не указано';
+        const phoneNumber = user.phoneNumber || 'Не указано';
+        const userCity = user.userCity || 'Не указано';
 
         try {
             await bot.answerWebAppQuery(queryId, {
