@@ -173,6 +173,12 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
         console.log(ProductOrder);
         console.log(ProductSize);
         console.log(ProductName);
+        const desc = `Название товара: ${productName}, 
+                      размер: ${ProductSize}, 
+                      ФИО: ${userFio}, 
+                      Номер для связи ${phoneNumber}
+                      Город: ${userCity},
+                      Адрес доставки: ${userAdress}`;
         // Поиск пользователя в базе данных
         const user = await User.findOne({ where: { userId: userId.toString() } });
 
@@ -188,12 +194,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                   order_id: ProductOrder, // Используйте order_id из req.body
                   amount: ProductPrice,
                   apikey: apikey,
-                  desc: `Название товара: ${productName}, 
-                      размер: ${ProductSize}, 
-                      ФИО: ${userFio}, 
-                      Номер для связи ${phoneNumber}
-                      Город: ${userCity},
-                      Адрес доставки: ${userAdress}`,
+                  desc: desc,
               };
             const paymentResponse = await axios.post('https://p2pkassa.online/api/v1/link',dataToSend);
 
