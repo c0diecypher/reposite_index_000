@@ -183,8 +183,8 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                 Город: ${userCity},
                 Адрес доставки: ${userAdress}`;
             const paymentResponse = await axios.post('https://p2pkassa.online/api/v1/link', {
-                project_id: project_id,
-                order_id: order_id,
+                project_id,
+                order_id,
                 amount: price,
                 apikey: apikey,
                 desc: desc,
