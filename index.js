@@ -115,7 +115,7 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
         const userFio = user.userFio;
         const userAdress = user.userAdress;
         const phoneNumber = user.phoneNumber;
-        const userDelivery = user.userCity;
+        const userCity = user.userCity;
 
         try {
             await bot.answerWebAppQuery(queryId, {
