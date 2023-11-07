@@ -113,7 +113,7 @@ bot.on('message', async(msg) => {
 });
 
 app.post('/customer/settings/client/buy/offer', async(req, res) => {
-    const {queryId, price, size, name, order_id, userId} = req.body;
+    const {queryId, price, size, name} = req.body;
     try {
         await bot.answerWebAppQuery(queryId, {
             type: 'article',
@@ -122,14 +122,13 @@ app.post('/customer/settings/client/buy/offer', async(req, res) => {
             input_message_content: {
                 message_text: `
             Поздравляем с покупкой! 
-        📋 Детали заказа: ${order_id}
+        📋 Детали заказа: 
 🧾 Название: ${name}
-💎 Цена: ${price}, 
-📏 Размер: ${size} EU.
-
+💎 Цена: ${price} ₽, 
+📏 Размер: ${size} US.
 
         🚚 Детали доставки:
-📱 Номер для связи: ${userId}, 
+📱 Номер для связи: , 
 👤 ФИО: ...., 
 📍 Адрес выдачи: ...
 
@@ -395,32 +394,6 @@ app.get('/customer/settings/client/:userId', async (req, res) => {
   } catch (error) {
     console.error('Ошибка при запросе данных из базы данных:', error);
     res.status(500).json({ message: 'Внутренняя ошибка сервера' });
-  }
-});
-
-const apikey = '123asdasd1';
-const project_id = process.env.IDP2P;
-
-app.post('/create_payment', async (req, res) => {
-  const {queryId, price, size, name, order_id} = req.body;
-  const data = {
-    project_id,
-    apikey,
-    order_id: {order_id},
-    amount : {price},
-    desc: `Название: ${name}, размер: ${size}, сумма: ${price}, ФИО: ${userFio}, Номер для связи: ${PhoneNumber}`,
-  };
-  console.log('payment_create:', data)
-  
-  try {
-    // Отправляем запрос на платежную систему для создания платежа
-    const response = await axios.post('123', data);
-    const result = response.data;
-
-    // Вернуть результат клиенту, например, ссылку на форму оплаты
-    res.json(result);
-  } catch (error) {
-    res.status(400).json({ error: 'Ошибка', message: error.message });
   }
 });
 
