@@ -25,72 +25,65 @@ const start = `⚡<strong>ZipperApp</strong> - твой надежный гид 
 let userId = '';
 let photoUrl = '';
 
-app.post('/customers/client/validate', async(req, res) => {
+app.post('/validate-initdata', async (req, res) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('twa-init-data')) {
     return res.status(400).json({ success: false, error: 'Invalid header Authorization' });
   }
-  
+
   const initData = authHeader.replace('twa-init-data ', '');
-  console.log('initData logs:', initData); // Получаем инофрмацию в сыром виде
+  console.log('initData logs:', initData);
 
   try {
-  
     validate(initData, token);
-     
+
     const decodedData = decodeURIComponent(initData);
 
     console.log(decodedData);
-    
+
     const userMatch = /user=([^&]+)/.exec(decodedData);
     if (userMatch) {
-  const userData = JSON.parse(userMatch[1]);
+      const userData = JSON.parse(userMatch[1]);
 
-  // Получите существующую запись пользователя из базы данных
-  const existingUser = await User.findOne({ where: { userId: userData.id.toString() } });
+      const existingUser = await User.findOne({ where: { userId: userData.id.toString() } });
 
-  if (existingUser) {
-    // Если пользователь существует, проверьте, изменились ли данные
-    if (
-      existingUser.first_name !== userData.first_name ||
-      existingUser.last_name !== userData.last_name ||
-      existingUser.username !== userData.username
-    ) {
-      // Если данные изменились, обновите запись
-      await existingUser.update({
-        first_name: userData.first_name,
-        last_name: userData.last_name,
-        username: userData.username,
-        filePath: photoUrl,
-      });
+      if (existingUser) {
+        if (
+          existingUser.first_name !== userData.first_name ||
+          existingUser.last_name !== userData.last_name ||
+          existingUser.username !== userData.username
+        ) {
+          await existingUser.update({
+            first_name: userData.first_name,
+            last_name: userData.last_name,
+            username: userData.username,
+            filePath: photoUrl,
+          });
 
-      console.log(userData, 'Данные в базе данных успешно обновлены.');
-    } else {
-      // Если данные не изменились, ничего не делайте
-      console.log(userData, 'Данные в базе данных остались без изменений.');
+          console.log(userData, 'Данные в базе данных успешно обновлены.');
+        } else {
+          console.log(userData, 'Данные в базе данных остались без изменений.');
+        }
+      } else {
+        const user = {
+          userId: userData.id.toString(),
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          username: userData.username,
+          filePath: photoUrl,
+        };
+
+        await User.create(user);
+
+        console.log('Новая запись создана в базе данных:', userData);
+      }
+
+      res.json({ success: true, message: 'Authorized valid' });
+    } catch (error) {
+      res.status(400).json({ success: false, error: error.message });
     }
-  } else {
-    // Если пользователь не существует, создайте новую запись
-    const user = {
-      userId: userData.id.toString(),
-      first_name: userData.first_name,
-      last_name: userData.last_name,
-      username: userData.username,
-        filePath: photoUrl,
-    };
-
-    await User.create(user);
-
-    console.log('Новая запись создана в базе данных:', userData);
-  }
-   
-  }
-    res.json({ success: true, message: 'Authorized valid' });
-  } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
+  });
 
 const webAppUrl = 'https://zipperapp.vercel.app/'
 
