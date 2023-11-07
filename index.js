@@ -104,32 +104,51 @@ bot.on('message', async(msg) => {
     }
 });
 
-app.post('/customer/settings/client/buy/offer', async(req, res) => {
-    const {queryId, price, size, name} = req.body;
+app.post('/customer/settings/client/buy/offer', async (req, res) => {
+    const { queryId, price, size, name, order_id } = req.body;
+
     try {
-        await bot.answerWebAppQuery(queryId, {
-            type: 'article',
-            id: queryId,
-            title: 'Успешная покупка',
-            input_message_content: {
-                message_text: `
-            Поздравляем с покупкой! 
-        📋 Детали заказа: 
-🧾 Название: ${name}
-💎 Цена: ${price}, 
-📏 Размер: ${size} EU.
+        const userId = queryId; // Предположим, что queryId содержит userId
 
-        🚚 Детали доставки:
-📱 Номер для связи: , 
-👤 ФИО: ...., 
-📍 Адрес выдачи: ...
+        // Поиск пользователя в базе данных
+        const user = await User.findOne({ where: { userId: userId } });
 
-Спасибо, что пользуетесь zipper app ! ⚡`
-            }
-        })
+        if (user) {
+            // Извлекаем данные пользователя
+            const userFio = user.userFio;
+            const userAdress = user.userAdress;
+            const userDelivery = user.userDelivery;
+            const phoneNumber = user.phoneNumber;
+            // Отправляем ответ с данными пользователя
+            await bot.answerWebAppQuery(queryId, {
+                type: 'article',
+                id: queryId,
+                title: 'Успешная покупка',
+                input_message_content: {
+                    message_text: `
+                    Поздравляем с покупкой! 
+                          📋 Детали заказа:
+                    🎟️ Номер заказа: ${order_id}
+                    🧾 Название: ${name}
+                    💎 Цена: ${price}, 
+                    📏 Размер: ${size} EU.
+
+                          🚚 Детали доставки:
+                    📱 Номер для связи: ${phoneNumber}, 
+                    👤 ФИО: ${userFio}, 
+                    📍 Адрес выдачи: ${userAdress}
+
+                    Спасибо, что пользуетесь zipper app ! ⚡`
+                }
+            });
+        } else {
+            // Обработка, если пользователь не найден в базе данных
+            // Вы можете отправить другой ответ или сообщение об ошибке
+        }
+
         return res.status(200).json({});
     } catch (e) {
-        return res.status(500).json({})
+        return res.status(500).json({});
     }
 });
 
