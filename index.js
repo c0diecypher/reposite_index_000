@@ -164,8 +164,9 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
 
     const apikey = 'cpfmxaq0su2dy63v4g9zowjh';
     const project_id = '225';
-    
+  
     try {
+      const { queryId, price, size, name, userId, order_id } = req.body;
         // Поиск пользователя в базе данных
         const user = await User.findOne({ where: { userId: userId.toString() } });
 
