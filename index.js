@@ -37,7 +37,7 @@ app.post('/validate-initdata', async (req, res) => {
 
   try {
     validate(initData, token);
-
+    console.log(`validate: ${validate}`);
     const decodedData = decodeURIComponent(initData);
 
     console.log(decodedData);
@@ -78,6 +78,7 @@ app.post('/validate-initdata', async (req, res) => {
 
         console.log('Новая запись создана в базе данных:', userData);
       }
+      
     }
       res.json({ success: true, message: 'Authorized valid' });
     }catch (error) {
