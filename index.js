@@ -173,7 +173,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
         console.log(ProductOrder);
         console.log(ProductSize);
         console.log(ProductName);
-        const desc = `Название товара: ${productName}, 
+        const desc = `Название товара: ${ProductName}, 
                       размер: ${ProductSize}, 
                       ФИО: ${userFio}, 
                       Номер для связи ${phoneNumber}
