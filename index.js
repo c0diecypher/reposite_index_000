@@ -71,7 +71,6 @@ app.post('/validate-initdata', async (req, res) => {
           first_name: userData.first_name,
           last_name: userData.last_name,
           username: userData.username,
-          filePath: photoUrl,
         };
 
         await User.create(user);
