@@ -155,7 +155,7 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
 
 app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
     const { queryId, price, size, name, userId, order_id } = req.body;
-
+    console.log(queryId, price, size, name, userId, order_id);
     // Проверьте, что userId совпадает с ожидаемым
     const allowedUserId = userId;
     if (userId !== allowedUserId) {
@@ -169,6 +169,10 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
         const ProductSize = size;
         const ProductOrder = order_id;
         const ProductPrice = price;
+        console.log(ProductPrice);
+        console.log(ProductOrder);
+        console.log(ProductSize);
+        console.log(ProductName);
         // Поиск пользователя в базе данных
         const user = await User.findOne({ where: { userId: userId.toString() } });
 
