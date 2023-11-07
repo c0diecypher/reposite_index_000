@@ -104,49 +104,32 @@ bot.on('message', async(msg) => {
     }
 });
 
-app.post('/customer/settings/client/buy/offer', async (req, res) => {
-    const { queryId, price, size, name, order_id, userId } = req.body;
-    console.log(`userID: ${userId}`);
-    
+app.post('/customer/settings/client/buy/offer', async(req, res) => {
+    const {queryId, price, size, name} = req.body;
     try {
-        // Используем userId из тела запроса
-        const user = await User.findOne({ where: { userId: userId } });
+        await bot.answerWebAppQuery(queryId, {
+            type: 'article',
+            id: queryId,
+            title: 'Успешная покупка',
+            input_message_content: {
+                message_text: `
+            Поздравляем с покупкой! 
+        📋 Детали заказа: 
+🧾 Название: ${name}
+💎 Цена: ${price}, 
+📏 Размер: ${size} EU.
 
-        if (user) {
-            // Извлекаем данные пользователя
-            const userFio = user.userFio;
-            const userAdress = user.userAdress;
-            const userDelivery = user.userDelivery;
-            const phoneNumber = user.phoneNumber;
-        }
-      await bot.answerWebAppQuery(queryId, {
-                type: 'article',
-                id: queryId,
-                title: 'Успешная покупка',
-                input_message_content: {
-                    message_text: `
-                        Поздравляем с покупкой! 
-                      📋 Детали заказа:
-                🎟️ Номер заказа: ${order_id}
-                🧾 Название: ${name}
-                💎 Цена: ${price}, 
-                📏 Размер: ${size} EU.
+        🚚 Детали доставки:
+📱 Номер для связи: , 
+👤 ФИО: ...., 
+📍 Адрес выдачи: ...
 
-                      🚚 Детали доставки:
-                📱 Номер для связи: ${phoneNumber}, 
-                👤 ФИО: ${userFio}, 
-                📍 Адрес выдачи: ${userAdress}
-                🚚 Метод доставки: ${userDelivery}
-
-                Спасибо, что пользуетесь zipper app ! ⚡
-            `
-                }
-            });
-
+Спасибо, что пользуетесь zipper app ! ⚡`
+            }
+        })
         return res.status(200).json({});
     } catch (e) {
-      console.error(e);
-        return res.status(500).json({});
+        return res.status(500).json({})
     }
 });
 
