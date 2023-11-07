@@ -177,10 +177,10 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
             const userCity = user.userCity || 'Не указано';
 
             const paymentResponse = await axios.post('https://p2pkassa.online/api/v1/link', {
-                project_id,
-                order_id,
+                project_id: project_id,
+                order_id: order_id,
                 amount: price,
-                apikey,
+                apikey: apikey,
                 desc: `Название товара: ${name}, 
                 размер: ${size}, 
                 ФИО: ${userFio}, 
