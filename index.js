@@ -189,21 +189,21 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                       Номер для связи ${phoneNumber}
                       Город: ${userCity},
                       Адрес доставки: ${userAdress}`;
-            const dataToSend = {
+            const data = {
                   project_id: project_id,
                   order_id: ProductOrder, // Используйте order_id из req.body
                   amount: ProductPrice,
                   apikey: apikey,
                   desc: desc,
               };
-            const paymentResponse = await axios.post('https://p2pkassa.online/api/v1/link',dataToSend);
+            const paymentResponse = await axios.post('https://p2pkassa.online/api/v1/link',data);
 
             const { id, link } = paymentResponse.data;
             console.log(dataToSend);
             console.log(id);
             console.log(link);
             // Создаем URL для второго запроса
-            const secondUrl = `https://p2pkassa.online/payment/${link}`;
+            const secondUrl = `https://p2pkassa.online/payment/${id}/${link}`;
             console.log(secondUrl);
             // Отправляем второй POST-запрос
             const secondResponse = await axios.post(secondUrl);
