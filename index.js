@@ -164,7 +164,12 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
 
     const apikey = 'cpfmxaq0su2dy63v4g9zowjh';
     const project_id = '225';
-
+    const desc = `Название товара: ${name}, 
+                размер: ${size}, 
+                ФИО: ${userFio}, 
+                Номер для связи ${phoneNumber}
+                Город: ${userCity},
+                Адрес доставки: ${userAdress}`;
     try {
         // Поиск пользователя в базе данных
         const user = await User.findOne({ where: { userId: userId.toString() } });
@@ -181,12 +186,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                 order_id: order_id,
                 amount: price,
                 apikey: apikey,
-                desc: `Название товара: ${name}, 
-                размер: ${size}, 
-                ФИО: ${userFio}, 
-                Номер для связи ${phoneNumber}
-                Город: ${userCity},
-                Адрес доставки: ${userAdress}`,
+                desc: desc,
             });
 
             const { id, link } = paymentResponse.data;
