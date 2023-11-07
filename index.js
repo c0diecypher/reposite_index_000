@@ -164,9 +164,11 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
 
     const apikey = 'cpfmxaq0su2dy63v4g9zowjh';
     const project_id = '225';
-  
+    const name = name;
+    const amount = price;
+    const size = size;
+    const orderId = order_id;
     try {
-      const { queryId, price, size, name, userId, order_id } = req.body;
         // Поиск пользователя в базе данных
         const user = await User.findOne({ where: { userId: userId.toString() } });
 
@@ -177,14 +179,15 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
             const phoneNumber = user.phoneNumber || 'Не указано';
             const userCity = user.userCity || 'Не указано';
             const desc = `Название товара: ${name}, 
+                номер доставки: ${orderId},
                 размер: ${size}, 
                 ФИО: ${userFio}, 
                 Номер для связи ${phoneNumber}
                 Город: ${userCity},
                 Адрес доставки: ${userAdress}`;
             const paymentResponse = await axios.post('https://p2pkassa.online/api/v1/link', {
-                project_id,
-                order_id,
+                project_id: project_id,
+                order_id: orderId,
                 amount: price,
                 apikey: apikey,
                 desc: desc,
