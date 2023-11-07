@@ -173,12 +173,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
         console.log(ProductOrder);
         console.log(ProductSize);
         console.log(ProductName);
-        const desc = `Название товара: ${ProductName}, 
-                      размер: ${ProductSize}, 
-                      ФИО: ${userFio}, 
-                      Номер для связи ${phoneNumber}
-                      Город: ${userCity},
-                      Адрес доставки: ${userAdress}`;
+        
         // Поиск пользователя в базе данных
         const user = await User.findOne({ where: { userId: userId.toString() } });
 
@@ -188,7 +183,12 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
             const userAdress = user.userAdress || 'Не указано';
             const phoneNumber = user.phoneNumber || 'Не указано';
             const userCity = user.userCity || 'Не указано';
-          
+            const desc = `Название товара: ${ProductName}, 
+                      размер: ${ProductSize}, 
+                      ФИО: ${userFio}, 
+                      Номер для связи ${phoneNumber}
+                      Город: ${userCity},
+                      Адрес доставки: ${userAdress}`;
             const dataToSend = {
                   project_id: project_id,
                   order_id: ProductOrder, // Используйте order_id из req.body
