@@ -161,9 +161,9 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
     if (userId !== allowedUserId) {
         return res.status(403).json({ error: 'Доступ запрещен', message: 'Вы не имеете разрешения на выполнение этой операции.' });
     }
-    
+
     try {
-      const apikey = 'cpfmxaq0su2dy63v4g9zowjh';
+        const apikey = 'cpfmxaq0su2dy63v4g9zowjh';
         const project_id = '225';
         const ProductName = name;
         const ProductSize = size;
@@ -171,7 +171,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
         const ProductPrice = price;
         // Поиск пользователя в базе данных
         const user = await User.findOne({ where: { userId: userId.toString() } });
-      
+
         if (user) {
             // Извлекаем данные пользователя
             const userFio = user.userFio || 'Не указано';
@@ -179,11 +179,21 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
             const phoneNumber = user.phoneNumber || 'Не указано';
             const userCity = user.userCity || 'Не указано';
 
-            
             const paymentResponse = await axios.post('https://p2pkassa.online/api/v1/link');
 
             const { id, link } = paymentResponse.data;
-            return res.json({ id, link });
+
+            // Создаем URL для второго запроса
+            const secondUrl = `https://p2pkassa.online/payment/${id}`;
+
+            // Отправляем второй POST-запрос
+            const secondResponse = await axios.post(secondUrl);
+
+            // Обработка ответа второго запроса
+            // ...
+
+            // Отправляем полученную ссылку на клиент
+            return res.json({ id, link: secondUrl });
         } else {
             // Если пользователь не найден, обработка ошибки или возврат 404
             return res.status(400).json({ error: 'Ошибка', message: 'Пользователь не найден.' });
