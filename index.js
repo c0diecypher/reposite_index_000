@@ -112,7 +112,7 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
         const userId = userId;
        console.log(`userI2D: ${userId}`)
         // Поиск пользователя в базе данных
-        const user = await User.findOne({ where: { userId: userId } });
+        const user = await User.findOne({ where: { userId } });
 
         if (user) {
             // Извлекаем данные пользователя
