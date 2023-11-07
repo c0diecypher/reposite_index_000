@@ -106,10 +106,11 @@ bot.on('message', async(msg) => {
 
 app.post('/customer/settings/client/buy/offer', async (req, res) => {
     const { queryId, price, size, name, order_id, userId } = req.body;
-
+   console.log(`userID: ${userId}`)
     
     try {
         const userId = userId;
+       console.log(`userI2D: ${userId}`)
         // Поиск пользователя в базе данных
         const user = await User.findOne({ where: { userId: userId.toString() } });
 
