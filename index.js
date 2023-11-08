@@ -197,8 +197,6 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                   desc: desc,
               };
             const paymentResponse = await axios.post('https://p2pkassa.online/api/v1/link', dataToSend);
-            console.log('paymentResponse:', paymentResponse);
-            const { id, link } = paymentResponse.data;
             console.log(paymentResponse.data); // Выведем ответ сервера, чтобы убедиться, что есть данные id и link
             const { id, link } = paymentResponse.data; // Извлекаем id и link из ответа
             console.log(id, link); // Выведем id и link для проверки
