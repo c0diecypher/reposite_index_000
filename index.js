@@ -197,7 +197,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                   desc: desc,
               };
             const paymentResponse = await axios.post('https://p2pkassa.online/api/v1/link', dataToSend);
-
+            console.log('paymentResponse:', paymentResponse);
             const { id, link } = paymentResponse.data;
             // Создаем URL для второго запроса
             const paymentUrl = `https://p2pkassa.online/payment/${id}`;
