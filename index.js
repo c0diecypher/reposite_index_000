@@ -176,6 +176,11 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
         console.log(ProductOrder);
         console.log(ProductSize);
         console.log(ProductName);
+        const config = {
+                  headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                  }
+                };
         
         // Поиск пользователя в базе данных
         const user = await User.findOne({ where: { userId: userId.toString() } });
@@ -199,20 +204,41 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                   apikey: apikey,
                   desc: desc,
               };
-              const config = {
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
-                }
-              };
             const response = await axios.post('https://p2pkassa.online/api/v1/link', dataToSend, config);
             const result = response.data;
              console.log(result);
             if (result && result.link) {
               // Создаем URL для второго запроса
               const paymentUrl = result.link;
+              const paymentId = result.id;
               console.log(paymentUrl);
               // Отправляем второй POST-запрос
                return res.json({ paymentUrl });
+
+              const interval = setInterval(async () => {
+                if (Date.now() - startTime > 20 * 60 * 1000) {
+                    // Если прошло более 20 минут, останавливаем интервал
+                    clearInterval(interval);
+                    console.log('Истекло время для проверки статуса платежа');
+                } else {
+                    const checkData = {
+                        project_id: project_id,
+                        apikey: apikey, 
+                        id: paymentId,
+                    };
+
+                    const checkResponse = await axios.post('https://p2pkassa.online/api/v1/getPayment', checkData, config);
+                    const checkResult = checkResponse.data;
+
+                    // Обработайте результат проверки, например, проверьте статус платежа
+                    if (checkResult.status === 'success') {
+                        console.log('Платеж успешен');
+                        clearInterval(interval); // Если платеж успешен, останавливаем интервал
+                    } else {
+                        console.log('Платеж неуспешен');
+                    }
+                }
+            }, 60 * 1000); // Проверяем каждую минуту
             } else {
               
               console.log('Отсутствуют данные id и link в ответе');
