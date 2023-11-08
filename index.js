@@ -2,6 +2,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
 const cors = require('cors');
 const https = require('https');
+const crypto = require('crypto');
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const { validate } = require('@twa.js/init-data-node');
 const User = require('./models'); 
@@ -234,7 +235,29 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               console.log(getPaymentStatus);
               // Отправляем второй POST-запрос
                return res.json({ getPaymentId, getPaymentOrderId, getPaymentAmount, getPaymentStatus, getPaymentData});
-              }  else {
+                
+              
+                if (req.method !== 'POST') {
+                    res.status(400).send('Wrong request method');
+                    return;
+                }
+                const data = html_entity_decode(req.body.data);
+                const generatedSign = crypto
+                  .createHash('sha256')
+                  .update(${id}:${order_id}:${projectId}:${apiKey})
+                  .digest('hex');
+              
+              // Проверка подписи
+              if (generatedSign) {
+                  res.status(400).send('Wrong sign');
+                  return;
+              }
+
+// Оплата прошла успешно, можно проводить операцию.
+
+res.send('OK');
+                
+              } else {
               
               console.log(' данные в ответе не получены');
               
