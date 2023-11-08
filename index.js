@@ -163,8 +163,9 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
     }
 
     try {
-        const apikey = cpfmxaq0su2dy63v4g9zowjh;
-        const project_id = 225;
+        const apikey = 'cpfmxaq0su2dy63v4g9zowjh';
+        const project_id = '225';
+        console.log(project_id, apikey);
         const ProductName = name;
         const ProductSize = size;
         const ProductOrder = order_id;
