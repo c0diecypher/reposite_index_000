@@ -193,14 +193,20 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
             const dataToSend = {
                   project_id: project_id,
                   order_id: ProductOrder, // Используйте order_id из req.body
-                  amount: amount,
+                  amount: ProductPrice,
                   apikey: apikey,
                   desc: desc,
               };
-            const paymentResponse = await axios.post('https://p2pkassa.online/api/v1/link', dataToSend);
-            console.log(paymentResponse.data); // Выведем ответ сервера, чтобы убедиться, что есть данные id и link
-            const { id, link } = paymentResponse.data; // Извлекаем id и link из ответа
-            console.log(id, link); // Выведем id и link для проверки
+
+            const config = {
+                  headers: {
+                      'Content-Type': 'application/json'
+                  }
+              };
+            const paymentResponse = await axios.post('https://p2pkassa.online/api/v1/link', dataToSend, config);
+            console.log(paymentResponse.data); 
+            const { id, link } = paymentResponse.data; 
+            console.log(id, link); 
             if (id && link) {
               // Создаем URL для второго запроса
               const paymentUrl = `https://p2pkassa.online/payment/${id}/${link}`;
@@ -208,7 +214,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               // Отправляем второй POST-запрос
                return res.json({ paymentUrl });
             } else {
-              // Если данные id и link отсутствуют в ответе
+              
               console.log('Отсутствуют данные id и link в ответе');
               
             }
