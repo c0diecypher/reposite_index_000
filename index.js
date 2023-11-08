@@ -215,7 +215,6 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               console.log(paymentUrl);
               console.log(paymentId);
               // Отправляем второй POST-запрос
-               return res.json({ paymentUrl });
 
               const dataToPayment = {
                 id: paymentId,
@@ -234,10 +233,10 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               const getPaymentData = resGetPayment.data;
               console.log(getPaymentStatus);
               // Отправляем второй POST-запрос
-               return res.json({ getPaymentId, getPaymentOrderId, getPaymentAmount, getPaymentStatus, getPaymentData});
+               return res.json({ paymentUrl, getPaymentStatus });
                 
               } else {
-              console.log('Статус платежа не получен');
+                  console.log('Статус платежа не получен');
               }  
             } else {
               
