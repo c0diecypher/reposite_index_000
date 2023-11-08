@@ -189,30 +189,29 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                       Номер для связи ${phoneNumber}
                       Город: ${userCity},
                       Адрес доставки: ${userAdress}`;
-            const data = {
+            const dataToSend = {
                   project_id: project_id,
                   order_id: ProductOrder, // Используйте order_id из req.body
                   amount: ProductPrice,
                   apikey: apikey,
                   desc: desc,
               };
-            const paymentResponse = await axios.post('https://p2pkassa.online/api/v1/link',data);
+            const paymentResponse = await axios.post('https://p2pkassa.online/api/v1/link', dataToSend);
 
             const { id, link } = paymentResponse.data;
             console.log(data);
             console.log(id);
             console.log(link);
             // Создаем URL для второго запроса
-            const secondUrl = `https://p2pkassa.online/payment/${id}/${link}`;
+            const paymentUrl = `https://p2pkassa.online/payment/${id}`;
             console.log(secondUrl);
             // Отправляем второй POST-запрос
-            const secondResponse = await axios.post(secondUrl);
 
             // Обработка ответа второго запроса
             // ...
 
             // Отправляем полученную ссылку на клиент
-            return res.json({ id, link: secondUrl });
+            return res.json({ id, link: paymentUrl });
         } else {
             // Если пользователь не найден, обработка ошибки или возврат 404
             return res.status(400).json({ error: 'Ошибка', message: 'Пользователь не найден.' });
