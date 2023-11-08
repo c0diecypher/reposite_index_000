@@ -201,12 +201,11 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               };
 
             const response = await axios.post('https://p2pkassa.online/api/v1/link', data=dataToSend, { httpsAgent: new https.Agent({ rejectUnauthorized: true }) });
-            const result = response.data;
+            const result = response.json();
              console.log(result);
-            if (id && link) {
-               console.log(id, link); 
+            if (result) {
               // Создаем URL для второго запроса
-              const paymentUrl = `https://p2pkassa.online/payment/${id}/${link}`;
+              const paymentUrl = `https://p2pkassa.online/payment/${result}`;
               console.log(paymentUrl);
               // Отправляем второй POST-запрос
                return res.json({ paymentUrl });
