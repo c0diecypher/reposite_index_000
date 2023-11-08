@@ -238,7 +238,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                 
               } else {
               console.log('Статус платежа не получен');
-            }  
+              }  
             } else {
               
               console.log('Отсутствуют данные id и link в ответе');
