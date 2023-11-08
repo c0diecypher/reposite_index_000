@@ -206,8 +206,8 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               };
             const paymentResponse = await axios.post('https://p2pkassa.online/api/v1/link', dataToSend, config);
             console.log(paymentResponse.data); 
-            const id = response.data.id;
-            const link = response.data.link;
+            const id = paymentResponse.data.id;
+            const link = paymentResponse.data.link;
            
             if (id && link) {
                console.log(id, link); 
