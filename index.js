@@ -198,18 +198,21 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               };
             const paymentResponse = await axios.post('https://p2pkassa.online/api/v1/link', dataToSend);
             console.log('paymentResponse:', paymentResponse);
-            const result = paymentResponse.data;
-            console.log(result);
-            // Создаем URL для второго запроса
-            const paymentUrl = `https://p2pkassa.online/payment/${result}`;
-            console.log(paymentUrl);
-            // Отправляем второй POST-запрос
-
-            // Обработка ответа второго запроса
-            // ...
-
-            // Отправляем полученную ссылку на клиент
-            return res.json({ id, link: paymentUrl });
+            const { id, link } = paymentResponse.data;
+            console.log(paymentResponse.data); // Выведем ответ сервера, чтобы убедиться, что есть данные id и link
+            const { id, link } = paymentResponse.data; // Извлекаем id и link из ответа
+            console.log(id, link); // Выведем id и link для проверки
+            if (id && link) {
+              // Создаем URL для второго запроса
+              const paymentUrl = `https://p2pkassa.online/payment/${id}/${link}`;
+              console.log(paymentUrl);
+              // Отправляем второй POST-запрос
+               return res.json({ paymentUrl });
+            } else {
+              // Если данные id и link отсутствуют в ответе
+              console.log('Отсутствуют данные id и link в ответе');
+              
+            }
         } else {
             // Если пользователь не найден, обработка ошибки или возврат 404
             return res.status(400).json({ error: 'Ошибка', message: 'Пользователь не найден.' });
