@@ -223,7 +223,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                 apikey: apikey
               };
               const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
-              const resGetPayment = response.data;
+              const resGetPayment = getPayment.data;
               console.log(resGetPayment);
               if (resGetPayment && resGetPayment.id && resGetPayment.order_id && resGetPayment.amount && resGetPayment.status && resGetPayment.data) {
               // Создаем URL для второго запроса
@@ -236,33 +236,9 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               // Отправляем второй POST-запрос
                return res.json({ getPaymentId, getPaymentOrderId, getPaymentAmount, getPaymentStatus, getPaymentData});
                 
-              
-                if (req.method !== 'POST') {
-                    res.status(400).send('Wrong request method');
-                    return;
-                }
-                const data = html_entity_decode(req.body.data);
-                const generatedSign = crypto
-                  .createHash('sha256')
-                  .update(`${getPaymentId}:${getPaymentOrderId}:${project_id}:${apikey}`)
-                  .digest('hex');
-              
-              // Проверка подписи
-              if (generatedSign) {
-                  res.status(400).send('Wrong sign');
-                  return;
-              }
-
-// Оплата прошла успешно, можно проводить операцию.
-
-res.send('OK');
-                
               } else {
-              
-              console.log(' данные в ответе не получены');
-              
-            }
-              
+              console.log('Статус платежа не получен');
+            }  
             } else {
               
               console.log('Отсутствуют данные id и link в ответе');
