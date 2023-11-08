@@ -199,8 +199,12 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                   apikey: apikey,
                   desc: desc,
               };
-
-            const response = await axios.post('https://p2pkassa.online/api/v1/link', dataToSend, { httpsAgent: new https.Agent({ rejectUnauthorized: true }) });
+              const config = {
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                }
+              };
+            const response = await axios.post('https://p2pkassa.online/api/v1/link', dataToSend, config);
             const result = response.data;
              console.log(result);
             if (result) {
