@@ -201,7 +201,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
             const { id, link } = paymentResponse.data;
             // Создаем URL для второго запроса
             const paymentUrl = `https://p2pkassa.online/payment/${id}`;
-            console.log(secondUrl);
+            console.log(paymentUrl);
             // Отправляем второй POST-запрос
 
             // Обработка ответа второго запроса
