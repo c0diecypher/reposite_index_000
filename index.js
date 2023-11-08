@@ -169,6 +169,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
         const ProductSize = size;
         const ProductOrder = order_id;
         const ProductPrice = price;
+        const amount = 200;
         console.log(ProductPrice);
         console.log(ProductOrder);
         console.log(ProductSize);
@@ -192,7 +193,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
             const dataToSend = {
                   project_id: project_id,
                   order_id: ProductOrder, // Используйте order_id из req.body
-                  amount: ProductPrice,
+                  amount: amount,
                   apikey: apikey,
                   desc: desc,
               };
