@@ -207,38 +207,39 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
             const response = await axios.post('https://p2pkassa.online/api/v1/link', dataToSend, config);
             const result = response.data;
              console.log(result);
-            if (result && result.link) {
+            if (result && result.link && result.id) {
               // Создаем URL для второго запроса
               const paymentUrl = result.link;
               const paymentId = result.id;
               console.log(paymentUrl);
+              console.log(paymentId);
               // Отправляем второй POST-запрос
                return res.json({ paymentUrl });
 
-              const interval = setInterval(async () => {
-                if (Date.now() - startTime > 20 * 60 * 1000) {
-                    // Если прошло более 20 минут, останавливаем интервал
-                    clearInterval(interval);
-                    console.log('Истекло время для проверки статуса платежа');
-                } else {
-                    const checkData = {
-                        project_id: project_id,
-                        apikey: apikey, 
-                        id: paymentId,
-                    };
-
-                    const checkResponse = await axios.post('https://p2pkassa.online/api/v1/getPayment', checkData, config);
-                    const checkResult = checkResponse.data;
-
-                    // Обработайте результат проверки, например, проверьте статус платежа
-                    if (checkResult.status === 'success') {
-                        console.log('Платеж успешен');
-                        clearInterval(interval); // Если платеж успешен, останавливаем интервал
-                    } else {
-                        console.log('Платеж неуспешен');
-                    }
-                }
-            }, 60 * 1000); // Проверяем каждую минуту
+              const dataToPayment = {
+                id: paymentId,
+                project_id: project_id,
+                apikey: apikey
+              };
+              const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
+              const resGetPayment = response.data;
+              console.log(resGetPayment);
+              if (resGetPayment && resGetPayment.id && resGetPayment.order_id && resGetPayment.amount && resGetPayment.status && resGetPayment.data) {
+              // Создаем URL для второго запроса
+              const getPaymentId = resGetPayment.id;
+              const getPaymentOrderId = resGetPayment.order_id;
+              const getPaymentAmount = resGetPayment.amount;
+              const getPaymentStatus = resGetPayment.status;
+              const getPaymentData = resGetPayment.data;
+              console.log(getPaymentStatus);
+              // Отправляем второй POST-запрос
+               return res.json({ getPaymentId, getPaymentOrderId, getPaymentAmount, getPaymentStatus, getPaymentData});
+              }  else {
+              
+              console.log(' данные в ответе не получены');
+              
+            }
+              
             } else {
               
               console.log('Отсутствуют данные id и link в ответе');
