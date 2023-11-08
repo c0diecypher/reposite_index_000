@@ -224,7 +224,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
               const resGetPayment = getPayment.data;
               console.log(resGetPayment);
-              if (resGetPayment && resGetPayment.id && resGetPayment.order_id && resGetPayment.amount && resGetPayment.status && resGetPayment.data) {
+              
               // Создаем URL для второго запроса
               const getPaymentId = resGetPayment.id;
               const getPaymentOrderId = resGetPayment.order_id;
@@ -233,11 +233,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               const getPaymentData = resGetPayment.data;
               console.log(getPaymentStatus);
               // Отправляем второй POST-запрос
-               return res.json({ paymentUrl, getPaymentStatus });
-                
-              } else {
-                  console.log('Статус платежа не получен');
-              }  
+               return res.json({ paymentUrl, getPaymentStatus });  
             } else {
               
               console.log('Отсутствуют данные id и link в ответе');
