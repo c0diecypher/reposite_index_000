@@ -200,7 +200,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                   desc: desc,
               };
 
-            const response = await axios.post('https://p2pkassa.online/api/v1/link', data: dataToSend, { httpsAgent: new https.Agent({ rejectUnauthorized: true }) });
+            const response = await axios.post('https://p2pkassa.online/api/v1/link', dataToSend, { httpsAgent: new https.Agent({ rejectUnauthorized: true }) });
             const result = response.data;
              console.log(result);
             if (result) {
