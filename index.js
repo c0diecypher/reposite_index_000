@@ -244,7 +244,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                 const data = html_entity_decode(req.body.data);
                 const generatedSign = crypto
                   .createHash('sha256')
-                  .update(${id}:${order_id}:${projectId}:${apiKey})
+                  .update(`${getPaymentId}:${getPaymentOrderId}:${project_id}:${apikey}`)
                   .digest('hex');
               
               // Проверка подписи
