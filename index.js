@@ -155,6 +155,35 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
     }
 });
 
+app.get('/customer/settings/client/buy/offer/pay/status', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  
+  // Начальная отправка данных
+  res.write(`data: ${JSON.stringify({ paymentStatus: 'initial' })}\n\n`);
+
+  // Внутри этого обработчика можно отправлять обновления
+  // Например, после второго запроса
+  const updatePaymentStatus = async () => {
+    
+    const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
+    const resGetPayment = getPayment.data;
+    const paymentStatus = resGetPayment.status;
+    
+    // Отправка обновления клиенту
+    res.write(`data: ${JSON.stringify({ paymentStatus })}\n\n`);
+  };
+  
+  // Вызывать функцию обновления через определенные интервалы
+  const updateInterval = setInterval(updatePaymentStatus, 5000); // Примерно каждые 5 секунд
+
+  // Обработка разрыва соединения
+  res.on('close', () => {
+    clearInterval(updateInterval); // Остановить интервал при разрыве соединения
+  });
+});
+
+
 app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
     const { queryId, price, size, name, userId, order_id } = req.body;
     console.log(queryId, price, size, name, userId, order_id);
@@ -233,7 +262,10 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               const getPaymentData = resGetPayment.data;
               console.log(getPaymentStatus);
               // Отправляем второй POST-запрос
-               return res.json({ paymentUrl, getPaymentStatus });  
+              
+              const sseUrl = `/customer/settings/client/buy/offer/pay/status/${apikey}/${project_id}/${paymentId}`;
+              console.log(sseUrl);
+               return res.json({ paymentUrl, sseUrl });  
             } else {
               
               console.log('Отсутствуют данные id и link в ответе');
