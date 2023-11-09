@@ -232,6 +232,8 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               const getPaymentAmount = resGetPayment.amount;
               const getPaymentStatus = resGetPayment.status;
               const getPaymentData = resGetPayment.data;
+              const getPaymentSign = resGetPayment.sign;
+              console.log(getPaymentSign);
               console.log(getPaymentStatus);
               // Отправляем второй POST-запрос
                return res.json({ paymentUrl, getPaymentStatus });  
