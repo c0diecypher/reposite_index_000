@@ -221,38 +221,18 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                 project_id: project_id,
                 apikey: apikey
               };
+              const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
+              const resGetPayment = getPayment.data;
+              console.log(resGetPayment);
               
-
-              const checkPaymentStatus = async () => {
-              while (true) {
-                try {
-                  const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
-                  const resGetPayment = getPayment.data;
-                  const getPaymentStatus = resGetPayment.status;
-            
-                  if (getPaymentStatus === 'PAID') {
-                    // Обработка успешного платежа
-                    break; // Завершить цикл
-                  } else if (getPaymentStatus === 'WAIT') {
-                    // Обработка непрошедшего платежа
-                    break; // Завершить цикл
-                  } else if (getPaymentStatus === 'CANCEL') {
-                    // Обработка отмененного платежа
-                    break; // Завершить цикл
-                  }
-            
-                  // Ждать некоторое время перед следующей проверкой (например, 5 секунд)
-                  await new Promise((resolve) => setTimeout(resolve, 5000));
-                } catch (error) {
-                  console.error('Ошибка при проверке статуса платежа:', error);
-                  // Повторить попытку через некоторое время
-                  await new Promise((resolve) => setTimeout(resolve, 5000));
-                }
-              }
-            }
-            
-            // Запустить проверку статуса платежа
-            checkPaymentStatus();
+              // Создаем URL для второго запроса
+              const getPaymentId = resGetPayment.id;
+              const getPaymentOrderId = resGetPayment.order_id;
+              const getPaymentAmount = resGetPayment.amount;
+              const getPaymentStatus = resGetPayment.status;
+              const getPaymentData = resGetPayment.data;
+              console.log(getPaymentStatus);
+              // Отправляем второй POST-запрос
                return res.json({ paymentUrl, getPaymentStatus });  
             } else {
               
