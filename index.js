@@ -221,6 +221,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                 project_id: project_id,
                 apikey: apikey
               };
+              res.json({ paymentUrl, getPaymentStatus });
               const updatePaymentStatus = async (paymentUrl) => {
               const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
               const resGetPayment = getPayment.data;
@@ -235,7 +236,6 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
             setInterval(updatePaymentStatus, 5000);
           
             // Отправьте клиенту начальный статус и URL
-            res.json({ paymentUrl, getPaymentStatus });
             } else {
               
               console.log('Отсутствуют данные id и link в ответе');
