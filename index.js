@@ -257,7 +257,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               } else {
               
               console.log('Отсутствуют данные id и link в ответе');
-              
+              }
           
         } else {
             // Если пользователь не найден, обработка ошибки или возврат 404
