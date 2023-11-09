@@ -260,10 +260,10 @@ app.post('/customer/settings/client/buy/offer/pay/webhook', (req, res) => {
   if (req.method !== 'POST') {
     return res.status(400).send('Wrong request method');
   }
-
+  
   // Расчет подписи
   const calculatedSign = crypto.createHash('sha256').update(`${dataToPayment.id}:${dataToSent.order_id}:${dataToPayment.project_id}:${dataToPayment.apikey}`).digest('hex');
-
+  console.log(calculatedSign);
   // Проверка совпадения подписей
   if (calculatedSign !== sign) {
     return res.status(400).send('Wrong sign');
