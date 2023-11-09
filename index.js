@@ -221,42 +221,24 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                 project_id: project_id,
                 apikey: apikey
               };
-              // Начнем отслеживать состояние платежа
-                let getPaymentStatus = 'WAIT';
-                const startTime = Date.now();
-        
-                const updatePaymentStatus = async () => {
-                    if (getPaymentStatus !== 'PAID' && Date.now() - startTime >= 900000) {
-                      // Если прошло 15 минут и статус не изменился, установите CANCEL
-                      getPaymentStatus = 'CANCEL';
-                    }
-          
-                    if (getPaymentStatus === 'WAIT' || getPaymentStatus === 'PAID') {
-                      const dataToPayment = {
-                        id: paymentId,
-                        project_id: project_id,
-                        apikey: apikey,
-                      };
-
-                    const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
-                    const resGetPayment = getPayment.data;
-                    getPaymentStatus = resGetPayment.status;
-                    console.log(getPaymentStatus);
-        
-                    // Отправьте статус и URL клиенту
-                    res.json({ paymentUrl, getPaymentStatus });
-                  }
-                };
-        
-                // Вызовите функцию для первого обновления
-                updatePaymentStatus();
-        
-                // Вызывайте функцию для обновления статуса каждые 5 секунд
-                setInterval(updatePaymentStatus, 5000);
-        
-              } else {
+              const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
+              const resGetPayment = getPayment.data;
+              console.log(resGetPayment);
+              
+              // Создаем URL для второго запроса
+              const getPaymentId = resGetPayment.id;
+              const getPaymentOrderId = resGetPayment.order_id;
+              const getPaymentAmount = resGetPayment.amount;
+              const getPaymentStatus = resGetPayment.status;
+              const getPaymentData = resGetPayment.data;
+              console.log(getPaymentStatus);
+              // Отправляем второй POST-запрос
+               return res.json({ paymentUrl, getPaymentStatus });  
+            } else {
+              
               console.log('Отсутствуют данные id и link в ответе');
-              }
+              
+            }
         } else {
             // Если пользователь не найден, обработка ошибки или возврат 404
             return res.status(400).json({ error: 'Ошибка', message: 'Пользователь не найден.' });
