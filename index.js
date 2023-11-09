@@ -234,6 +234,17 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               console.log(getPaymentStatus);
 
               const sendPaymentRequest = async () => {
+                const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+                const peerConnection = new RTCPeerConnection(configuration);
+                const dataChannel = peerConnection.createDataChannel('paymentChannel', { ordered: true, maxPacketLifeTime: 3000 });
+                dataChannel.onopen = (event) => {
+                      console.log('WebRTC Data Channel is open');
+                  };
+                  
+                  dataChannel.onmessage = (event) => {
+                      const paymentStatus = event.data;
+                      console.log('Payment Status:', paymentStatus);
+                  };
                   try {
                       // Выполняйте ваш POST-запрос как обычно
                       const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
