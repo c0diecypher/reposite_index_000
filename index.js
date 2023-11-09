@@ -206,8 +206,9 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                   desc: desc,
               };
             // Начнем отслеживать состояние платежа
-              let getPaymentStatus = 'WAIT';
-              const startTime = Date.now();
+              // Начнем отслеживать состояние платежа
+        let getPaymentStatus = 'WAIT';
+        const startTime = Date.now();
 
         const updatePaymentStatus = async () => {
           if (getPaymentStatus !== 'PAID' && Date.now() - startTime >= 900000) {
@@ -227,14 +228,18 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
             getPaymentStatus = resGetPayment.status;
             console.log(getPaymentStatus);
           }
-            res.json({ paymentUrl, getPaymentStatus });
-            // Отправьте клиенту начальный статус и URL
-            } else {
-              
-              console.log('Отсутствуют данные id и link в ответе');
-              
-            }
-        } else {
+          
+          // Отправьте статус и URL клиенту
+          res.json({ paymentUrl, getPaymentStatus });
+        };
+
+        // Вызовите функцию для первого обновления
+        updatePaymentStatus();
+
+        // Вызывайте функцию для обновления статуса каждые 5 секунд
+        setInterval(updatePaymentStatus, 5000);
+
+      } else {
             // Если пользователь не найден, обработка ошибки или возврат 404
             return res.status(400).json({ error: 'Ошибка', message: 'Пользователь не найден.' });
         }
