@@ -237,14 +237,14 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               if (req.method !== 'POST') {
                   return res.status(400).send('Неверный метод запроса');
               }
-
-              const sign = crypto
+            
+              const signOnClick = crypto
                                     .createHash('sha256')
                                     .update(`${getPaymentId}:${getPaymentOrderId}:${project_id}:${apikey}`)
                                     .digest('hex');
               console.log(sign)
               // Проверка подписи
-              if (sign) {
+              if (sign !== signOnClick) {
                   res.status(400).send('Wrong sign');
                   return;
               }
