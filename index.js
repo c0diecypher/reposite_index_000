@@ -205,36 +205,29 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                   apikey: apikey,
                   desc: desc,
               };
-            const response = await axios.post('https://p2pkassa.online/api/v1/link', dataToSend, config);
-            const result = response.data;
-             console.log(result);
-            if (result && result.link && result.id) {
-              // Создаем URL для второго запроса
-              const paymentUrl = result.link;
-              const paymentId = result.id;
-              console.log(paymentUrl);
-              console.log(paymentId);
-              // Отправляем второй POST-запрос
+            // Начнем отслеживать состояние платежа
+              let getPaymentStatus = 'WAIT';
+              const startTime = Date.now();
 
-              const dataToPayment = {
-                id: paymentId,
-                project_id: project_id,
-                apikey: apikey
-              };
-              res.json({ paymentUrl, getPaymentStatus });
-              const updatePaymentStatus = async (paymentUrl) => {
-              const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
-              const resGetPayment = getPayment.data;
-              const getPaymentStatus = resGetPayment.status;
-              console.log(getPaymentStatus);
-          
-              // Отправьте статус клиенту
-              res.json({ paymentUrl, getPaymentStatus });
+        const updatePaymentStatus = async () => {
+          if (getPaymentStatus !== 'PAID' && Date.now() - startTime >= 900000) {
+            // Если прошло 15 минут и статус не изменился, установите CANCEL
+            getPaymentStatus = 'CANCEL';
+          }
+
+          if (getPaymentStatus === 'wait' || getPaymentStatus === 'PAID') {
+            const dataToPayment = {
+              id: paymentId,
+              project_id: project_id,
+              apikey: apikey,
             };
-          
-            // Вызывайте функцию для обновления статуса каждые 5 секунд
-            setInterval(updatePaymentStatus, 5000);
-          
+
+            const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
+            const resGetPayment = getPayment.data;
+            getPaymentStatus = resGetPayment.status;
+            console.log(getPaymentStatus);
+          }
+            res.json({ paymentUrl, getPaymentStatus });
             // Отправьте клиенту начальный статус и URL
             } else {
               
