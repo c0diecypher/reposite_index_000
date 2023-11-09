@@ -233,38 +233,8 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               const getPaymentData = resGetPayment.data;
               console.log(getPaymentStatus);
 
-              const sendPaymentRequest = async () => {
-                const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-                const peerConnection = new RTCPeerConnection(configuration);
-                const dataChannel = peerConnection.createDataChannel('paymentChannel', { ordered: true, maxPacketLifeTime: 3000 });
-                dataChannel.onopen = (event) => {
-                      console.log('WebRTC Data Channel is open');
-                  };
-                  
-                  dataChannel.onmessage = (event) => {
-                      const paymentStatus = event.data;
-                      console.log('Payment Status:', paymentStatus);
-                  };
-                  try {
-                      // Выполняйте ваш POST-запрос как обычно
-                      const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
-                      const resGetPayment = getPayment.data;
               
-                      // Получите обновленный статус оплаты из ответа
-                      const getPaymentStatus = resGetPayment.status;
-              
-                      // Отправьте обновление статуса через WebRTC Data Channel или другой механизм реального времени
-                      dataChannel.send(`PaymentStatusUpdate:${getPaymentStatus}`);
-              
-                  } catch (error) {
-                      console.error(error);
-                  }
-              };
-              
-              // Вызывайте функцию для отправки запроса на сервер
-              sendPaymentRequest();
-              
-               return res.json({ paymentUrl, sendPaymentRequest });  
+               return res.json({ paymentUrl, getPaymentStatus });  
             } else {
               
               console.log('Отсутствуют данные id и link в ответе');
