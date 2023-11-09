@@ -232,9 +232,23 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               const getPaymentAmount = resGetPayment.amount;
               const getPaymentStatus = resGetPayment.status;
               const getPaymentData = resGetPayment.data;
-              const getPaymentSign = resGetPayment.sign;
-              console.log(getPaymentSign);
               console.log(getPaymentStatus);
+
+              if (req.method !== 'POST') {
+                  return res.status(400).send('Неверный метод запроса');
+              }
+
+              const sign = crypto
+                                    .createHash('sha256')
+                                    .update(${getPaymentId}:${getPaymentOrderId}:${projectId}:${apiKey})
+                                    .digest('hex');
+              console.log(sign)
+              // Проверка подписи
+              if (sign !== sign) {
+                  res.status(400).send('Wrong sign');
+                  return;
+              }
+              res.send('OK');
               // Отправляем второй POST-запрос
                return res.json({ paymentUrl, getPaymentStatus });  
             } else {
