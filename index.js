@@ -156,7 +156,7 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
 });
 
 app.get('/customer/settings/client/buy/offer/pay/status', (req, res) => {
-  const { id, project_id } = req.params;
+  const { paymentId, project_id, apikey } = req.params;
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   
