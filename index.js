@@ -244,7 +244,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                                     .digest('hex');
               console.log(sign)
               // Проверка подписи
-              if (sign !== sign) {
+              if (sign) {
                   res.status(400).send('Wrong sign');
                   return;
               }
