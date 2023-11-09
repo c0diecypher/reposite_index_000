@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const https = require('https');
 const crypto = require('crypto');
+const bodyParser = require('body-parser');
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const { validate } = require('@twa.js/init-data-node');
 const User = require('./models'); 
@@ -248,6 +249,29 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
         console.error(error);
         return res.status(500).json({ error: 'Ошибка', message: 'Внутренняя ошибка сервера.' });
     }
+});
+
+// Используем bodyParser для парсинга тела POST-запроса
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+app.post('/customer/settings/client/buy/offer/pay/webhook', (req, res) => {
+  // Проверка метода запроса
+  if (req.method !== 'POST') {
+    return res.status(400).send('Wrong request method');
+  }
+
+  // Расчет подписи
+  const calculatedSign = crypto.createHash('sha256').update(`${dataToPayment.id}:${dataToSent.order_id}:${dataToPayment.project_id}:${dataToPayment.apikey}`).digest('hex');
+
+  // Проверка совпадения подписей
+  if (calculatedSign !== sign) {
+    return res.status(400).send('Wrong sign');
+  }
+
+  // Обработка успешной оплаты
+  console.log('Payment successful');
+  return res.status(200).send('OK');
 });
 
 bot.on('contact', async (msg) => {
