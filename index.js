@@ -168,7 +168,7 @@ app.get('/customer/settings/client/buy/offer/pay/status', (req, res) => {
   const updatePaymentStatus = async () => {
     // Используйте id и project_id из параметров URL при необходимости
     const dataToPayment = {
-      id: id,
+      id: paymentId,
       project_id: project_id,
       apikey: apikey,
     };
