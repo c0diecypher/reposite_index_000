@@ -250,7 +250,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               }
               res.send('OK');
               // Отправляем второй POST-запрос
-               return res.json({ paymentUrl, getPaymentStatus });  
+               res.json({ message: 'OK', paymentUrl, getPaymentStatus });
             } else {
               
               console.log('Отсутствуют данные id и link в ответе');
