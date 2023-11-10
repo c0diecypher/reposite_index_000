@@ -235,13 +235,8 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               const getPaymentStatus = resGetPayment.status;
               const getPaymentData = resGetPayment.data;
               console.log(getPaymentStatus);
-
-              res.json({ paymentUrl });
-              
-              emitter.on('newStatus', (getPaymentStatus) => {
-                 res.json({ getPaymentStatus });
-              });
-              
+              // Отправляем второй POST-запрос
+               return res.json({ paymentUrl, getPaymentStatus });  
             } else {
               
               console.log('Отсутствуют данные id и link в ответе');
