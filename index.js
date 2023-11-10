@@ -237,10 +237,6 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               console.log(getPaymentStatus);
               // Отправляем второй POST-запрос
                return res.json({ paymentUrl, getPaymentStatus });  
-              console.log(dataToPayment.id);
-              console.log(dataToSend.order_id});
-              console.log(dataToPayment.project_id);
-              console.log(dataToSend.apikey);
             } else {
               
               console.log('Отсутствуют данные id и link в ответе');
