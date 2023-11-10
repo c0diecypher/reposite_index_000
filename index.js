@@ -238,7 +238,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
 
               res.json({ paymentUrl });
               
-              emitter.once('newStatus', () => {
+              emitter.on('newStatus', (getPaymentStatus) => {
                  res.json({ getPaymentStatus });
               });
               
