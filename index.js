@@ -12,6 +12,7 @@ const axios = require('axios');
 const path = require('path'); // Импортируем библиотеку path
 const bot = new TelegramBot(token, {polling: true});
 const app = express();
+const emitter = new events.EventEmitter();
 app.use(express.json());
 app.use(cors());
 const start = `⚡<strong>ZipperApp</strong> - твой надежный гид в мире стильной одежды и оригинальных товаров из-за рубежа!
@@ -234,23 +235,12 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               const getPaymentData = resGetPayment.data;
               console.log(getPaymentStatus);
 
-              if (req.method !== 'POST') {
-                  return res.status(400).send('Неверный метод запроса');
-              }
-            
-              const sign = crypto
-                                    .createHash('sha256')
-                                    .update(`${getPaymentId}:${getPaymentOrderId}:${project_id}:${apikey}`)
-                                    .digest('hex');
-              console.log(sign)
-              // Проверка подписи
-              if (sign !== sign) {
-                  res.status(400).send('Wrong sign');
-                  return;
-              }
-
-              // Отправляем второй POST-запрос
-               res.json({ message: 'OK', paymentUrl, getPaymentStatus });
+              res.json({ paymentUrl });
+              
+              emitter.once('newStatus', () => {
+                 res.json({ getPaymentStatus });
+              });
+              
             } else {
               
               console.log('Отсутствуют данные id и link в ответе');
@@ -272,22 +262,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.post('/customer/settings/client/buy/offer/pay/webhook', (req, res) => {
-  // Проверка метода запроса
-  if (req.method !== 'POST') {
-    return res.status(400).send('Wrong request method');
-  }
-  
-  // Расчет подписи
-  const calculatedSign = crypto.createHash('sha256').update(`${dataToPayment.id}:${dataToSent.order_id}:${dataToPayment.project_id}:${dataToPayment.apikey}`).digest('hex');
-  console.log(calculatedSign);
-  // Проверка совпадения подписей
-  if (calculatedSign !== sign) {
-    return res.status(400).send('Wrong sign');
-  }
-
-  // Обработка успешной оплаты
-  console.log('Payment successful');
-  return res.status(200).send('OK');
+  const getPaymentStatus = req.body;
+  emitter.emit('newStatus', getPaymentStatus);
+  res.status(200).send('OK');
 });
 
 bot.on('contact', async (msg) => {
