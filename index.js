@@ -237,6 +237,10 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               console.log(getPaymentStatus);
               // Отправляем второй POST-запрос
                return res.json({ paymentUrl, getPaymentStatus });  
+              console.log(dataToPayment.id);
+              console.log(dataToSend.order_id});
+              console.log(dataToPayment.project_id);
+              console.log(dataToSend.apikey);
             } else {
               
               console.log('Отсутствуют данные id и link в ответе');
@@ -258,9 +262,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.post('/customer/settings/client/buy/offer/pay/webhook', (req, res) => {
-  const getPaymentStatus = req.body;
-  emitter.emit('newStatus', getPaymentStatus);
-  res.status(200).send('OK');
+  const sign = crypto.createHash('sha256')
+        .update(`${dataToPayment.id}:${dataToSend.order_id}:${dataToPayment.project_id}:${dataToSend.apikey}`)
+        .digest('hex');
+    console.log(sign);
+    if (sign) {
+        console.log('OK');
+        res.send('OK');
+    } else {
+        console.error('Wrong sign');
+        res.status(403).send('Forbidden');
+    }
 });
 
 bot.on('contact', async (msg) => {
