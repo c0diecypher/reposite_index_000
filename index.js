@@ -1,5 +1,6 @@
 const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
+const events = require('events');
 const cors = require('cors');
 const https = require('https');
 const crypto = require('crypto');
