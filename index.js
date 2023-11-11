@@ -270,7 +270,7 @@ app.post('/customer/client/pay/status', (req, res) => {
     .update(`${id}:${order_id}:${project_id}:${apikey}`)
     .digest('hex');
 
-  if (sign) {
+  if (sign !== sign) {
     return res.status(400).send('Wrong sign');
   }
 
