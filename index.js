@@ -201,7 +201,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                       Номер для связи ${phoneNumber}
                       Город: ${userCity},
                       Адрес доставки: ${userAdress}`;
-            const dataToSend = {
+            dataToSend = {
                   project_id: project_id,
                   order_id: ProductOrder, // Используйте order_id из req.body
                   amount: ProductPrice,
@@ -254,26 +254,47 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
 });
 
 let dataToPayment = {};
-
+let dataToSend = {};
 // Используем bodyParser для парсинга тела POST-запроса
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.post('/customer/settings/client/buy/offer/pay/webhook', (req, res) => {
+app.post('/customer/settings/client/buy/offer/pay/webhook', async (req, res) => {
   const { id, order_id } = dataToPayment;
+  const { amount, order_id, desc } = dataToPayment;
   const apikey = 'cpfmxaq0su2dy63v4g9zowjh';
   const project_id = '225';
   const sign = crypto.createHash('sha256')
-        .update(`${id}:${order_id}:${project_id}:${apikey}`)
-        .digest('hex');
-    console.log(sign);
-    if (sign) {
-        console.log('OK');
-        res.send('OK');
-    } else {
-        console.error('Wrong sign');
-        res.status(403).send('Forbidden');
+    .update(`${id}:${order_id}:${project_id}:${apikey}`)
+    .digest('hex');
+  
+  console.log(sign);
+
+  if (sign) {
+    console.log('OK');
+    res.send('OK');
+
+    try {
+      await bot.answerWebAppQuery(queryId, {
+        type: 'article',
+        id: userId,
+        title: 'Успешная покупка',
+        input_message_content: {
+          message_text: `
+            Поздравляем с покупкой! 
+            ${desc}
+
+            Спасибо, что пользуетесь zipper app ! ⚡
+          `,
+        },
+      });
+    } catch (error) {
+      console.error('Ошибка при отправке ответа вебхука:', error);
     }
+  } else {
+    console.error('Wrong sign');
+    res.status(403).send('Forbidden');
+  }
 });
 
 bot.on('contact', async (msg) => {
