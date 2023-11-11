@@ -259,43 +259,21 @@ let dataToSend = {};
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.post('/customer/settings/client/buy/offer/pay/webhook', async (req, res) => {
-  const { id, order_id } = dataToPayment;
-  const { amount, desc } = dataToPayment;
-  const { queryId, price, size, name, userId } = req.body;
+app.post('/customer/settings/client/buy/offer/pay/webhook', (req, res) => {
+  const { id, order_id, project_id, amount, createDateTime, data } = req.body;
   const apikey = 'cpfmxaq0su2dy63v4g9zowjh';
   const project_id = '225';
   const sign = crypto.createHash('sha256')
-    .update(`${id}:${order_id}:${project_id}:${apikey}`)
-    .digest('hex');
-  
-  console.log(sign);
-
-  if (sign) {
-    console.log('OK');
-    res.send('OK');
-
-    try {
-      await bot.answerWebAppQuery(queryId, {
-        type: 'article',
-        id: userId,
-        title: 'Успешная покупка',
-        input_message_content: {
-          message_text: `
-            Поздравляем с покупкой! 
-            ${desc}
-
-            Спасибо, что пользуетесь zipper app ! ⚡
-          `,
-        },
-      });
-    } catch (error) {
-      console.error('Ошибка при отправке ответа вебхука:', error);
+        .update(`${id}:${order_id}:${project_id}:${apikey}`)
+        .digest('hex');
+    console.log(sign);
+    if (sign) {
+        console.log('OK');
+        res.send('OK');
+    } else {
+        console.error('Wrong sign');
+        res.status(403).send('Forbidden');
     }
-  } else {
-    console.error('Wrong sign');
-    res.status(403).send('Forbidden');
-  }
 });
 
 bot.on('contact', async (msg) => {
