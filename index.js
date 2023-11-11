@@ -237,9 +237,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               console.log(getPaymentStatus);
               // Отправляем второй POST-запрос
                return res.json({ paymentUrl, getPaymentStatus }); 
-                
               };
-              const webhookPayment = await.post('/customer/settings/client/buy/offer/pay/webhook',
             } else {
               
               console.log('Отсутствуют данные id и link в ответе');
