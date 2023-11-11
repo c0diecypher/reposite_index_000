@@ -161,8 +161,7 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
 app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
     const { queryId, price, size, name, userId, order_id } = req.body;
     console.log(queryId, price, size, name, userId, order_id);
-    const priceWithoutSpaces = price.replace(/\s/g, '').replace(/\u00a0/g, '');
-    console.log(priceWithoutSpaces);
+  
     // Проверьте, что userId совпадает с ожидаемым
     const allowedUserId = userId;
     if (userId !== allowedUserId) {
@@ -176,7 +175,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
         const ProductName = name;
         const ProductSize = size;
         const ProductOrder = order_id;
-        const ProductPrice = price;
+        const ProductPrice = price.replace(/\s/g, '').replace(/\u00a0/g, '');
         const amount = 200;
         console.log(ProductPrice);
         console.log(ProductOrder);
