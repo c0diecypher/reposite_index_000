@@ -263,7 +263,7 @@ app.post('/customer/client/pay/status', (req, res) => {
     return res.status(400).send('Wrong request method');
   }
 
-  const { id, order_id, amount, createDateTime, sign, data } = req.body;
+  const { id, order_id, project_id, amount, createDateTime, data } = req.body;
 
   const expectedSign = crypto
     .createHash('sha256')
