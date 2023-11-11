@@ -263,7 +263,7 @@ app.post('/customer/client/pay/status', (req, res) => {
     return res.status(400).send('Wrong request method');
   }
 
-  const { id, apikey, order_id, project_id, amount, createDateTime, data } = req.body;
+  const { id, apikey, order_id, project_id, amount, createDateTime, desc } = req.body;
 
   const sign = crypto
     .createHash('sha256')
@@ -275,7 +275,7 @@ app.post('/customer/client/pay/status', (req, res) => {
   }
 
   // Платеж прошел успешно, проводите операции по обработке платежа
-  console.log('Payment successful:', { id, order_id, amount, createDateTime, data });
+  console.log('Оплачено', { id, order_id, amount, createDateTime, desc });
 
   res.send('OK');
 });
