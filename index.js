@@ -112,7 +112,6 @@ bot.on('message', async(msg) => {
 app.post('/customer/settings/client/buy/offer', async (req, res) => {
     const { queryId, price, size, name, userId, order_id } = req.body;
     console.log(queryId, price, size, name, userId, order_id);
-    const priceWithoutSpaces = price.replace(/\u00a0/g, '');
     // Поиск пользователя в базе данных
     const user = await User.findOne({ where: { userId: userId.toString() } });
 
@@ -162,6 +161,7 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
 app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
     const { queryId, price, size, name, userId, order_id } = req.body;
     console.log(queryId, price, size, name, userId, order_id);
+    const priceWithoutSpaces = price.replace(/\s/g, '').replace(/\u00a0/g, '');
     // Проверьте, что userId совпадает с ожидаемым
     const allowedUserId = userId;
     if (userId !== allowedUserId) {
