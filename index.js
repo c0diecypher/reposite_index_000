@@ -265,7 +265,7 @@ app.post('/customer/client/pay/status', (req, res) => {
 
   const { id, apikey, order_id, project_id, amount, createDateTime, data } = req.body;
 
-  const expectedSign = crypto
+  const sign = crypto
     .createHash('sha256')
     .update(`${id}:${order_id}:${project_id}:${apikey}`)
     .digest('hex');
