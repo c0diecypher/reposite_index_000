@@ -219,7 +219,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               console.log(paymentId);
               // Отправляем второй POST-запрос
 
-              const dataToPayment = {
+              dataToPayment = {
                 id: paymentId,
                 project_id: project_id,
                 apikey: apikey
@@ -253,13 +253,18 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
     }
 });
 
+let dataToPayment = {};
+
 // Используем bodyParser для парсинга тела POST-запроса
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.post('/customer/settings/client/buy/offer/pay/webhook', (req, res) => {
+  const { id, order_id } = dataToPayment;
+  const apikey = 'cpfmxaq0su2dy63v4g9zowjh';
+  const project_id = '225';
   const sign = crypto.createHash('sha256')
-        .update(`${dataToPayment.id}:${dataToSend.order_id}:${dataToPayment.project_id}:${dataToSend.apikey}`)
+        .update(`${id}:${order_id}:${project_id}:${apikey}`)
         .digest('hex');
     console.log(sign);
     if (sign) {
