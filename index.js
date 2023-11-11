@@ -262,6 +262,7 @@ app.use(bodyParser.json());
 app.post('/customer/settings/client/buy/offer/pay/webhook', async (req, res) => {
   const { id, order_id } = dataToPayment;
   const { amount, order_id, desc } = dataToPayment;
+  const { queryId, price, size, name, userId, order_id } = req.body;
   const apikey = 'cpfmxaq0su2dy63v4g9zowjh';
   const project_id = '225';
   const sign = crypto.createHash('sha256')
