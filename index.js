@@ -260,7 +260,7 @@ let dataToSend = {};
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.post('https://zipperconnect.space/', (req, res) => {
+app.post('/', (req, res) => {
   if (req.method !== 'POST') {
     return res.status(400).send('Wrong request method');
   }
