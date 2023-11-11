@@ -262,7 +262,6 @@ app.use(bodyParser.json());
 app.post('/customer/settings/client/buy/offer/pay/webhook', (req, res) => {
   const { id, order_id, project_id, amount, createDateTime, data } = req.body;
   const apikey = 'cpfmxaq0su2dy63v4g9zowjh';
-  const project_id = '225';
   const sign = crypto.createHash('sha256')
         .update(`${id}:${order_id}:${project_id}:${apikey}`)
         .digest('hex');
