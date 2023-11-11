@@ -201,7 +201,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                       Номер для связи ${phoneNumber}
                       Город: ${userCity},
                       Адрес доставки: ${userAdress}`;
-            dataToSend = {
+            const dataToSend = {
                   project_id: project_id,
                   order_id: ProductOrder, // Используйте order_id из req.body
                   amount: ProductPrice,
@@ -219,7 +219,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               console.log(paymentId);
               // Отправляем второй POST-запрос
 
-              dataToPayment = {
+              const dataToPayment = {
                 id: paymentId,
                 project_id: project_id,
                 apikey: apikey
@@ -236,8 +236,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               const getPaymentData = resGetPayment.data;
               console.log(getPaymentStatus);
               // Отправляем второй POST-запрос
-               return res.json({ paymentUrl, getPaymentStatus }); 
-              };
+               return res.json({ paymentUrl, getPaymentStatus });  
             } else {
               
               console.log('Отсутствуют данные id и link в ответе');
@@ -254,8 +253,6 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
     }
 });
 
-let dataToPayment = {};
-let dataToSend = {};
 // Используем bodyParser для парсинга тела POST-запроса
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
