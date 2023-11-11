@@ -112,6 +112,7 @@ bot.on('message', async(msg) => {
 app.post('/customer/settings/client/buy/offer', async (req, res) => {
     const { queryId, price, size, name, userId, order_id } = req.body;
     console.log(queryId, price, size, name, userId, order_id);
+    const priceWithoutSpaces = price.replace(/\u00a0/g, '');
     // Поиск пользователя в базе данных
     const user = await User.findOne({ where: { userId: userId.toString() } });
 
