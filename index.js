@@ -162,6 +162,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
     const { queryId, price, size, name, userId, order_id } = req.body;
     console.log(queryId, price, size, name, userId, order_id);
     const priceWithoutSpaces = price.replace(/\s/g, '').replace(/\u00a0/g, '');
+    console.log(priceWithoutSpaces);
     // Проверьте, что userId совпадает с ожидаемым
     const allowedUserId = userId;
     if (userId !== allowedUserId) {
