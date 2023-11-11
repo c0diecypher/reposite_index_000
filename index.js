@@ -236,7 +236,10 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               const getPaymentData = resGetPayment.data;
               console.log(getPaymentStatus);
               // Отправляем второй POST-запрос
-               return res.json({ paymentUrl, getPaymentStatus });  
+               return res.json({ paymentUrl, getPaymentStatus }); 
+                
+              };
+              const webhookPayment = await.post('/customer/settings/client/buy/offer/pay/webhook',
             } else {
               
               console.log('Отсутствуют данные id и link в ответе');
@@ -259,21 +262,26 @@ let dataToSend = {};
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.post('/customer/settings/client/buy/offer/pay/webhook', (req, res) => {
-  const { id, order_id, project_id, amount, createDateTime, data } = req.body;
-  console.log(id, order_id, project_id, amount, createDateTime, data);
-  const apikey = 'cpfmxaq0su2dy63v4g9zowjh';
-  const sign = crypto.createHash('sha256')
-        .update(`${id}:${order_id}:${project_id}:${apikey}`)
-        .digest('hex');
-    console.log(sign);
-    if (sign) {
-        console.log('OK');
-        res.send('OK');
-    } else {
-        console.error('Wrong sign');
-        res.status(403).send('Forbidden');
-    }
+app.post('https://zipperconnect.space/', (req, res) => {
+  if (req.method !== 'POST') {
+    return res.status(400).send('Wrong request method');
+  }
+
+  const { id, order_id, amount, createDateTime, sign, data } = req.body;
+
+  const expectedSign = crypto
+    .createHash('sha256')
+    .update(`${id}:${order_id}:${project_id}:${apikey}`)
+    .digest('hex');
+
+  if (sign !== expectedSign) {
+    return res.status(400).send('Wrong sign');
+  }
+
+  // Платеж прошел успешно, проводите операции по обработке платежа
+  console.log('Payment successful:', { id, order_id, amount, createDateTime, data });
+
+  res.send('OK');
 });
 
 bot.on('contact', async (msg) => {
