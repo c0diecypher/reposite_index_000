@@ -278,11 +278,9 @@ app.post('/customer/client/pay/status', (req, res) => {
   console.log('Оплачено', { id, order_id, amount, createDateTime });
 
   // Отправляем статус только если все поля определены
-  if (id !== undefined && order_id !== undefined && amount !== undefined && createDateTime !== undefined) {
-    res.send('OK');
-  } else {
-    res.status(400).send('One or more fields are undefined');
-  }
+  
+  res.send('OK');
+  
 });
 
 bot.on('contact', async (msg) => {
