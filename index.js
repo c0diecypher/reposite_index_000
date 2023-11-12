@@ -301,6 +301,21 @@ app.post('/customer/client/pay/status', (req, res) => {
   const chatId = '204688184';
   const message = `${data}`;
   bot.sendMessage(chatId, message);
+  
+  const response = await axios.put('/customer/client/pay/status/data', {
+      id,
+      order_id,
+      amount,
+      createDateTime,
+      data,
+    });
+
+    console.log('Успешный второй запрос:', response.data);
+
+  } catch (error) {
+    console.error('Ошибка:', error);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
 bot.on('contact', async (msg) => {
