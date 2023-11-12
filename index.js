@@ -94,7 +94,7 @@ const webAppUrl = 'https://zipperapp.vercel.app/'
 bot.on('message', async(msg) => {
   const chatId = msg.chat.id;
   const text = msg.text;
-  
+  console.log(chatId);
     if(text === '/start'){
         await bot.sendMessage(chatId,start,{
             reply_markup: {
@@ -263,7 +263,7 @@ app.post('/customer/client/pay/status', (req, res) => {
     return res.status(400).send('Wrong request method');
   }
 
-  const { id, apikey, order_id, project_id, amount, createDateTime } = req.body;
+  const { id, apikey, order_id, project_id, amount, createDateTime, data } = req.body;
 
   const sign = crypto
     .createHash('sha256')
@@ -275,12 +275,13 @@ app.post('/customer/client/pay/status', (req, res) => {
   }
 
   // Платеж прошел успешно, проводите операции по обработке платежа
-  console.log('Оплачено', { id, order_id, amount, createDateTime });
+  console.log('Оплачено', { id, order_id, amount, createDateTime, data });
 
   // Отправляем статус только если все поля определены
   
   res.send('OK');
-  
+  const message = `Платеж успешно проведен! Order ID: ${order_id}\nСумма: ${amount}`;
+  bot.sendMessage(chatId, message);
 });
 
 bot.on('contact', async (msg) => {
