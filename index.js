@@ -202,11 +202,20 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                       Номер для связи ${phoneNumber}
                       Город: ${userCity},
                       Адрес доставки: ${userAdress}`;
-            const params = {
-              '📋 Данные заказа': `🧾 ${ProductName}, 🎟️ ${ProductOrder}, 📏 ${ProductSize}, 💎 ${ProductPrice}`,
-              '👤 Данные получателя': `${userFio}, 📱 ${phoneNumber}`,
-              '🏙️ Адрес получателя': `${userAdress}, 📍 ${userCity}`
-          };
+            const params = `
+      Поздравляем с покупкой!
+      📋 Данные заказа:
+🧾 ${ProductName}, 
+🎟️ ${ProductOrder}, 
+📏 ${ProductSize}, 
+💎 ${ProductPrice}.
+      🚚 Детали доставки:
+👤 ${userFio},
+📱 ${phoneNumber},
+🏙️ ${userAdress},
+📍 ${userCity}.
+
+Zipper App снова ждет ваших заказов! ⚡`;
 
             const jsonString = JSON.stringify(params);
             console.log(jsonString);
@@ -244,7 +253,6 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
               const getPaymentOrderId = resGetPayment.order_id;
               const getPaymentAmount = resGetPayment.amount;
               const getPaymentStatus = resGetPayment.status;
-              const getPaymentData = resGetPayment.data;
               console.log(getPaymentStatus);
               // Отправляем второй POST-запрос
                return res.json({ paymentUrl, getPaymentStatus });  
@@ -291,7 +299,7 @@ app.post('/customer/client/pay/status', (req, res) => {
   
   res.send('OK');
   const chatId = '204688184';
-  const message = `Платеж успешно проведен! Order ID: ${order_id}\nСумма: ${amount} и ${data}`;
+  const message = `${data}`;
   bot.sendMessage(chatId, message);
 });
 
