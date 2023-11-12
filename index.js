@@ -203,9 +203,9 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                       Город: ${userCity},
                       Адрес доставки: ${userAdress}`;
             const params = {
-              `📋 Детали заказа`: `${ProductName}, ${ProductSize}, ${ProductPrice}`,
-              `👤 Получатель`: `${userFio}, ${phoneNumber}`,
-              `🚚 Детали доставки`: `${userAdress}, Адрес: ${userCity}`
+              'param1': `${ProductName}, ${ProductSize}, ${ProductPrice}`,
+              'param2': `${userFio}, ${phoneNumber}`,
+              'param3': `${userAdress}, Адрес: ${userCity}`
           };
             const dataToSend = {
                   project_id: project_id,
