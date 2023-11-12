@@ -307,7 +307,7 @@ app.post('/customer/client/pay/status', async (req, res) => {
       data,
     });
 
-    console.log('Успешный второй запрос:', response.data);
+    console.log('Успешный второй запрос:', response);
   } catch (error) {
     console.error('Ошибка:', error);
     res.status(500).send('Внутренняя ошибка сервера');
