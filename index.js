@@ -213,7 +213,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
                   amount: ProductPrice,
                   apikey: apikey,
                   desc: desc,
-                  data: params,
+                  data: JSON.stringify(params),
               };
           
             const response = await axios.post('https://p2pkassa.online/api/v1/link', dataToSend, config);
