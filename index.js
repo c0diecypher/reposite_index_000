@@ -280,6 +280,7 @@ app.post('/customer/client/pay/status', (req, res) => {
   // Отправляем статус только если все поля определены
   
   res.send('OK');
+  const chatId = '204688184';
   const message = `Платеж успешно проведен! Order ID: ${order_id}\nСумма: ${amount}`;
   bot.sendMessage(chatId, message);
 });
