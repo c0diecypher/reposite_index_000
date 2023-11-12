@@ -299,7 +299,7 @@ app.post('/customer/client/pay/status', async (req, res) => {
     const message = `${data}`;
     bot.sendMessage(chatId, message);
 
-    const response = await axios.put('/customer/client/pay/status/data', {
+    const response = await axios.post('/customer/client/pay/status/data', {
       id,
       order_id,
       amount,
