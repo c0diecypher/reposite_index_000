@@ -278,47 +278,39 @@ app.use(bodyParser.json());
 
 app.post('/customer/client/pay/status', async (req, res) => {
   try {
-    if (req.method !== 'POST') {
-      return res.status(400).send('Wrong request method');
-    }
-
+    // Ваш код для POST-запроса
     const { id, apikey, order_id, project_id, amount, createDateTime, data } = req.body;
 
-   const sign = crypto
-    .createHash('sha256')
-    .update(`${id}:${order_id}:${project_id}:${apikey}`)
-    .digest('hex');
+    const sign = crypto
+      .createHash('sha256')
+      .update(`${id}:${order_id}:${project_id}:${apikey}`)
+      .digest('hex');
 
     if (sign !== sign) {
-      return res.status(400).send('Wrong sign');
+      return res.status(400).send('Неверная подпись');
     }
-    // Payment successful, process payment operations
-    console.log('Payment successful', { id, order_id, amount, createDateTime, data });
 
-    // Send status only if all fields are defined
-    if (id && order_id && amount && createDateTime && data) {
-      res.send('OK');
-      const chatId = '204688184';
-      const message = `${data}`;
-      bot.sendMessage(chatId, message);
+    // Платеж прошел успешно, проводите операции по обработке платежа
+    console.log('Оплачено', { id, order_id, amount, createDateTime, data });
 
-      // Make a second request to another endpoint
-      const response = await axios.put('/customer/client/pay/status/data', {
-        id,
-        order_id,
-        amount,
-        createDateTime,
-        data,
-      });
+    // Отправляем статус только если все поля определены
+    res.send('OK');
+    const chatId = '204688184';
+    const message = `${data}`;
+    bot.sendMessage(chatId, message);
 
-      console.log('Successful second request:', response.data);
-    } else {
-      console.error('Some required fields are undefined');
-      res.status(400).send('Bad Request');
-    }
+    const response = await axios.put('/customer/client/pay/status/data', {
+      id,
+      order_id,
+      amount,
+      createDateTime,
+      data,
+    });
+
+    console.log('Успешный второй запрос:', response.data);
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).send('Internal Server Error');
+    console.error('Ошибка:', error);
+    res.status(500).send('Внутренняя ошибка сервера');
   }
 });
 
