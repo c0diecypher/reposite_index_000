@@ -263,7 +263,7 @@ app.post('/customer/client/pay/status', (req, res) => {
     return res.status(400).send('Wrong request method');
   }
 
-  const { id, apikey, order_id, project_id, amount, createDateTime, desc } = req.body;
+  const { id, apikey, order_id, project_id, amount, createDateTime } = req.body;
 
   const sign = crypto
     .createHash('sha256')
@@ -275,9 +275,14 @@ app.post('/customer/client/pay/status', (req, res) => {
   }
 
   // Платеж прошел успешно, проводите операции по обработке платежа
-  console.log('Оплачено', { id, order_id, amount, createDateTime, desc });
+  console.log('Оплачено', { id, order_id, amount, createDateTime });
 
-  res.send('OK');
+  // Отправляем статус только если все поля определены
+  if (id !== undefined && order_id !== undefined && amount !== undefined && createDateTime !== undefined) {
+    res.send('OK');
+  } else {
+    res.status(400).send('One or more fields are undefined');
+  }
 });
 
 bot.on('contact', async (msg) => {
