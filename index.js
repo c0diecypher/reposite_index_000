@@ -5,6 +5,7 @@ const cors = require('cors');
 const https = require('https');
 const crypto = require('crypto');
 const WebSocket = require('ws');
+const wss = new WebSocket.Server({ app });
 const bodyParser = require('body-parser');
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const { validate } = require('@twa.js/init-data-node');
