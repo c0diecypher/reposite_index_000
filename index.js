@@ -176,7 +176,6 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
         const ProductSize = size;
         const ProductOrder = order_id;
         const ProductPrice = price.replace(/\s/g, '').replace(/\u00a0/g, '');
-        const QueryId = queryId;
         console.log(ProductPrice);
         console.log(ProductOrder);
         console.log(ProductSize);
@@ -192,6 +191,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
 
         if (user) {
             // Извлекаем данные пользователя
+            const userId = user.userId;
             const userFio = user.userFio || 'Не указано';
             const userAdress = user.userAdress || 'Не указано';
             const phoneNumber = user.phoneNumber || 'Не указано';
@@ -214,7 +214,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
 📱 ${phoneNumber},
 🏙️ ${userAdress},
 📍 ${userCity}
-ID: ${QueryId}.
+ID: ${userId}.
 
 Zipper App снова ждет ваших заказов! ⚡`;
 
@@ -297,26 +297,6 @@ app.post('/customer/client/pay/status', async (req, res) => {
     const chatId = '204688184';
     const message = `${data}`;
     bot.sendMessage(chatId, message);
-    try {
-            const response = await axios.post('https://p2pkassa.online/api/v1/getPayment', {
-                id,
-                project_id,
-                apikey,
-            });
-
-            // Handle the response from the external API
-            console.log('External API Response:', response.data);
-
-            // Send only the 'status' field back to the client
-            res.json({ axiosResponse: { status: response.data.status } });
-        } catch (error) {
-            console.error('Error making Axios request:', error.message);
-            res.status(500).json({ error: 'Internal Server Error' });
-        }
-    } else {
-        // Если поле данных undefined, возвращаем ошибку
-        res.status(400).send('Поле данных не определено');
-    }
 });
 
 bot.on('contact', async (msg) => {
