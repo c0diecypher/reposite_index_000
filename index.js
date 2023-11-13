@@ -18,7 +18,6 @@ const app = express();
 const emitter = new events.EventEmitter();
 app.use(express.json());
 app.use(cors());
-const wss = new WebSocket.Server({ server });
 const start = `⚡<strong>ZipperApp</strong> - твой надежный гид в мире стильной одежды и оригинальных товаров из-за рубежа!
 \n\
 🔍 <strong>Из каталога или поиска</strong>
