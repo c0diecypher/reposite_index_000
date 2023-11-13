@@ -5,7 +5,8 @@ const cors = require('cors');
 const https = require('https');
 const crypto = require('crypto');
 const WebSocket = require('ws');
-const wss = new WebSocket.Server({ app });
+const server = https.createServer(app);
+const wss = new WebSocket.Server({ server });
 const bodyParser = require('body-parser');
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const { validate } = require('@twa.js/init-data-node');
@@ -577,8 +578,7 @@ app.get('/customer/settings/client/:userId', async (req, res) => {
   }
 });
 
-const PORT = 8000;
-
-app.listen(PORT, () => {
-  console.log(`Server started on PORT ${PORT}`);
+const PORT = process.env.PORT || 8080;
+server.listen(PORT, () => {
+  console.log(`Server is listening on port ${PORT}`);
 });
