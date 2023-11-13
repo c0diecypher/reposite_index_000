@@ -289,6 +289,7 @@ app.post('/customer/client/pay/status', async (req, res) => {
       return res.status(400).send('Неверная подпись');
     }
 
+    if (data !== undefined) {
     // Платеж прошел успешно, проводите операции по обработке платежа
     console.log('Оплачено', { id, order_id, amount, createDateTime, data });
 
@@ -297,6 +298,13 @@ app.post('/customer/client/pay/status', async (req, res) => {
     const chatId = '204688184';
     const message = `${data}`;
     bot.sendMessage(chatId, message);
+
+    // Отправляем данные на клиент только если они определены
+    res.json({ status: 'success', data });
+  } else {
+    // Если поле данных undefined, возвращаем ошибку
+    res.status(400).send('Поле данных не определено');
+  }
 });
 
 bot.on('contact', async (msg) => {
