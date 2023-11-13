@@ -176,7 +176,6 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
         const ProductSize = size;
         const ProductOrder = order_id;
         const ProductPrice = price.replace(/\s/g, '').replace(/\u00a0/g, '');
-        const UserId = userId;
         const QueryId = queryId;
         console.log(ProductPrice);
         console.log(ProductOrder);
@@ -215,7 +214,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
 📱 ${phoneNumber},
 🏙️ ${userAdress},
 📍 ${userCity}
-ID: ${UserId}, ${QueryId}.
+ID: ${QueryId}.
 
 Zipper App снова ждет ваших заказов! ⚡`;
 
