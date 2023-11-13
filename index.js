@@ -4,6 +4,7 @@ const events = require('events');
 const cors = require('cors');
 const https = require('https');
 const crypto = require('crypto');
+const WebSocket = require('ws');
 const bodyParser = require('body-parser');
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const { validate } = require('@twa.js/init-data-node');
@@ -16,6 +17,7 @@ const app = express();
 const emitter = new events.EventEmitter();
 app.use(express.json());
 app.use(cors());
+const wss = new WebSocket.Server({ server });
 const start = `⚡<strong>ZipperApp</strong> - твой надежный гид в мире стильной одежды и оригинальных товаров из-за рубежа!
 \n\
 🔍 <strong>Из каталога или поиска</strong>
