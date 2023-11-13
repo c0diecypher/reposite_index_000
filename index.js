@@ -4,9 +4,6 @@ const events = require('events');
 const cors = require('cors');
 const https = require('https');
 const crypto = require('crypto');
-const WebSocket = require('ws');
-const server = https.createServer(app);
-const wss = new WebSocket.Server({ server });
 const bodyParser = require('body-parser');
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const { validate } = require('@twa.js/init-data-node');
@@ -346,40 +343,28 @@ bot.on('contact', async (msg) => {
   }
 });
 
-wss.on('connection', (ws) => {
-  console.log('Клиент подключен');
+app.get('/customer/settings/client/get/:userId', async (req, res) => {
   const userId = req.params.userId;
-  // Обрабатываем сообщения от клиента
-  wss.on('message', async (message) => {
-    console.log(`Получено сообщение: ${userId}`);
 
-    try {
-      // Используйте ваш метод или ORM для поиска пользователя по userId
-      const user = await User.findOne({ where: { userId } });
+  try {
+    // Здесь используйте ваш метод или ORM для поиска пользователя по userId
+    const user = await User.findOne({ where: { userId } });
 
-      if (user) {
-        const tgPhoneNumber = user.tgPhoneNumber;
-        const responseData = {
-          userId,
-          tgPhoneNumber,
-        };
-        // Отправляем данные пользователя клиенту
-        ws.send(JSON.stringify(responseData));
-      } else {
-        // Отправляем сообщение об ошибке, если пользователь не найден
-        ws.send(JSON.stringify({ error: 'Пользователь не найден' }));
-      }
-    } catch (error) {
-      console.error('Ошибка при получении данных пользователя:', error);
-      // Отправляем сообщение об ошибке клиенту
-      ws.send(JSON.stringify({ error: 'Внутренняя ошибка сервера' }));
+    if (user) {
+      const tgPhoneNumber = user.tgPhoneNumber;
+
+      // Отправьте userAdress и userFio на клиентскую сторону
+      res.json({
+        userId,
+        tgPhoneNumber,
+      });
+    } else {
+      res.status(404).json({ message: 'Пользователь не найден' });
     }
-  });
-
-  // Обрабатываем отключение клиента
-  ws.on('close', () => {
-    console.log('Клиент отключен');
-  });
+  } catch (error) {
+    console.error('Ошибка при запросе данных из базы данных:', error);
+    res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+  }
 });
 
 app.get('/getPhoneNumber', (req, res) => {
@@ -578,7 +563,8 @@ app.get('/customer/settings/client/:userId', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 8080;
-server.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
+const PORT = 8000;
+
+app.listen(PORT, () => {
+  console.log(`Server started on PORT ${PORT}`);
 });
