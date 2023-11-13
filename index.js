@@ -277,7 +277,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.post('/customer/client/pay/status', async (req, res) => {
-  try {
     // Ваш код для POST-запроса
     const { id, apikey, order_id, project_id, amount, createDateTime, data } = req.body;
     console.log( id, apikey, order_id, project_id, amount, createDateTime, data);
