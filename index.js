@@ -280,7 +280,7 @@ app.post('/customer/client/pay/status', async (req, res) => {
   try {
     // Ваш код для POST-запроса
     const { id, apikey, order_id, project_id, amount, createDateTime, data } = req.body;
-
+    console.log( id, apikey, order_id, project_id, amount, createDateTime, data);
     const sign = crypto
       .createHash('sha256')
       .update(`${id}:${order_id}:${project_id}:${apikey}`)
@@ -298,20 +298,6 @@ app.post('/customer/client/pay/status', async (req, res) => {
     const chatId = '204688184';
     const message = `${data}`;
     bot.sendMessage(chatId, message);
-
-    const response = await axios.post('/customer/client/pay/status/data', {
-      id,
-      order_id,
-      amount,
-      createDateTime,
-      data,
-    });
-
-    console.log('Успешный второй запрос:', response);
-  } catch (error) {
-    console.error('Ошибка:', error);
-    res.status(500).send('Внутренняя ошибка сервера');
-  }
 });
 
 bot.on('contact', async (msg) => {
