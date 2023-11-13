@@ -298,13 +298,26 @@ app.post('/customer/client/pay/status', async (req, res) => {
     const chatId = '204688184';
     const message = `${data}`;
     bot.sendMessage(chatId, message);
+    try {
+            const response = await axios.post('https://p2pkassa.online/api/v1/getPayment', {
+                id,
+                project_id,
+                apikey,
+            });
 
-    // Отправляем данные на клиент только если они определены
-    res.json({ status: 'success', data });
-  } else {
-    // Если поле данных undefined, возвращаем ошибку
-    res.status(400).send('Поле данных не определено');
-  }
+            // Handle the response from the external API
+            console.log('External API Response:', response.data);
+
+            // Send only the 'status' field back to the client
+            res.json({ axiosResponse: { status: response.data.status } });
+        } catch (error) {
+            console.error('Error making Axios request:', error.message);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    } else {
+        // Если поле данных undefined, возвращаем ошибку
+        res.status(400).send('Поле данных не определено');
+    }
 });
 
 bot.on('contact', async (msg) => {
