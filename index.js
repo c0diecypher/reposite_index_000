@@ -289,7 +289,7 @@ app.post('/customer/client/pay/status', async (req, res) => {
       return res.status(400).send('Неверная подпись');
     }
 
-    if (data !== undefined) {
+    if (data !== undefined && id !== undefined && order_id !== undefined && createDateTime !== undefined && amount !== undefined) {
     // Платеж прошел успешно, проводите операции по обработке платежа
     console.log('Оплачено', { id, order_id, amount, createDateTime, data });
 
