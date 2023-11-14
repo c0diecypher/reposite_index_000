@@ -290,13 +290,15 @@ app.post('/customer/client/pay/status', async (req, res) => {
 
     if (data !== undefined && id !== undefined && order_id !== undefined && createDateTime !== undefined && amount !== undefined) {
     // Платеж прошел успешно, проводите операции по обработке платежа
-    console.log('Оплачено', { id, order_id, amount, createDateTime, data });
+     console.log('Оплачено', { id, order_id, amount, createDateTime, data });
 
-    // Отправляем статус только если все поля определены
-    res.send('OK');
-    const chatId = '204688184';
-    const message = `${data}`;
-    bot.sendMessage(chatId, message);
+  // Отправляем статус только если все поля определены
+  
+  res.send('OK');
+  const chatId = '204688184';
+  const message = `Платеж успешно проведен! Order ID: ${order_id}\nСумма: ${amount}`;
+  bot.sendMessage(chatId, message);
+    }
 });
 
 bot.on('contact', async (msg) => {
