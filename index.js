@@ -278,6 +278,8 @@ app.post('/get/payment', async (req, res) => {
             await new Promise(resolve => setTimeout(resolve, 100));
         }
         res.json({ paymentStatus: getPaymentStatus });
+      console.log(paymentStatus);
+      console.log(getPaymentStatus);
     } catch (error) {
         console.error('Error getting payment status:', error);
         res.status(500).json({ error: 'Ошибка', message: 'Внутренняя ошибка сервера.' });
