@@ -244,7 +244,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
                 apikey: apikey
               };
               const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
-              const resGetPayment = getPayment.data;
+              resGetPayment = getPayment.data;
               console.log(resGetPayment);
               if (resGetPayment && resGetPayment.status && resGetPayment.id){
                 const status = resGetPayment.status;
@@ -272,7 +272,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
 });
 
 app.get('/get/payment', (req, res) => {
-  res.json(resGetPayment);
+  res.json(resGetPayment.status);
 
 });
 
