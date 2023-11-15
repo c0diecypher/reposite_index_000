@@ -271,7 +271,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
     }
 });
 
-app.get('/get/payment', (req, res) => {
+app.post('/get/payment', (req, res) => {
   res.json({paymentStatus: getPaymentStatus});
 });
 
