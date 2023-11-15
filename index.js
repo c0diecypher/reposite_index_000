@@ -246,7 +246,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
               const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
               resGetPayment = getPayment.data;
               console.log(resGetPayment);
-              
+              console.log(getPayment.data.status);
               // Создаем URL для второго запроса
               const getPaymentId = resGetPayment.id;
               const getPaymentOrderId = resGetPayment.order_id;
@@ -272,16 +272,8 @@ Zipper App снова ждет ваших заказов! ⚡`;
 });
 
 app.post('/get/payment', async (req, res) => {
-    try {
-        // Дождитесь, пока getPaymentStatus не будет определен
-        while (resGetPayment === null) {
-            await new Promise(resolve => setTimeout(resolve, 100));
-        }
-        res.json({ paymentData: resGetPayment });
-    } catch (error) {
-        console.error('Error getting payment status:', error);
-        res.status(500).json({ error: 'Ошибка', message: 'Внутренняя ошибка сервера.' });
-    }
+    
+res.json({ resGetPayment });
 });
 
 app.post("/get/payment", async (req, res) => {
