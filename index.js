@@ -275,7 +275,7 @@ app.get('/get/payment', (req, res) => {
     res.status(404).json({ success: false, message: 'Payment information not available.' });
     return;
   }
-
+try {
   // Преобразование JSON-строки в объект JavaScript
   const resGetPaymentObject = JSON.parse(resGetPayment);
 
@@ -283,6 +283,10 @@ app.get('/get/payment', (req, res) => {
   const status = resGetPaymentObject.status;
 
   res.json({ success: true, status });
+} catch (error) {
+  console.error('Error parsing JSON:', error.message);
+  res.status(500).json({ success: false, message: 'Error parsing JSON.' });
+}
 });
 
 app.post("/get/payment", async (req, res) => {
