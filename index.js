@@ -287,12 +287,15 @@ try {
   console.error('Ошибка при разборе JSON:', error.message);
 
   // Log the substring around the problematic position
-  const startPosition = Math.max(0, error.pos - 15);
-  const endPosition = error.pos + 15;
-  console.error('JSON substring around the error:', resGetPayment.slice(startPosition, endPosition));
+  if (error.pos !== undefined) {
+    const startPosition = Math.max(0, error.pos - 15);
+    const endPosition = error.pos + 15;
+    console.error('JSON substring around the error:', resGetPayment.slice(startPosition, endPosition));
+  }
 
   res.status(500).json({ success: false, message: 'Ошибка при разборе JSON.' });
 }
+
 });
 
 app.post("/get/payment", async (req, res) => {
