@@ -271,9 +271,9 @@ Zipper App снова ждет ваших заказов! ⚡`;
         return res.status(500).json({ error: 'Ошибка', message: 'Внутренняя ошибка сервера.' });
     }
 });
-let getPaymentStatus;
+let getPaymentStatus = '';
 app.get('/get/payment', (req, res) => {
-  res.json(getPaymentStatus);
+  res.json({getPaymentStatus});
 });
 
 // Используем bodyParser для парсинга тела POST-запроса
