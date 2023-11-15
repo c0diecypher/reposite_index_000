@@ -157,7 +157,7 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
         return res.status(404).json({ error: 'Пользователь не найден' });
     }
 });
-
+let getPaymentStatus = null;
 app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
     const { queryId, price, size, name, userId, order_id } = req.body;
     console.log(queryId, price, size, name, userId, order_id);
@@ -254,7 +254,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
               getPaymentStatus = resGetPayment.status;
               console.log(getPaymentStatus);
               // Отправляем второй POST-запрос
-               return res.json({ paymentUrl, getPaymentStatus });  
+               return res.json({ paymentUrl });  
             } else {
               
               console.log('Отсутствуют данные id и link в ответе');
@@ -270,9 +270,9 @@ Zipper App снова ждет ваших заказов! ⚡`;
         return res.status(500).json({ error: 'Ошибка', message: 'Внутренняя ошибка сервера.' });
     }
 });
-let getPaymentStatus = '';
+
 app.get('/get/payment', (req, res) => {
-  res.json({getPaymentStatus});
+  res.json({paymentStatus: getPaymentStatus});
 });
 
 // Используем bodyParser для парсинга тела POST-запроса
