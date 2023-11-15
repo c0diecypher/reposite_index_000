@@ -277,7 +277,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
 });
 
 app.get('/get/payment', async (req, res) => {
-    const status = resGetPayment ? JSON.parse(resGetPayment).status : undefined;
+    const status = JSON.parse(resGetPayment)
  res.json({ status });
 });
 
