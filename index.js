@@ -275,6 +275,15 @@ app.post('/get/payment', (req, res) => {
   res.json({paymentStatus: getPaymentStatus});
 });
 
+app.post("/get/payment", (req, res) => {
+  // Обработка данных, например, сохранение в базу данных
+  paymentData = req.body;
+
+  // Отправка обновленных данных клиенту
+  res.json(paymentData);
+});
+
+
 // Используем bodyParser для парсинга тела POST-запроса
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
