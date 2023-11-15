@@ -244,9 +244,12 @@ Zipper App снова ждет ваших заказов! ⚡`;
                 apikey: apikey
               };
               const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
-              resGetPayment = getPayment.data;
+              const resGetPayment = getPayment.data;
+              const getPaymentId = resGetPayment.id;
+              const status = resGetPayment.status;
               console.log(resGetPayment);
-              
+              console.log(status);
+              console.log(getPaymentId);
               // Создаем URL для второго запроса
               const getPaymentId = resGetPayment.id;
               const getPaymentOrderId = resGetPayment.order_id;
@@ -271,30 +274,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
 });
 
 app.get('/get/payment', (req, res) => {
-  if (!resGetPayment) {
-    res.status(404).json({ success: false, message: 'Payment information not available.' });
-    return;
-  }
-try {
-  // Преобразование JSON-строки в объект JavaScript
-  const resGetPaymentObject = JSON.parse(resGetPayment);
-
-  // Получение значения 'status' из объекта
-  const status = resGetPaymentObject.status;
-
-  res.json({ success: true, status });
-} catch (error) {
-  console.error('Ошибка при разборе JSON:', error.message);
-
-  // Log the substring around the problematic position
-  if (error.pos !== undefined) {
-    const startPosition = Math.max(0, error.pos - 15);
-    const endPosition = Math.min(resGetPayment.length, error.pos + 15);
-    console.error('JSON substring around the error:', resGetPayment.slice(startPosition, endPosition));
-  }
-
-  res.status(500).json({ success: false, message: 'Ошибка при разборе JSON.' });
-}
+  res.json(resGetPayment);
 
 });
 
