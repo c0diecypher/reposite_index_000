@@ -251,10 +251,8 @@ Zipper App снова ждет ваших заказов! ⚡`;
               console.log(status);
               console.log(getPaymentId);
               // Создаем URL для второго запроса
-              const getPaymentId = resGetPayment.id;
               const getPaymentOrderId = resGetPayment.order_id;
               const getPaymentAmount = resGetPayment.amount;
-              const getPaymentStatus = resGetPayment.status;
               // Отправляем второй POST-запрос
                return res.json({ paymentUrl });  
             } else {
