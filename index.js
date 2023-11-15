@@ -157,7 +157,7 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
         return res.status(404).json({ error: 'Пользователь не найден' });
     }
 });
-let resGetPayment = null;
+let status = null;
 app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
     const { queryId, price, size, name, userId, order_id } = req.body;
     console.log(queryId, price, size, name, userId, order_id);
@@ -244,12 +244,12 @@ Zipper App снова ждет ваших заказов! ⚡`;
                 apikey: apikey
               };
               const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
-              resGetPayment = getPayment.data;
+              const resGetPayment = getPayment.data;
               
               console.log(resGetPayment);
 
               const match = resGetPayment.match(/\"status\":\"([^"]+)\"/);
-              const status = match ? match[1] : null;
+              status = match ? match[1] : null;
               
               console.log('Статус оплаты:', status);
               
@@ -273,7 +273,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
 });
 
 app.get('/get/payment', (req, res) => {
-  res.json(resGetPayment);
+  res.json(status);
 
 });
 
