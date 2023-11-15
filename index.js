@@ -245,19 +245,14 @@ Zipper App снова ждет ваших заказов! ⚡`;
               };
               const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
               const resGetPayment = getPayment.data;
-              if (Array.isArray(resGetPayment) && resGetPayment.length > 0) {
-                const firstPayment = resGetPayment[0];
-                const getPaymentId = firstPayment.id;
-                const status = firstPayment.status;
-                console.log(firstPayment);
-                console.log(status);
-                console.log(getPaymentId);
-              } else {
-                console.error('Invalid response format or empty array');
+              console.log(resGetPayment);
+              if (resGetPayment && resGetPayment.status && resGetPayment.id){
+                const status = resGetPayment.status;
+                const id = resGetPayment.id;
+                console.log(id);
+                 console.log(status);
               }
               // Создаем URL для второго запроса
-              const getPaymentOrderId = resGetPayment.order_id;
-              const getPaymentAmount = resGetPayment.amount;
               // Отправляем второй POST-запрос
                return res.json({ paymentUrl });  
             } else {
