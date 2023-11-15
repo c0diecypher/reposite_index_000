@@ -157,7 +157,7 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
         return res.status(404).json({ error: 'Пользователь не найден' });
     }
 });
-let getPaymentStatus = null;
+let resGetPayment = null;
 app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
     const { queryId, price, size, name, userId, order_id } = req.body;
     console.log(queryId, price, size, name, userId, order_id);
@@ -244,14 +244,14 @@ Zipper App снова ждет ваших заказов! ⚡`;
                 apikey: apikey
               };
               const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
-              const resGetPayment = getPayment.data;
+              resGetPayment = getPayment.data;
               console.log(resGetPayment);
               
               // Создаем URL для второго запроса
               const getPaymentId = resGetPayment.id;
               const getPaymentOrderId = resGetPayment.order_id;
               const getPaymentAmount = resGetPayment.amount;
-              getPaymentStatus = resGetPayment.status;
+              const getPaymentStatus = resGetPayment.status;
               console.log(getPaymentStatus);
               // Отправляем второй POST-запрос
                return res.json({ paymentUrl });  
@@ -274,12 +274,10 @@ Zipper App снова ждет ваших заказов! ⚡`;
 app.post('/get/payment', async (req, res) => {
     try {
         // Дождитесь, пока getPaymentStatus не будет определен
-        while (getPaymentStatus === null) {
+        while (resGetPayment === null) {
             await new Promise(resolve => setTimeout(resolve, 100));
         }
-        res.json({ paymentStatus: getPaymentStatus });
-      console.log(paymentStatus);
-      console.log(getPaymentStatus);
+        res.json({ paymentData: resGetPayment });
     } catch (error) {
         console.error('Error getting payment status:', error);
         res.status(500).json({ error: 'Ошибка', message: 'Внутренняя ошибка сервера.' });
