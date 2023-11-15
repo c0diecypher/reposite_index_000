@@ -252,7 +252,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
               const getPaymentId = resGetPayment.id;
               const getPaymentOrderId = resGetPayment.order_id;
               const getPaymentAmount = resGetPayment.amount;
-              const getPaymentStatus = resGetPayment.status;
+              getPaymentStatus = resGetPayment.status;
               console.log(getPaymentStatus);
               // Отправляем второй POST-запрос
                return res.json({ paymentUrl, getPaymentStatus });  
@@ -270,6 +270,10 @@ Zipper App снова ждет ваших заказов! ⚡`;
         console.error(error);
         return res.status(500).json({ error: 'Ошибка', message: 'Внутренняя ошибка сервера.' });
     }
+});
+let getPaymentStatus;
+app.get('/get/payment', (req, res) => {
+  res.json(getPaymentStatus);
 });
 
 // Используем bodyParser для парсинга тела POST-запроса
