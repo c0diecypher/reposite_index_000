@@ -248,7 +248,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
               
               console.log(resGetPayment);
 
-              const match = jsonString.match(/\"status\":\"([^"]+)\"/);
+              const match = resGetPayment.match(/\"status\":\"([^"]+)\"/);
               const status = match ? match[1] : null;
               
               console.log('Статус оплаты:', status);
