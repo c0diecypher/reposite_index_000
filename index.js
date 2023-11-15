@@ -246,6 +246,8 @@ Zipper App снова ждет ваших заказов! ⚡`;
               const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
               resGetPayment = getPayment.data;
               console.log(resGetPayment);
+              const status = resGetPayment.status;
+              console.log('Статус оплаты:', status);
               // Создаем URL для второго запроса
               const getPaymentId = resGetPayment.id;
               const getPaymentOrderId = resGetPayment.order_id;
