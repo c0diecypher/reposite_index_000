@@ -270,8 +270,19 @@ Zipper App снова ждет ваших заказов! ⚡`;
     }
 });
 
-app.get('/get/payment', async (req, res) => {
- res.json(resGetPayment);
+app.get('/get/payment', (req, res) => {
+  if (!resGetPayment) {
+    res.status(404).json({ success: false, message: 'Payment information not available.' });
+    return;
+  }
+
+  // Преобразование JSON-строки в объект JavaScript
+  const resGetPaymentObject = JSON.parse(resGetPayment);
+
+  // Получение значения 'status' из объекта
+  const status = resGetPaymentObject.status;
+
+  res.json({ success: true, status });
 });
 
 app.post("/get/payment", async (req, res) => {
