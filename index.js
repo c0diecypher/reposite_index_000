@@ -289,7 +289,7 @@ try {
   // Log the substring around the problematic position
   if (error.pos !== undefined) {
     const startPosition = Math.max(0, error.pos - 15);
-    const endPosition = error.pos + 15;
+    const endPosition = Math.min(resGetPayment.length, error.pos + 15);
     console.error('JSON substring around the error:', resGetPayment.slice(startPosition, endPosition));
   }
 
