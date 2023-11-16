@@ -372,7 +372,7 @@ app.post('/customer/client/pay/status', async (req, res) => {
       await User.update(
         {
           // Устанавливаем новый статус
-          userOrder: Sequelize.literal(`json_set(userOrder, '{status}', '"PAID"')`),
+          userOrder: Sequelize.literal(`json_set(userOrder, '"WAIT"', '"PAID"')`),
         },
         {
           where: {
