@@ -52,6 +52,11 @@ const User = sequelize.define('User', {
     allowNull: true,
     unique: true,
   },
+  userOrderStatus: {
+    type: DataTypes.STRING, 
+    allowNull: true,
+    unique: true,
+  },
   latestOrders: {
     type: DataTypes.STRING, 
     allowNull: true,
