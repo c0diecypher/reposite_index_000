@@ -161,8 +161,8 @@ let status = null;
 let paymentId = null;
 let ProductOrder = null;
 app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
-    const { queryId, price, size, name, userId, order_id } = req.body;
-    console.log(queryId, price, size, name, userId, order_id);
+    const { productId,queryId, price, size, name, userId, order_id } = req.body;
+    console.log(productId,queryId, price, size, name, userId, order_id);
   
     // Проверьте, что userId совпадает с ожидаемым
     const allowedUserId = userId;
