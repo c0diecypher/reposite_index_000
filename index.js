@@ -273,6 +273,30 @@ Zipper App снова ждет ваших заказов! ⚡`;
         return res.status(500).json({ error: 'Ошибка', message: 'Внутренняя ошибка сервера.' });
     }
 });
+app.post('/get/pay', (req, res) => {
+    const apikey = 'cpfmxaq0su2dy63v4g9zowjh';
+    const project_id = '225';
+    const config = {
+                  headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                  }
+                };
+   const dataToPayment = {
+                id: paymentId,
+                project_id: project_id,
+                apikey: apikey
+              };
+  const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
+              const resGetPayment = getPayment.data;
+              
+              console.log(resGetPayment);
+
+              const match = resGetPayment.match(/\"status\":\"([^"]+)\"/);
+              status = match ? match[1] : null;
+              
+              console.log('Статус оплаты:', status);
+
+});
 
 app.get('/get/payment', (req, res) => {
   res.json({id: paymentId, order_id: ProductOrder, status: status});
