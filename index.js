@@ -350,17 +350,28 @@ app.post('/customer/client/pay/status', async (req, res) => {
       return res.status(400).send('Неверная подпись');
     }
 
-    if (data !== undefined && id !== undefined && order_id !== undefined && createDateTime !== undefined && amount !== undefined) {
+   if (data !== undefined && id !== undefined && order_id !== undefined && createDateTime !== undefined && amount !== undefined) {
     // Платеж прошел успешно, проводите операции по обработке платежа
-     console.log('Оплачено', { id, order_id, amount, createDateTime, data });
+    console.log('Оплачено', { id, order_id, amount, createDateTime, data });
 
-  // Отправляем статус только если все поля определены
-  
-  res.send('OK');
-  const chatId = '204688184';
-  const message = `${data}`;
-  bot.sendMessage(chatId, message);
+    // Отправляем статус только если все поля определены
+    res.send('OK');
+
+    // Находим пользователя с совпадающими данными в userOrder
+    const user = await User.findOne({
+      where: {
+        userOrder: {
+          [Sequelize.Op.like]: `%${data}%`,
+        },
+      },
+    });
+
+    if (user) {
+      const chatId = user.userId;
+      const message = `${data}`;
+      bot.sendMessage(chatId, message);
     }
+  }
 });
 
 bot.on('contact', async (msg) => {
