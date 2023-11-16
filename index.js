@@ -359,19 +359,19 @@ app.post('/customer/client/pay/status', async (req, res) => {
 
     // Находим пользователя с совпадающими данными в userOrder
     const user = await User.findOne({
-      where: {
-        userOrder: {
-          [Sequelize.Op.like]: `%${data}%`,
+        where: {
+          userOrder: {
+            [Sequelize.Op.like]: `%${order_id}%`, // Используем order_id вместо data
+          },
         },
-      },
-    });
+      });
 
-    if (user) {
-      const chatId = user.userId;
-      const message = `${data}`;
-      bot.sendMessage(chatId, message);
-    }
-  }
+      if (user) {
+        const chatId = user.userId;
+        const message = `${data}`;
+        bot.sendMessage(chatId, message);
+      }
+   }
 });
 
 bot.on('contact', async (msg) => {
