@@ -273,7 +273,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
         return res.status(500).json({ error: 'Ошибка', message: 'Внутренняя ошибка сервера.' });
     }
 });
-app.post('/get/pay', (req, res) => {
+app.post('/get/pay', async (req, res) => {
     const apikey = 'cpfmxaq0su2dy63v4g9zowjh';
     const project_id = '225';
     const config = {
