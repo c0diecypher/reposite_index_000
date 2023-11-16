@@ -160,6 +160,13 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
 let status = null;
 let paymentId = null;
 let ProductOrder = null;
+const clients = new Set();
+function sendUpdateToClients(status) {
+    for (const client of clients) {
+        client.res.json({ paymentUrl});
+        clients.delete(client);
+    }
+}
 app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
     const { queryId, price, size, name, userId, order_id } = req.body;
     console.log(queryId, price, size, name, userId, order_id);
@@ -245,19 +252,27 @@ Zipper App снова ждет ваших заказов! ⚡`;
                 project_id: project_id,
                 apikey: apikey
               };
-              const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
-              const resGetPayment = getPayment.data;
-              
-              console.log(resGetPayment);
+             clients.add({ res, userId });
 
-              const match = resGetPayment.match(/\"status\":\"([^"]+)\"/);
-              status = match ? match[1] : null;
-              
-              console.log('Статус оплаты:', status);
-              
+            // Функция для обновления статуса и отправки клиентам
+            const updateStatusAndSend = async () => {
+                const getPayment = await axios.post('https://p2pkassa.online/api/v1/getPayment', dataToPayment, config);
+                const resGetPayment = getPayment.data;
+
+                const match = resGetPayment.match(/\"status\":\"([^"]+)\"/);
+                status = match ? match[1] : null;
+
+                console.log('Статус оплаты:', status);
+              if (status === 'PAID' || status === 'CANCEL') {
+                    sendUpdateToClients(status);
+                } else {
+                    // Повторяем обновление через 1 секунду
+                    setTimeout(updateStatusAndSend, 1000);
+                }
+            };
+              updateStatusAndSend();
               // Создаем URL для второго запроса
-              // Отправляем второй POST-запрос
-               return res.json({ paymentUrl });  
+              // Отправляем второй POST-запрос 
             } else {
               
               console.log('Отсутствуют данные id и link в ответе');
