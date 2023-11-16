@@ -158,6 +158,7 @@ app.post('/customer/settings/client/buy/offer', async (req, res) => {
     }
 });
 let status = null;
+let paymentId = null;
 app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
     const { queryId, price, size, name, userId, order_id } = req.body;
     console.log(queryId, price, size, name, userId, order_id);
@@ -233,7 +234,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
             if (result && result.link && result.id) {
               // Создаем URL для второго запроса
               const paymentUrl = result.link;
-              const paymentId = result.id;
+              paymentId = result.id;
               console.log(paymentUrl);
               console.log(paymentId);
               // Отправляем второй POST-запрос
@@ -273,7 +274,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
 });
 
 app.get('/get/payment', (req, res) => {
-  res.json(status);
+  res.json({id: paymentId, status: status});
 
 });
 
