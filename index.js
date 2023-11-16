@@ -260,12 +260,12 @@ Zipper App снова ждет ваших заказов! ⚡`;
                 order_id: order_id,
                 price: price,
                 size: size,
+                status: status
               });
               // Обновляем запись в таблице Users
               await User.update(
                 {
-                  userOrder: userOrderSave,
-                  userOrderStatus: status, // Предполагается, что status у вас уже объявлен где-то в коде
+                  userOrder: userOrderSave
                 },
                 {
                   where: { userId: userId },
