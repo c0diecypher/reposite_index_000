@@ -257,7 +257,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
               // Обновляем запись в таблице Users
               await User.update(
                 {
-                  userOrder: data,
+                  userOrder: params,
                   userOrderStatus: status, // Предполагается, что status у вас уже объявлен где-то в коде
                 },
                 {
