@@ -254,13 +254,13 @@ Zipper App снова ждет ваших заказов! ⚡`;
               status = match ? match[1] : null;
               
               console.log('Статус оплаты:', status);
-              const userOrderSave = {
+              const userOrderSave = JSON.stringify({
                 id: productId,
                 name: name,
                 order_id: order_id,
                 price: price,
                 size: size,
-              };
+              });
               // Обновляем запись в таблице Users
               await User.update(
                 {
