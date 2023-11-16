@@ -256,10 +256,10 @@ Zipper App снова ждет ваших заказов! ⚡`;
               console.log('Статус оплаты:', status);
               const userOrderSave = {
                 id: productId,
-                name: productName,
-                order_id: ProductOrder,
-                price: ProductPrice,
-                size: ProductSize,
+                name: name,
+                order_id: order_id,
+                price: price,
+                size: size,
               };
               // Обновляем запись в таблице Users
               await User.update(
