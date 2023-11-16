@@ -48,7 +48,7 @@ const User = sequelize.define('User', {
     unique: true,
   },
   userOrder: {
-    type: DataTypes.JSONB, 
+    type: DataTypes.STRING,
     allowNull: true,
     unique: true,
   },
