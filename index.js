@@ -362,12 +362,30 @@ app.post('/customer/client/pay/status', async (req, res) => {
     const user = await User.findOne({
         where: {
           userOrder: {
-            [Sequelize.Op.like]: `%${order_id}%`, // Используем order_id вместо data
+            [Sequelize.Op.like]: `%${order_id}%`, // Используем order_id для поиска похожего
           },
         },
       });
 
       if (user) {
+      // Обновляем запись в таблице Users
+      await User.update(
+        {
+          // Устанавливаем новый статус
+          userOrder: Sequelize.literal(`replace(userOrder, 'status: WAIT', 'status: PAID')`),
+        },
+        {
+          where: {
+            userId: user.userId,
+            userOrder: {
+              [Sequelize.Op.and]: [
+                Sequelize.literal(`userOrder LIKE '%order_id: ${order_id}%'`), // Точное соответствие order_id
+                Sequelize.literal(`userOrder LIKE '%status: WAIT%'`), // Находим только те, где есть 'status: WAIT'
+              ],
+            },
+          },
+        }
+      );
         const chatId = user.userId;
         const message = `${data}`;
         bot.sendMessage(chatId, message);
