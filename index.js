@@ -268,7 +268,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
                   };
                 
                   // Обновление массива заказов
-                  const updatedOrders = [...currentOrders, newOrder];
+                  const updatedOrders = Array.isArray(currentOrders) ? [...currentOrders, newOrder] : [newOrder];
                 
                   // Преобразование обновленных заказов обратно в формат JSON
                   const updatedOrdersJSON = JSON.stringify(updatedOrders);
