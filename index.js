@@ -255,7 +255,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
               status = match ? match[1] : null;
               
               console.log('Статус оплаты:', status);
-              let currentOrders = user.userOrder || [];
+              let currentOrders = user.userOrder ? JSON.parse(user.userOrder) : [];
 
               // Добавьте новый заказ к существующему значению
               const newOrder = {
