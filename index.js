@@ -377,12 +377,12 @@ app.post('/customer/client/pay/status', async (req, res) => {
     
     // Изменение статуса в базе данных
     await User.update(
-        { status: 'PAID' }, // Замените 'новый статус' на актуальное значение
+        {
+            'userOrder.status': 'PAID',
+        },
         {
             where: {
-                userOrder: {
-                    [Sequelize.Op.like]: `%${order_id}%`,
-                },
+                'userOrder.order_id': order_id,
             },
         }
     );
