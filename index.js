@@ -258,14 +258,14 @@ Zipper App снова ждет ваших заказов! ⚡`;
               let currentOrders = user.userOrder ? JSON.parse(user.userOrder) : [];
 
               // Добавьте новый заказ к существующему значению
-              const newOrder = {
-                id: productId,
-                name: name,
-                order_id: order_id,
-                price: price,
-                size: size,
-                status: status
-              };
+              const newOrder = `{
+               ${productId},
+                ${name},
+                ${order_id},
+                ${price},
+                ${size},
+                ${status}
+              }`;
               
               const updatedOrders = currentOrders.concat(newOrder);
               console.log("currentOrders before update:", currentOrders);
