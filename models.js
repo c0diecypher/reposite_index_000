@@ -48,7 +48,7 @@ const User = sequelize.define('User', {
     unique: true,
   },
   userOrder: {
-    type: DataTypes.STRING(1000),
+    type: DataTypes.STRING(1234),
     allowNull: true,
     unique: true,
   },
