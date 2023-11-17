@@ -364,42 +364,19 @@ app.post('/customer/client/pay/status', async (req, res) => {
     
     // Находим пользователя с совпадающими данными в userOrder
     const user = await User.findOne({
-  where: {
-    userOrder: {
-      [Sequelize.Op.like]: `%${order_id}%`, // Используем order_id для поиска похожего
-    },
-  },
-});
-
-if (user) {
-  // Обновляем запись в таблице Users
-  await User.update(
-    {
-      userOrder: Sequelize.literal(`
-        jsonb_set(
-          userOrder::jsonb,
-          '{${order_id},status}',
-          '"PAID"'
-        )
-      `),
-    },
-    {
-      where: {
-        userId: user.userId,
-        userOrder: {
-          [Sequelize.Op.like]: `%${order_id}%`,
-          [Sequelize.Op.like]: '%"status":%',
+        where: {
+          userOrder: {
+            [Sequelize.Op.like]: `%${order_id}%`, // Используем order_id вместо data
+          },
         },
-      },
-    }
-  );
-}
-      // Отправляем сообщение в чат
-      const chatId = user.userId;
-      const message = `${data}`;
-      bot.sendMessage(chatId, message);
-    
-  }
+      });
+
+      if (user) {
+        const chatId = user.userId;
+        const message = `${data}`;
+        bot.sendMessage(chatId, message);
+      }
+   }
 });
 
 bot.on('contact', async (msg) => {
