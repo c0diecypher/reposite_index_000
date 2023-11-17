@@ -361,7 +361,7 @@ app.post('/customer/client/pay/status', async (req, res) => {
 
     // Отправляем статус только если все поля определены
     res.send('OK');
-
+    
     // Находим пользователя с совпадающими данными в userOrder
     const user = await User.findOne({
       where: {
@@ -378,8 +378,8 @@ app.post('/customer/client/pay/status', async (req, res) => {
     userOrder: Sequelize.literal(`
       REPLACE(
         userOrder,
-        '"order_id": "${order_id}"',
-        '"order_id": "${order_id}", "status": "PAID"'
+        '{"order_id": "${order_id}"}',
+        '{"order_id": "${order_id}", "status": "PAID"}'
       )
     `),
   },
@@ -388,6 +388,7 @@ app.post('/customer/client/pay/status', async (req, res) => {
       userId: user.userId,
       userOrder: {
         [Sequelize.Op.like]: `%${order_id}%`,
+        [Sequelize.Op.like]: '%"status":%',
             },
           },
         }
