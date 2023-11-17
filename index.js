@@ -255,19 +255,30 @@ Zipper App снова ждет ваших заказов! ⚡`;
               status = match ? match[1] : null;
               
               console.log('Статус оплаты:', status);
-              let currentOrders = user.userOrder || '';
+              const currentOrders = user.userOrder || '[]';
 
-              // Добавьте новый заказ к существующему значению
+              // Преобразуем текущие заказы в массив
+              const ordersArray = JSON.parse(currentOrders);
+              
+              // Создаем новый заказ
               const newOrder = {
-                                id: productId,
-                                name: name,
-                                order_id: order_id,
-                                price: price,
-                                size: size,
-                                status: status
-                              };
-              const newOrderString = JSON.stringify(newOrder);
-              const updatedOrders = currentOrders ? `${currentOrders}, ${newOrderString}` : newOrderString;
+                id: productId,
+                name: name,
+                order_id: order_id,
+                price: price,
+                size: size,
+                status: status
+              };
+              
+              // Создаем новый массив, включая все существующие заказы и новый заказ
+              const updatedOrdersArray = [...ordersArray, newOrder];
+              
+              // Ограничиваем количество сохраняемых заказов, если это необходимо
+              const maxOrders = 10; // Задайте желаемое максимальное количество заказов
+              
+              // Сохраняем только последние maxOrders заказов
+              const updatedOrders = JSON.stringify(updatedOrdersArray.slice(-maxOrders));
+              
               // Обновляем запись в таблице Users
               await User.update(
                 {
