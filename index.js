@@ -324,34 +324,9 @@ app.post('/get/pay', async (req, res) => {
 
 });
 
-app.get('/get/payment', async (req, res) => {
-  const { userId, order_id } = req.body;
-  try {
-    console.log(userId, order_id);
-    // Находим пользователя
-    const user = await User.findOne({ where: { userId: userId.toString() } });
+app.get('/get/payment', (req, res) => {
+  res.json({id: paymentId, order_id: ProductOrder, status: status});
 
-    if (!user) {
-      return res.status(404).json({ error: 'Пользователь не найден' });
-    }
-
-    // Находим заказ пользователя по order_id
-    const userOrder = await UserOrder.findOne({
-      where: {
-        order_id,
-        userId: user.userId,
-      },
-    });
-    console.log(userOrder);
-    if (!userOrder) {
-      return res.status(404).json({ error: 'Заказ не найден' });
-    }
-
-    res.json({ userId, order_id, status: userOrder.status });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Внутренняя ошибка сервера' });
-  }
 });
 
 app.post("/get/payment", async (req, res) => {
