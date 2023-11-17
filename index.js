@@ -255,32 +255,30 @@ Zipper App снова ждет ваших заказов! ⚡`;
               status = match ? match[1] : null;
               
               console.log('Статус оплаты:', status);
-                const currentOrders = user.userOrder ? JSON.parse(user.userOrder) : [];
-                  // Создание нового заказа
-                  const newOrder = {
-                    id: productId,
-                    name: name,
-                    order_id: order_id,
-                    price: price,
-                    size: size,
-                    status: status
-                  };
-                
-                  // Обновление массива заказов
-                  currentOrders.push(newOrder); // Добавляем новый заказ в массив существующих заказов
+              const currentOrders = user.userOrder || [];
 
-                  const updatedOrdersJSON = JSON.stringify(currentOrders);
-                
-                  // Обновление записи о пользователе новыми заказами
-                  await User.update(
-                    {
-                     userOrder: Sequelize.literal(`'${updatedOrdersJSON}'`),
-                    },
-                    {
-                      where: { userId: userId },
-                    }
-                  );
-                
+              // Добавляем новый заказ к текущим заказам
+              const newOrder = {
+                id: productId,
+                name: name,
+                order_id: order_id,
+                price: price,
+                size: size,
+                status: status
+              };
+              
+              const updatedOrders = [...currentOrders, newOrder];
+              
+              // Обновляем запись в таблице Users
+              await User.update(
+                {
+                  userOrder: updatedOrders,
+                },
+                {
+                  where: { userId: userId },
+                }
+              );
+                              
                   console.log("Заказ успешно добавлен.");
         
               // Создаем URL для второго запроса
