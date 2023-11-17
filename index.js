@@ -324,7 +324,7 @@ app.post('/get/pay', async (req, res) => {
 
 });
 
-app.get('/get/payment', (req, res) => {
+app.get('/get/payment', async (req, res) => {
   try {
     const { userId, order_id } = req.body;
     console.log(userId, order_id);
