@@ -267,8 +267,8 @@ Zipper App снова ждет ваших заказов! ⚡`;
                 status: status
               };
               
-              const updatedOrders = [...currentOrders, newOrder];
-              
+              const updatedOrders = currentOrders.concat(newOrder);
+              console.log("currentOrders before update:", currentOrders);
               // Обновляем запись в таблице Users
               await User.update(
                 {
