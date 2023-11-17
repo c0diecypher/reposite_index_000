@@ -272,7 +272,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
                   // Обновление записи о пользователе новыми заказами
                   await User.update(
                     {
-                      userOrder: Sequelize.literal(`COALESCE(userOrder, '[]'::JSONB) || '${newOrderJSON}'::JSONB`),
+                     userOrder: Sequelize.literal(`COALESCE("userOrder", '') || '${newOrderJSON}'`),
                     },
                     {
                       where: { userId: userId },
