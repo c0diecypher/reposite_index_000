@@ -48,7 +48,7 @@ const User = sequelize.define('User', {
     unique: true,
   },
   userOrder: {
-    type: DataTypes.TEXT,
+    type: DataTypes.JSON,
     allowNull: true,
   },
   userOrderStatus: {
