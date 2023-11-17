@@ -255,7 +255,6 @@ Zipper App снова ждет ваших заказов! ⚡`;
               status = match ? match[1] : null;
               
               console.log('Статус оплаты:', status);
-              const currentOrders = user.userOrder ? JSON.parse(user.userOrder) : [];
 
                   // Создание нового заказа
                   const newOrder = {
@@ -268,7 +267,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
                   };
                 
                   // Обновление массива заказов
-                  const updatedOrders = Array.isArray(currentOrders) ? [...currentOrders, newOrder] : [newOrder];
+                  const newOrderJSON = JSON.stringify(newOrder);
                 
                   // Преобразование обновленных заказов обратно в формат JSON
                   const updatedOrdersJSON = JSON.stringify(updatedOrders).substring(0, 254);
@@ -276,7 +275,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
                   // Обновление записи о пользователе новыми заказами
                   await User.update(
                     {
-                      userOrder: updatedOrdersJSON
+                      userOrder: Sequelize.literal(`COALESCE(userOrder, '[]'::JSONB) || '${newOrderJSON}'::JSONB`),
                     },
                     {
                       where: { userId: userId },
