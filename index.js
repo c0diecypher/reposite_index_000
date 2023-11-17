@@ -325,8 +325,8 @@ app.post('/get/pay', async (req, res) => {
 });
 
 app.get('/get/payment', async (req, res) => {
+  const { userId, order_id } = req.body;
   try {
-    const { userId, order_id } = req.body;
     console.log(userId, order_id);
     // Находим пользователя
     const user = await User.findOne({ where: { userId: userId.toString() } });
