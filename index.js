@@ -255,28 +255,36 @@ Zipper App снова ждет ваших заказов! ⚡`;
               status = match ? match[1] : null;
               
               console.log('Статус оплаты:', status);
-              let currentOrders = user.userOrder || '';
+              const currentOrders = user.userOrder ? JSON.parse(user.userOrder) : [];
 
-              // Добавьте новый заказ к существующему значению
-              const newOrder = JSON.stringify({
-                                id: productId,
-                                name: name,
-                                order_id: order_id,
-                                price: price,
-                                size: size,
-                                status: status
-                              });
-              const updatedOrders = currentOrders ? `${currentOrders}\n${newOrder}` : newOrder;
-              // Обновляем запись в таблице Users
-              await User.update(
-                {
-                  userOrder: updatedOrders
-                },
-                {
-                  where: { userId: userId },
-                }
-              );
-              
+                  // Создание нового заказа
+                  const newOrder = {
+                    id: productId,
+                    name: name,
+                    order_id: order_id,
+                    price: price,
+                    size: size,
+                    status: status
+                  };
+                
+                  // Обновление массива заказов
+                  const updatedOrders = [...currentOrders, newOrder];
+                
+                  // Преобразование обновленных заказов обратно в формат JSON
+                  const updatedOrdersJSON = JSON.stringify(updatedOrders);
+                
+                  // Обновление записи о пользователе новыми заказами
+                  await User.update(
+                    {
+                      userOrder: updatedOrdersJSON
+                    },
+                    {
+                      where: { userId: userId },
+                    }
+                  );
+                
+                  console.log("Заказ успешно добавлен.");
+        
               // Создаем URL для второго запроса
               // Отправляем второй POST-запрос
                return res.json({ paymentUrl });  
