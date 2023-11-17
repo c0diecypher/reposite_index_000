@@ -255,8 +255,11 @@ Zipper App снова ждет ваших заказов! ⚡`;
               status = match ? match[1] : null;
               
               console.log('Статус оплаты:', status);
-              const currentOrders = user.userOrder || [];
+              const currentOrders = user.userOrder || '[]';
 
+              // Парсим строку JSON
+              const ordersArray = JSON.parse(currentOrders);
+              
               // Добавляем новый заказ к текущим заказам
               const newOrder = {
                 id: productId,
@@ -267,12 +270,15 @@ Zipper App снова ждет ваших заказов! ⚡`;
                 status: status
               };
               
-              const updatedOrders = [...currentOrders, newOrder];
+              ordersArray.push(newOrder);
+              
+              // Преобразуем обновленные заказы обратно в строку JSON
+              const updatedOrdersString = JSON.stringify(ordersArray);
               
               // Обновляем запись в таблице Users
               await User.update(
                 {
-                  userOrder: updatedOrders,
+                  userOrder: updatedOrdersString,
                 },
                 {
                   where: { userId: userId },
