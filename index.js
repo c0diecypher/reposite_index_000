@@ -372,10 +372,24 @@ app.post('/customer/client/pay/status', async (req, res) => {
       });
 
       if (user) {
-        const chatId = user.userId;
-        const message = `${data}`;
-        bot.sendMessage(chatId, message);
-      }
+    const chatId = user.userId;
+    const message = `${data}`;
+    
+    // Изменение статуса в базе данных
+    await User.update(
+        { status: 'PAID' }, // Замените 'новый статус' на актуальное значение
+        {
+            where: {
+                userOrder: {
+                    [Sequelize.Op.like]: `%${order_id}%`,
+                },
+            },
+        }
+    );
+
+    // Отправка сообщения пользователю
+    bot.sendMessage(chatId, message);
+}
    }
 });
 
