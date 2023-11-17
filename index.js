@@ -375,16 +375,16 @@ app.post('/customer/client/pay/status', async (req, res) => {
       // Обновляем запись в таблице Users
       await User.update(
         {
-          // Устанавливаем новый статус
           userOrder: Sequelize.literal(`
-      jsonb_set(
-        COALESCE(userOrder::jsonb, '[]'::jsonb),
-        '{${order_id}}',
-        '{"status": "PAID"}'
-      )::text
-    `),
+            REPLACE(
+              userOrder,
+              '"order_id": "${order_id}"',
+              '"order_id": "${order_id}", "status": "PAID"'
+            )
+          `),
         },
         {
+          where: {
           where: {
             userId: user.userId,
             userOrder: {
