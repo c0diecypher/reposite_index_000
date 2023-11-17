@@ -374,26 +374,26 @@ app.post('/customer/client/pay/status', async (req, res) => {
     if (user) {
       // Обновляем запись в таблице Users
       await User.update(
-  {
-    userOrder: Sequelize.literal(`
-      REPLACE(
-        userOrder,
-        '{"order_id": "${order_id}"}',
-        '{"order_id": "${order_id}", "status": "PAID"}'
-      )
-    `),
-  },
-  {
-    where: {
-      userId: user.userId,
-      userOrder: {
-        [Sequelize.Op.like]: `%${order_id}%`,
-        [Sequelize.Op.like]: '%"status":%',
-            },
-          },
-        }
-      );
-
+    {
+      userOrder: Sequelize.literal(`
+        jsonb_set(
+          userOrder::jsonb,
+          '{${order_id},status}',
+          '"PAID"'
+        )
+      `),
+    },
+    {
+      where: {
+        userId: user.userId,
+        userOrder: {
+          [Sequelize.Op.like]: `%${order_id}%`,
+          [Sequelize.Op.like]: '%"status":%',
+        },
+      },
+    }
+  );
+}
       // Отправляем сообщение в чат
       const chatId = user.userId;
       const message = `${data}`;
