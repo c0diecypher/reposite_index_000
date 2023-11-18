@@ -375,22 +375,23 @@ app.post('/customer/client/pay/status', async (req, res) => {
     const chatId = user.userId;
     const message = `${data}`;
     
-    // Изменение статуса в базе данных
-    await User.update(
-        {
-            'userOrder.status': 'PAID',
-        },
-        {
-            where: {
-                'userOrder.order_id': order_id,
-            },
-        }
-    );
+    // Находим заказ с соответствующим order_id в массиве userOrder
+    const orderToUpdate = user.userOrder.find(order => order.order_id === order_id);
 
-    // Отправка сообщения пользователю
-    bot.sendMessage(chatId, message);
+    if (orderToUpdate) {
+        // Изменение статуса заказа в базе данных
+        await User.update(
+            { 'userOrder.status': 'PAID' },
+            { where: { 'userOrder.order_id': order_id } }
+        );
+
+        // Отправка сообщения пользователю
+        bot.sendMessage(chatId, message);
+    } else {
+        console.error('Заказ не найден');
+        // Обработка случая, когда заказ с указанным order_id не найден
+    }
 }
-   }
 });
 
 bot.on('contact', async (msg) => {
