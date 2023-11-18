@@ -349,14 +349,6 @@ app.post('/get/payment', async (req, res) => {
     }
 });
 
-app.post("/get/payment", async (req, res) => {
-  // Обработка данных, например, сохранение в базу данных
-  paymentData = req.body;
-
-  // Отправка обновленных данных клиенту
-  res.json(paymentData);
-});
-
 
 // Используем bodyParser для парсинга тела POST-запроса
 app.use(bodyParser.urlencoded({ extended: false }));
