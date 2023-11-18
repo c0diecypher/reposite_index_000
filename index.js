@@ -364,7 +364,7 @@ app.post('/customer/client/pay/status', async (req, res) => {
     
     // Обновляем статус заказа в базе данных
         await User.update(
-            { userOrder: sequelize.literal(`jsonb_set(CAST(userOrder AS jsonb), '{${user.userOrder.findIndex(order => order.order_id === order_id)}.status}', '"PAID"')`) },
+            { userOrder: literal(`jsonb_set(CAST(userOrder AS jsonb), '{${user.userOrder.findIndex(order => order.order_id === order_id)}.status}', '"PAID"')`) },
             {
                 where: {
                     'userOrder.order_id': order_id
