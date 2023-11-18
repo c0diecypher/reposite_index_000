@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
-router.use(bodyParser.json());
-
-
+const cors = require('cors');
+router.use(express.json());
+router.use(cors());
 
 router.post('/get/payment', async (req, res) => {
     const { userId, order_id } = req.body;
