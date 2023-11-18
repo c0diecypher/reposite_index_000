@@ -1,15 +1,11 @@
 const express = require('express');
+const router = express.Router();
 const bodyParser = require('body-parser');
-const app = express();
-const User = require('./models'); 
-const cors = require('cors');
+router.use(bodyParser.json());
 
 
-app.use(express.json());
-app.use(cors());
 
-
-app.post('/get/payment', async (req, res) => {
+router.post('/get/payment', async (req, res) => {
     const { userId, order_id } = req.body;
 
     try {
@@ -35,7 +31,7 @@ app.post('/get/payment', async (req, res) => {
 });
 
 
-app.post('/update/payment', async (req, res) => {
+router.post('/update/payment', async (req, res) => {
     const { userId, order_id } = req.body;
 
     try {
