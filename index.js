@@ -392,6 +392,7 @@ app.post('/customer/client/pay/status', async (req, res) => {
         // Обработка случая, когда заказ с указанным order_id не найден
     }
 }
+   }
 });
 
 bot.on('contact', async (msg) => {
