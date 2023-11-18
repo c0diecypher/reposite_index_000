@@ -378,17 +378,28 @@ app.post('/customer/client/pay/status', async (req, res) => {
           // Отправляем сообщение пользователю
           bot.sendMessage(chatId, message);
       
-          // Изменение статуса в базе данных
-          await User.update(
-              { 'userOrder.status': 'PAID' },
-              {
-                  where: {
-                      'userId': user.userId,
-                      'userOrder.order_id': order_id,
-                  },
+          let currentOrders = user.userOrder ? JSON.parse(user.userOrder) : [];
+
+          // Обновляем статус заказов с соответствующим order_id
+          const updatedOrders = currentOrders.map(order => {
+              if (order.order_id === order_id) {
+                  return { ...order, status: 'PAID' };
               }
-          );
-      }
+              return order;
+          });
+      
+          // Обновляем запись в таблице Users
+          await User.update(
+              {
+                  userOrder: JSON.stringify(updatedOrders)
+              },
+              {
+                  where: { userId: user.userId },
+              }
+            );
+      
+          console.log("Статус заказа успешно обновлен.");
+          }
   }
 });
 
