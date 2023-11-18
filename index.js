@@ -324,6 +324,7 @@ app.post('/get/pay', async (req, res) => {
 
 });
 
+app.use(bodyParser.json());
 const resOrder = require('./order');
 app.use('/', resOrder);
 
