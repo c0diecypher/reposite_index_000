@@ -331,16 +331,14 @@ app.post('/get/payment', async (req, res) => {
         const user = await User.findOne({ where: { userId: userId.toString() } });
 
         if (user) {
-            const order = user.userOrder.find(order => order.order_id === order_id);
-
-            if (order) {
-                // Отправляем статус на клиент
-                res.json({ status: order.status });
-            } else {
-                res.status(404).json({ error: 'Заказ не найден' });
-            }
+        const userOrderArray = JSON.parse(user.userOrder);
+    
+        const order = userOrderArray.find(order => order.order_id === order_id);
+    
+        if (order) {
+            res.json({ status: order.status });
         } else {
-            res.status(404).json({ error: 'Пользователь не найден' });
+            res.status(404).json({ error: 'Заказ не найден' });
         }
     } catch (error) {
         console.error('Ошибка при запросе статуса из базы данных:', error);
