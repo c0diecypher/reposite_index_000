@@ -348,7 +348,7 @@ app.post('/get/payment', async (req, res) => {
         res.status(500).json({ error: 'Внутренняя ошибка сервера' });
     }
 });
-app.post("/get/payment/status", async (req, res) => {
+app.post("/get/payment", async (req, res) => {
   // Обработка данных, например, сохранение в базу данных
   paymentData = req.body;
 
