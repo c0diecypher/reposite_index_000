@@ -59,6 +59,6 @@ router.post('/update/payment', async (req, res) => {
 });
 
 const PORT = 8000; // Порт, на котором будет работать сервер
-app.listen(PORT, () => {
+router.listen(PORT, () => {
     console.log(`Сервер запущен на порту ${PORT}`);
 });
