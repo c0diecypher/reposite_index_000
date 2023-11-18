@@ -324,9 +324,28 @@ app.post('/get/pay', async (req, res) => {
 
 });
 
-app.get('/get/payment', (req, res) => {
-  res.json({id: paymentId, order_id: ProductOrder, status: status});
+app.post('/get/payment', async (req, res) => {
+    const { userId, order_id } = req.body;
 
+    try {
+        const user = await User.findOne({ where: { userId: userId.toString() } });
+
+        if (user) {
+            const order = user.userOrder.find(order => order.order_id === order_id);
+
+            if (order) {
+                // Отправляем статус на клиент
+                res.json({ status: order.status });
+            } else {
+                res.status(404).json({ error: 'Заказ не найден' });
+            }
+        } else {
+            res.status(404).json({ error: 'Пользователь не найден' });
+        }
+    } catch (error) {
+        console.error('Ошибка при запросе статуса из базы данных:', error);
+        res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    }
 });
 
 app.post("/get/payment", async (req, res) => {
