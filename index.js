@@ -364,32 +364,38 @@ app.post('/customer/client/pay/status', async (req, res) => {
     
     // Находим пользователя с совпадающими данными в userOrder
     const user = await User.findOne({
-        where: {
-          userOrder: {
-            [Sequelize.Op.like]: `%${order_id}%`, // Используем order_id вместо data
-          },
+    where: {
+        userOrder: {
+            [Sequelize.Op.like]: `%${order_id}%`,
         },
-      });
+    },
+});
 
-      if (user) {
+if (user) {
     const chatId = user.userId;
     const message = `${data}`;
-    
-    // Находим заказ с соответствующим order_id в массиве userOrder
-    const orderToUpdate = user.userOrder.find(order => order.order_id === order_id);
+
+    // Parse the userOrder string into a JavaScript array
+    const userOrderArray = JSON.parse(user.userOrder);
+
+    // Find the order with the specified order_id
+    const orderToUpdate = userOrderArray.find(order => order.order_id === order_id);
 
     if (orderToUpdate) {
-        // Изменение статуса заказа в базе данных
+        // Update the status in the JavaScript array
+        orderToUpdate.status = 'PAID';
+
+        // Stringify the updated array and update the database
         await User.update(
-            { 'userOrder.status': 'PAID' },
+            { userOrder: JSON.stringify(userOrderArray) },
             { where: { 'userOrder.order_id': order_id } }
         );
 
-        // Отправка сообщения пользователю
+        // Send a message to the user
         bot.sendMessage(chatId, message);
     } else {
-        console.error('Заказ не найден');
-        // Обработка случая, когда заказ с указанным order_id не найден
+        console.error('Order not found');
+        // Handle the case where the order with the specified order_id is not found
     }
 }
    }
