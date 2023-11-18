@@ -362,43 +362,36 @@ app.post('/customer/client/pay/status', async (req, res) => {
     // Отправляем статус только если все поля определены
     res.send('OK');
     
-    // Находим пользователя с совпадающими данными в userOrder
-    const user = await User.findOne({
-    where: {
-        userOrder: {
-            [Sequelize.Op.like]: `%${order_id}%`,
-        },
-    },
-});
-
-if (user) {
-    const chatId = user.userId;
-    const message = `${data}`;
-
-    // Parse the userOrder string into a JavaScript array
-    const userOrderArray = JSON.parse(user.userOrder);
-
-    // Find the order with the specified order_id
-    const orderToUpdate = userOrderArray.find(order => order.order_id === order_id);
-
-    if (orderToUpdate) {
-        // Update the status in the JavaScript array
-        orderToUpdate.status = 'PAID';
-
-        // Stringify the updated array and update the database
+    // Обновляем статус заказа в базе данных
         await User.update(
-            { userOrder: JSON.stringify(userOrderArray) },
-            { where: { 'userOrder.order_id': order_id } }
+            { userOrder: sequelize.literal(`jsonb_set(CAST(userOrder AS jsonb), '{${user.userOrder.findIndex(order => order.order_id === order_id)}.status}', '"PAID"')`) },
+            {
+                where: {
+                    'userOrder.order_id': order_id
+                }
+            }
         );
 
-        // Send a message to the user
-        bot.sendMessage(chatId, message);
-    } else {
-        console.error('Order not found');
-        // Handle the case where the order with the specified order_id is not found
+        // Находим пользователя с совпадающими данными в userOrder
+        const user = await User.findOne({
+            where: {
+                userOrder: {
+                    [Sequelize.Op.like]: `%${order_id}%`,
+                },
+            },
+        });
+
+        if (user) {
+            const chatId = user.userId;
+            const message = `${data}`;
+            
+            // Send a message to the user
+            bot.sendMessage(chatId, message);
+        } else {
+            console.error('Заказ не найден');
+            // Обработка случая, когда заказ с указанным order_id не найден
+        }
     }
-}
-   }
 });
 
 bot.on('contact', async (msg) => {
