@@ -362,36 +362,34 @@ app.post('/customer/client/pay/status', async (req, res) => {
     // Отправляем статус только если все поля определены
     res.send('OK');
     
-    // Обновляем статус заказа в базе данных
-        await User.update(
-            { userOrder: literal(`jsonb_set(CAST(userOrder AS jsonb), '{${user.userOrder.findIndex(order => order.order_id === order_id)}.status}', '"PAID"')`) },
-            {
-                where: {
-                    'userOrder.order_id': order_id
-                }
-            }
-        );
+     // Находим пользователя с совпадающими данными в userOrder
+    const user = await User.findOne({
+        where: {
+          userOrder: {
+            [Sequelize.Op.like]: `%${order_id}%`, // Используем order_id вместо data
+          },
+        },
+      });
 
-        // Находим пользователя с совпадающими данными в userOrder
-        const user = await User.findOne({
-            where: {
-                userOrder: {
-                    [Sequelize.Op.like]: `%${order_id}%`,
-                },
-            },
-        });
-
-        if (user) {
-            const chatId = user.userId;
-            const message = `${data}`;
-            
-            // Send a message to the user
-            bot.sendMessage(chatId, message);
-        } else {
-            console.error('Заказ не найден');
-            // Обработка случая, когда заказ с указанным order_id не найден
-        }
-    }
+          if (user) {
+          const chatId = user.userId;
+          const message =`${data}`;
+      
+          // Отправляем сообщение пользователю
+          bot.sendMessage(chatId, message);
+      
+          // Изменение статуса в базе данных
+          await User.update(
+              { 'userOrder.status': 'PAID' },
+              {
+                  where: {
+                      'userId': user.userId,
+                      'userOrder.order_id': order_id,
+                  },
+              }
+          );
+      }
+  }
 });
 
 bot.on('contact', async (msg) => {
