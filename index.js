@@ -1,6 +1,6 @@
 const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
-const Sequelize = require('sequelize');
+const { Sequelize, Op, literal } = require('sequelize');
 const events = require('events');
 const cors = require('cors');
 const https = require('https');
