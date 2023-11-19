@@ -1,45 +1,91 @@
-const { Sequelize } = require('sequelize');
-const { EventEmitter } = require('events');
 const express = require('express');
 const router = express.Router();
+const bodyParser = require('body-parser');
+const cors = require('cors');
 const User = require('./models');
+const { EventEmitter } = require('events');
 
 const eventEmitter = new EventEmitter();
 
+router.use(express.json());
+router.use(cors());
+
 // SSE endpoint
+// Глобальная область
+const listener = (data) => {
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+};
+
 router.get('/sse', (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    const listener = (data) => {
-        res.write(`data: ${JSON.stringify(data)}\n\n`);
-    };
-
     eventEmitter.addListener('paymentUpdate', listener);
 
-    req.on('close', () => {
+    res.on('finish', () => {
         eventEmitter.removeListener('paymentUpdate', listener);
     });
 });
 
-// Мониторинг изменений в базе данных (пример с sequelize)
-User.addHook('afterSave', (user) => {
-    // Получаем userId и order_id из запроса
+// Обработка обновлений статуса и отправка через SSE
+const sendPaymentUpdate = (status) => {
+  eventEmitter.emit('paymentUpdate', { status });
+};
+
+router.post('/get/payment', async (req, res) => {
     const { userId, order_id } = req.body;
 
-    // Проверяем, изменился ли статус заказа
-    const order = user.userOrderArray.find(order => order.order_id === order_id && order.changed('status'));
+    try {
+        const user = await User.findOne({ where: { userId: userId.toString() } });
 
-    if (order) {
-        // Отправляем обновление через SSE
-        sendPaymentUpdate(userId, order_id, order.status);
+        if (user) {
+            const userOrderArray = JSON.parse(user.userOrder);
+
+            const order = userOrderArray.find(order => order.order_id === order_id);
+
+            if (order) {
+                res.json({ status: order.status });
+                console.log('Отправлено обновление:', order.status);
+            } else {
+                res.status(404).json({ error: 'Заказ не найден' });
+            }
+        } else {
+            res.status(404).json({ error: 'Пользователь не найден' });
+        }
+    } catch (error) {
+        console.error('Ошибка при запросе статуса из базы данных:', error);
+        res.status(500).json({ error: 'Внутренняя ошибка сервера' });
     }
 });
 
-// Обработка обновлений статуса и отправка через SSE
-const sendPaymentUpdate = (userId, order_id, status) => {
-    eventEmitter.emit('paymentUpdate', { userId, order_id, status });
-};
+router.post('/update/payment', async (req, res) => {
+    const { userId, order_id } = req.body;
+
+    try {
+        const user = await User.findOne({ where: { userId: userId.toString() } });
+
+        if (user) {
+            const userOrderArray = JSON.parse(user.userOrder);
+
+            const order = userOrderArray.find(order => order.order_id === order_id);
+
+            if (order) {
+                res.json({ status: order.status });
+
+                // Отправка обновления через SSE
+                sendPaymentUpdate(order.status);
+                console.log('Отправлено обновление:', order.status);
+            } else {
+                res.status(404).json({ error: 'Заказ не найден' });
+            }
+        } else {
+            res.status(404).json({ error: 'Пользователь не найден' });
+        }
+    } catch (error) {
+        console.error('Ошибка при запросе статуса из базы данных:', error);
+        res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    }
+});
 
 module.exports = router;
