@@ -5,7 +5,7 @@ const cors = require('cors');
 const User = require('./models');
 const { EventEmitter } = require('events');
 const eventEmitter = new EventEmitter();
-
+const eventSource = new EventSource();
 router.use(express.json());
 router.use(cors());
 
