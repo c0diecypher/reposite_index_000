@@ -11,7 +11,7 @@ router.use(cors());
 
 
 
-router.post('/sse', async (req, res) => {
+router.post('/get/payment', async (req, res) => {
     const { userId, order_id } = req.body;
 
     try {
