@@ -47,6 +47,10 @@ router.post('/get/payment', async (req, res) => {
             if (order) {
                 res.json({ status: order.status });
                 console.log('Отправлено обновление:', order.status);
+
+                // Отправка обновления через SSE
+                sendPaymentUpdate(order.status);
+                console.log('Отправлено обновление:', order.status);
             } else {
                 res.status(404).json({ error: 'Заказ не найден' });
             }
