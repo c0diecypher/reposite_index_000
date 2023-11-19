@@ -24,6 +24,9 @@ router.post('/get/payment', async (req, res) => {
 
             if (order) {
                 res.json({ status: order.status });
+
+                // Отправка обновления через SSE
+                eventSource.send({ event: 'paymentUpdate', data: { status: order.status } });
             } else {
                 res.status(404).json({ error: 'Заказ не найден' });
             }
