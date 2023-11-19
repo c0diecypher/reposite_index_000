@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const User = require('./models');
 const { EventEmitter } = require('events');
+const { EventSource } = require('express-eventsource');  // добавлен импорт EventSource
 const eventEmitter = new EventEmitter();
 const eventSource = new EventSource();
 router.use(express.json());
