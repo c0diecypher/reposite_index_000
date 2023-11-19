@@ -2,9 +2,14 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const User = require('./models'); 
+const User = require('./models');
+const { EventSource } = require('express-eventsource');
+
 router.use(express.json());
 router.use(cors());
+
+// Инициализация SSE
+const eventSource = new EventSource();
 
 router.post('/get/payment', async (req, res) => {
     const { userId, order_id } = req.body;
@@ -14,9 +19,9 @@ router.post('/get/payment', async (req, res) => {
 
         if (user) {
             const userOrderArray = JSON.parse(user.userOrder);
-        
+
             const order = userOrderArray.find(order => order.order_id === order_id);
-        
+
             if (order) {
                 res.json({ status: order.status });
             } else {
@@ -31,7 +36,6 @@ router.post('/get/payment', async (req, res) => {
     }
 });
 
-
 router.post('/update/payment', async (req, res) => {
     const { userId, order_id } = req.body;
 
@@ -40,13 +44,16 @@ router.post('/update/payment', async (req, res) => {
 
         if (user) {
             const userOrderArray = JSON.parse(user.userOrder);
-        
+
             const order = userOrderArray.find(order => order.order_id === order_id);
-        
+
             if (order) {
                 // Обновление статуса или других данных платежа
                 // Например, order.status = 'PAID';
                 res.json({ status: order.status });
+
+                // Отправка обновления через SSE
+                eventSource.send({ event: 'paymentUpdate', data: { status: order.status } });
             } else {
                 res.status(404).json({ error: 'Заказ не найден' });
             }
