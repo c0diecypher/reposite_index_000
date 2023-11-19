@@ -13,6 +13,7 @@ router.use(cors());
 // SSE endpoint
 // Глобальная область
 const listener = (data) => {
+    console.log('Получено обновление от сервера:', data);
     res.write(`data: ${JSON.stringify(data)}\n\n`);
 };
 
@@ -22,7 +23,7 @@ router.get('/sse', (req, res) => {
     res.setHeader('Connection', 'keep-alive');
 
     eventEmitter.addListener('paymentUpdate', listener);
-
+    
     res.on('finish', () => {
         eventEmitter.removeListener('paymentUpdate', listener);
     });
