@@ -11,18 +11,19 @@ router.use(express.json());
 router.use(cors());
 
 // SSE endpoint
+// Глобальная область
+const listener = (data) => {
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+};
+
 router.get('/sse', (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    const listener = (data) => {
-        res.write(`data: ${JSON.stringify(data)}\n\n`);
-    };
-
     eventEmitter.addListener('paymentUpdate', listener);
 
-    req.on('close', () => {
+    res.on('finish', () => {
         eventEmitter.removeListener('paymentUpdate', listener);
     });
 });
@@ -45,6 +46,7 @@ router.post('/get/payment', async (req, res) => {
 
             if (order) {
                 res.json({ status: order.status });
+                console.log('Отправлено обновление:', order.status);
             } else {
                 res.status(404).json({ error: 'Заказ не найден' });
             }
@@ -73,6 +75,7 @@ router.post('/update/payment', async (req, res) => {
 
                 // Отправка обновления через SSE
                 sendPaymentUpdate(order.status);
+                console.log('Отправлено обновление:', order.status);
             } else {
                 res.status(404).json({ error: 'Заказ не найден' });
             }
