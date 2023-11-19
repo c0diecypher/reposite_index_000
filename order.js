@@ -4,13 +4,12 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const User = require('./models');
 const { EventEmitter } = require('events');
-const { EventSource } = require('express-eventsource');  // добавлен импорт EventSource
+const { EventSource, ExpressEventSourceMiddleware } = require('express-eventsource');  // Updated import
+
 const eventEmitter = new EventEmitter();
-const eventSource = new EventSource();
+
 router.use(express.json());
 router.use(cors());
-
-
 
 router.post('/get/payment', async (req, res) => {
     const { userId, order_id } = req.body;
@@ -27,7 +26,7 @@ router.post('/get/payment', async (req, res) => {
                 res.json({ status: order.status });
 
                 // Отправка обновления через SSE
-                eventSource.send({ event: 'paymentUpdate', data: { status: order.status } });
+                eventEmitter.emit('paymentUpdate', { status: order.status });
             } else {
                 res.status(404).json({ error: 'Заказ не найден' });
             }
@@ -40,36 +39,8 @@ router.post('/get/payment', async (req, res) => {
     }
 });
 
-router.post('/update/payment', async (req, res) => {
-    const { userId, order_id } = req.body;
-
-    try {
-        const user = await User.findOne({ where: { userId: userId.toString() } });
-
-        if (user) {
-            const userOrderArray = JSON.parse(user.userOrder);
-
-            const order = userOrderArray.find(order => order.order_id === order_id);
-
-            if (order) {
-                // Обновление статуса или других данных платежа
-                // Например, order.status = 'PAID';
-                res.json({ status: order.status });
-
-                // Отправка обновления через SSE
-                eventSource.send({ event: 'paymentUpdate', data: { status: order.status } });
-            } else {
-                res.status(404).json({ error: 'Заказ не найден' });
-            }
-        } else {
-            res.status(404).json({ error: 'Пользователь не найден' });
-        }
-    } catch (error) {
-        console.error('Ошибка при обновлении данных платежа:', error);
-        res.status(500).json({ error: 'Внутренняя ошибка сервера' });
-    }
-});
-
+// SSE middleware
+router.use('/sse', ExpressEventSourceMiddleware());
 
 // SSE endpoint
 router.get('/sse', (req, res) => {
