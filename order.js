@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const User = require('./models');
 const { EventEmitter } = require('events');
-const { EventSource, ExpressEventSourceMiddleware } = require('express-eventsource');  // Updated import
 
 const eventEmitter = new EventEmitter();
 
@@ -38,9 +37,6 @@ router.post('/get/payment', async (req, res) => {
         res.status(500).json({ error: 'Внутренняя ошибка сервера' });
     }
 });
-
-// SSE middleware
-router.use('/sse', ExpressEventSourceMiddleware());
 
 // SSE endpoint
 router.get('/sse', (req, res) => {
