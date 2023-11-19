@@ -23,9 +23,6 @@ router.post('/get/payment', async (req, res) => {
 
             if (order) {
                 res.json({ status: order.status });
-
-                // Отправка обновления через SSE
-                eventEmitter.emit('paymentUpdate', { status: order.status });
             } else {
                 res.status(404).json({ error: 'Заказ не найден' });
             }
@@ -53,6 +50,42 @@ router.get('/sse', (req, res) => {
     req.on('close', () => {
         eventEmitter.removeListener('paymentUpdate', listener);
     });
+});
+
+// Обработка обновлений статуса и отправка через SSE
+const sendPaymentUpdate = (status) => {
+    eventEmitter.emit('paymentUpdate', { status });
+};
+
+// Пример обновления статуса в БД
+router.post('/update/payment', async (req, res) => {
+    const { userId, order_id } = req.body;
+
+    try {
+        const user = await User.findOne({ where: { userId: userId.toString() } });
+
+        if (user) {
+            const userOrderArray = JSON.parse(user.userOrder);
+
+            const order = userOrderArray.find(order => order.order_id === order_id);
+
+            if (order) {
+                // Обновление статуса или других данных платежа
+                // Например, order.status = 'PAID';
+                res.json({ status: order.status });
+
+                // Отправка обновления через SSE
+                sendPaymentUpdate(order.status);
+            } else {
+                res.status(404).json({ error: 'Заказ не найден' });
+            }
+        } else {
+            res.status(404).json({ error: 'Пользователь не найден' });
+        }
+    } catch (error) {
+        console.error('Ошибка при обновлении данных платежа:', error);
+        res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    }
 });
 
 module.exports = router;
