@@ -10,6 +10,28 @@ const eventEmitter = new EventEmitter();
 router.use(express.json());
 router.use(cors());
 
+// SSE endpoint
+router.get('/sse', (req, res) => {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    const listener = (data) => {
+        res.write(`data: ${JSON.stringify(data)}\n\n`);
+    };
+
+    eventEmitter.addListener('paymentUpdate', listener);
+
+    req.on('close', () => {
+        eventEmitter.removeListener('paymentUpdate', listener);
+    });
+});
+
+// Обработка обновлений статуса и отправка через SSE
+const sendPaymentUpdate = (status) => {
+  eventEmitter.emit('paymentUpdate', { status });
+};
+
 router.post('/get/payment', async (req, res) => {
     const { userId, order_id } = req.body;
 
@@ -50,7 +72,7 @@ router.post('/update/payment', async (req, res) => {
                 res.json({ status: order.status });
 
                 // Отправка обновления через SSE
-                eventEmitter.emit('paymentUpdate', { status: order.status });
+                sendPaymentUpdate(order.status);
             } else {
                 res.status(404).json({ error: 'Заказ не найден' });
             }
@@ -61,23 +83,6 @@ router.post('/update/payment', async (req, res) => {
         console.error('Ошибка при запросе статуса из базы данных:', error);
         res.status(500).json({ error: 'Внутренняя ошибка сервера' });
     }
-});
-
-// SSE endpoint
-router.get('/sse', (req, res) => {
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-
-    const listener = (data) => {
-        res.write(`data: ${JSON.stringify(data)}\n\n`);
-    };
-
-    eventEmitter.addListener('paymentUpdate', listener);
-
-    req.on('close', () => {
-        eventEmitter.removeListener('paymentUpdate', listener);
-    });
 });
 
 module.exports = router;
