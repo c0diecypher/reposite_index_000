@@ -11,7 +11,7 @@ router.use(cors());
 
 
 
-router.post('/get/payment', async (req, res) => {
+router.post('sse', async (req, res) => {
     const { userId, order_id } = req.body;
 
     try {
@@ -68,20 +68,6 @@ router.post('/update/payment', async (req, res) => {
 
 
 // SSE endpoint
-router.get('/sse', (req, res) => {
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
 
-    const listener = (data) => {
-        res.write(`data: ${JSON.stringify(data)}\n\n`);
-    };
-
-    eventEmitter.addListener('paymentUpdate', listener);
-
-    req.on('close', () => {
-        eventEmitter.removeListener('paymentUpdate', listener);
-    });
-});
 
 module.exports = router;
