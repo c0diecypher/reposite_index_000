@@ -11,17 +11,15 @@ router.use(express.json());
 router.use(cors());
 
 // SSE endpoint
-// Глобальная область
-const listener = (data) => {
-    console.log('Получено обновление от сервера:', data);
-    res.write(`data: ${JSON.stringify(data)}\n\n`);
-};
 
 router.get('/sse', (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
-
+    const listener = (data) => {
+        console.log('Получено обновление от сервера:', data);
+        res.write(`data: ${JSON.stringify(data)}\n\n`);
+    };
     eventEmitter.addListener('paymentUpdate', listener);
     
     res.on('finish', () => {
@@ -48,6 +46,8 @@ router.post('/get/payment', async (req, res) => {
             if (order) {
                 res.json({ status: order.status });
                 console.log('Отправлено обновление:', order.status);
+                // Отправка обновления через SSE
+                sendPaymentUpdate(order.status);
             } else {
                 res.status(404).json({ error: 'Заказ не найден' });
             }
