@@ -3,13 +3,13 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const User = require('./models');
-const { EventSource } = require('express-eventsource');
+const { EventEmitter } = require('events');
+const eventEmitter = new EventEmitter();
 
 router.use(express.json());
 router.use(cors());
 
-// Инициализация SSE
-const eventSource = new EventSource();
+
 
 router.post('/get/payment', async (req, res) => {
     const { userId, order_id } = req.body;
