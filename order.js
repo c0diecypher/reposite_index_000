@@ -96,7 +96,7 @@ router.post('/load/basket', async (req, res) => {
         }
     } catch (error) {
         console.error('Ошибка при обновлении данных платежа:', error);
-        res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+        res.status(200).json([]);
     }
 });
 
