@@ -64,13 +64,13 @@ router.post('/load/basket', async (req, res) => {
 
     try {
         const user = await User.findOne({ where: { userId: userId.toString() } });
-
+        console.log('HUECOC', user);
         if (user) {
             const userOrderArray = JSON.parse(user.userOrder);
-
+                
             // Ищем все товары с статусом 'WAIT'
             const waitOrders = userOrderArray.filter(order => order.status === 'WAIT');
-
+            console.log('HINIYA', waitOrders);
             // Проверка на undefined перед использованием map
             const mappedData = waitOrders.map(order => {
                 if (order) {
