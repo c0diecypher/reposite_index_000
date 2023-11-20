@@ -68,15 +68,10 @@ router.post('/load/basket', async (req, res) => {
         if (user) {
             const userOrderArray = JSON.parse(user.userOrder);
 
-            // Получить только определенные поля для товаров с статусом "WAIT"
-            const waitOrders = await userOrderArray.findAll({
-                attributes: ['id', 'name', 'order_id', 'price', 'size', 'status'],
-                where: {
-                    status: 'WAIT',
-                }
-            });
+            // Ищем все товары с статусом 'WAIT'
+            const waitOrders = userOrderArray.filter(order => order.status === 'WAIT');
 
-            // Отправить данные на клиент
+            // Отправляем данные на клиент
             res.status(200).json(waitOrders);
         } else {
             res.status(404).json({ error: 'Пользователь не найден' });
