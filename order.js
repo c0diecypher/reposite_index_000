@@ -69,7 +69,7 @@ router.post('/load/basket', async (req, res) => {
             const userOrderArray = JSON.parse(user.userOrder);
 
             // Получить только определенные поля для товаров с статусом "WAIT"
-            const waitOrders = await userOrderArray.findAll({
+            const waitOrders = await userOrder.findAll({
                 attributes: ['id', 'name', 'order_id', 'price', 'size', 'status'],
                 where: {
                     order_id: userOrderArray.map(order => order.order_id),
