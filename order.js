@@ -82,6 +82,7 @@ router.post('/load/basket', async (req, res) => {
                         price: order.price,
                         size: order.size,
                         status: order.status,
+                        time: order.time,
                     };
                 }
                 return null;
