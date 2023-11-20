@@ -59,7 +59,7 @@ router.post('/update/payment', async (req, res) => {
         res.status(500).json({ error: 'Внутренняя ошибка сервера' });
     }
 });
-
+//Загрузка из БД в корзину данные с WAIT
 router.post('/load/basket', async (req, res) => {
     const { userId } = req.body;
 
@@ -100,7 +100,7 @@ router.post('/load/basket', async (req, res) => {
         res.status(200).json([]);
     }
 });
-
+//Создание ордера на оплачу в коризине
 router.post('/customer/settings/client/buy/offer/pay/basket', async (req, res) => {
     const { productId,queryId, price, size, name, userId, order_id, time } = req.body;
     console.log(productId,queryId, price, size, name, userId, order_id);
@@ -204,6 +204,48 @@ Zipper App снова ждет ваших заказов! ⚡`;
         // Обработка ошибки
         console.error(error);
         return res.status(500).json({ error: 'Ошибка', message: 'Внутренняя ошибка сервера.' });
+    }
+});
+
+//Загрузка из БД в корзину данные с PAID
+router.post('/load/basket/paid', async (req, res) => {
+    const { userId } = req.body;
+
+    try {
+        const user = await User.findOne({ where: { userId: userId.toString() } });
+        console.log('HUECOC', user);
+        if (user) {
+            const userOrderArray = JSON.parse(user.userOrder);
+                
+            // Ищем все товары с статусом 'WAIT'
+            const waitOrders = userOrderArray.filter(order => order.status === 'PAID');
+            console.log('HINIYA', waitOrders);
+            // Проверка на undefined перед использованием map
+            const mappedData = waitOrders.map(order => {
+                if (order) {
+                    // Добавьте дополнительные проверки на свойства объекта, если это необходимо
+                    return {
+                        id: order.id,
+                        name: order.name,
+                        order_id: order.order_id,
+                        price: order.price,
+                        size: order.size,
+                        status: order.status,
+                        time: order.time,
+                    };
+                }
+                return null;
+            });
+            console.log('PIDORAS', mappedData);
+
+            // Отправляем данные на клиент
+            res.status(200).json(mappedData);
+        } else {
+            res.status(404).json({ error: 'Пользователь не найден' });
+        }
+    } catch (error) {
+        console.error('Ошибка при обновлении данных платежа:', error);
+        res.status(200).json([]);
     }
 });
 
