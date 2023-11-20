@@ -86,6 +86,7 @@ router.post('/load/basket', async (req, res) => {
                 }
                 return null;
             });
+            console.log('PIDORAS', mappedData);
 
             // Отправляем данные на клиент
             res.status(200).json(mappedData);
