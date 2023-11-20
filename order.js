@@ -71,8 +71,24 @@ router.post('/load/basket', async (req, res) => {
             // Ищем все товары с статусом 'WAIT'
             const waitOrders = userOrderArray.filter(order => order.status === 'WAIT');
 
+            // Проверка на undefined перед использованием map
+            const mappedData = waitOrders.map(order => {
+                if (order) {
+                    // Добавьте дополнительные проверки на свойства объекта, если это необходимо
+                    return {
+                        id: order.id,
+                        name: order.name,
+                        order_id: order.order_id,
+                        price: order.price,
+                        size: order.size,
+                        status: order.status,
+                    };
+                }
+                return null;
+            });
+
             // Отправляем данные на клиент
-            res.status(200).json(waitOrders);
+            res.status(200).json(mappedData);
         } else {
             res.status(404).json({ error: 'Пользователь не найден' });
         }
