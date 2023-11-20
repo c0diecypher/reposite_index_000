@@ -218,7 +218,7 @@ router.post('/load/basket/paid', async (req, res) => {
             const userOrderArray = JSON.parse(user.userOrder);
                 
             // Ищем все товары с статусом 'WAIT'
-            const waitOrders = userOrderArray.filter(order => order.status === 'PAID');
+            const waitOrders = userOrderArray.filter(order => ['PAID', 'SENT', 'TRANSITCN', 'TRANSITRU', 'DELIVERED'].includes(order.status));
             console.log('HINIYA', waitOrders);
             // Проверка на undefined перед использованием map
             const mappedData = waitOrders.map(order => {
