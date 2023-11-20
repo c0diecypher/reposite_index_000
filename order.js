@@ -3,6 +3,7 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const User = require('./models'); 
+const axios = require('axios');
 router.use(express.json());
 router.use(cors());
 
