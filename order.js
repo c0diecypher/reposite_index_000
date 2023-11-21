@@ -85,16 +85,14 @@ router.get('/connect/payment', async (req, res) => {
         
             if (order) {
             
-            emitter.on('newStatus', (status) => {
-                try {
-                    console.log('Emitted new status:', status);
-                    // Здесь вы можете добавить любую дополнительную логику
-                } catch (error) {
-                    console.error('Ошибка в обработчике события:', error);
+            if (!emitter.listenerCount('newStatus')) {
+                    emitter.on('newStatus', (status) => {
+                        console.log('Emitted new status:', status);
+                        // Здесь вы можете добавить любую дополнительную логику
+                    });
                 }
-            });
-                
-             // Затем генерируем событие нового статуса
+
+                // Затем генерируем событие нового статуса с обновленным значением
                 emitter.emit('newStatus', order.status);
             
             res.writeHead(200, {
