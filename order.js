@@ -84,14 +84,18 @@ router.get('/connect/payment', async (req, res) => {
             const order = userOrderArray.find(order => order.order_id === order_id);
         
             if (order) {
-            emitter.emit('newStatus', order.status);
             
             emitter.on('newStatus', (status) => {
-                console.log('Emitted new status:', status);
-                // Здесь вы можете добавить любую дополнительную логику
+                try {
+                    console.log('Emitted new status:', status);
+                    // Здесь вы можете добавить любую дополнительную логику
+                } catch (error) {
+                    console.error('Ошибка в обработчике события:', error);
+                }
             });
                 
-            
+             // Затем генерируем событие нового статуса
+                emitter.emit('newStatus', order.status);
             
             res.writeHead(200, {
                 'Content-Type': 'text/event-stream',
