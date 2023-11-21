@@ -103,7 +103,7 @@ router.post('/connect/payment/post', async (req, res) => {
             if (order) {
                 try {
                     // Обновление статуса в объекте order на основе данных из базы данных
-                    const updatedOrder = await userOrder.findOne({
+                    const updatedOrder = await Order.findOne({
                         where: { order_id: order.order_id },
                         attributes: ['status']
                     });
@@ -128,10 +128,9 @@ router.post('/connect/payment/post', async (req, res) => {
             res.status(404).json({ error: 'Пользователь не найден' });
         }
     } catch (error) {
-        console.error('Ошибка при запросе статуса из базы данных:', error);
+        console.error('Ошибка при запросе пользователя из базы данных:', error);
         res.status(500).json({ error: 'Внутренняя ошибка сервера' });
-    }
-});
+    
 //Загрузка из БД в корзину данные с WAIT
 router.post('/load/basket', async (req, res) => {
     const { userId } = req.body;
