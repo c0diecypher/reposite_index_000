@@ -11,7 +11,6 @@ const axios = require('axios');
 router.use(express.json());
 router.use(cors());
 
-
 router.post('/get/payment', async (req, res) => {
     const { userId, order_id } = req.body;
 
@@ -64,17 +63,21 @@ router.post('/update/payment', async (req, res) => {
     }
 });
 
-router.get('/connect/payment', async (req, res) => {
- res.writeHead(200, {
-  'Content-Type': 'text/event-stream',
-  'Cache-Control': 'no-cache',
-  'Connection': 'keep-alive',
-  'Access-Control-Allow-Origin': 'https://zipperapp.vercel.app'
- });
-            
-   const listener = (status) => {
-    console.log('Emitted new status:', status);
-    res.write(`data: ${JSON.stringify(status)}\n\n`);
+router.get('/connect/payment', (req, res) => {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive',
+    'Access-Control-Allow-Origin': 'https://zipperapp.vercel.app'
+  });
+
+  const listener = async (status) => {
+    try {
+      console.log('Emitted new status:', status);
+      await sendEventData(res, status);
+    } catch (error) {
+      console.error('Error sending event data:', error);
+    }
   };
 
   emitter.on('newStatus', listener);
@@ -85,48 +88,43 @@ router.get('/connect/payment', async (req, res) => {
   });
 });
 
-// Асинхронный блок для использования await
-(async () => {
-  const dbClient = new Client();
-  await dbClient.connect();
-
-  const pubsub = new PostgresPubSub({ client: dbClient });
-
-  pubsub.subscribe('order_status_updates', (payload) => {
-    emitter.emit('newStatus', payload);
-  });
-
 router.post('/connect/payment/post', async (req, res) => {
-        const { userId, order_id } = req.body;
-        // Проверяем, что data существует
+  const { userId, order_id } = req.body;
 
-    try {
-        const user = await User.findOne({ where: { userId: userId.toString() } });
+  try {
+    const user = await User.findOne({ where: { userId: userId.toString() } });
 
-        if (user) {
-            const userOrderArray = JSON.parse(user.userOrder);
-        
-            const order = userOrderArray.find(order => order.order_id === order_id);
-        
-            if (order) {
+    if (user) {
+      const userOrderArray = JSON.parse(user.userOrder);
+      const order = userOrderArray.find(order => order.order_id === order_id);
 
-                pubsub.publish('order_status_updates', order.status);
-                res.status(200)
-               
-                
-            } else {
-                res.status(404).json({ error: 'Заказ не найден' });
-            }
-        } else {
-            res.status(404).json({ error: 'Пользователь не найден' });
-        }
-    } catch (error) {
-        console.error('Ошибка при запросе статуса из базы данных:', error);
-        res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+      if (order) {
+        await pubsub.publish('order_status_updates', order.status);
+        res.status(200).json({ success: true });
+      } else {
+        res.status(404).json({ error: 'Заказ не найден' });
+      }
+    } else {
+      res.status(404).json({ error: 'Пользователь не найден' });
     }
+  } catch (error) {
+    console.error('Ошибка при запросе статуса из базы данных:', error);
+    res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+  }
 });
-await dbClient.end();
-})();
+
+async function sendEventData(res, eventData) {
+  return new Promise((resolve, reject) => {
+    res.write(`data: ${JSON.stringify(eventData)}\n\n`, 'utf-8', (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
 //Загрузка из БД в корзину данные с WAIT
 router.post('/load/basket', async (req, res) => {
     const { userId } = req.body;
