@@ -99,6 +99,7 @@ router.get('/connect/payment', async (req, res) => {
                 'Content-Type': 'text/event-stream',
                 'Cache-Control': 'no-cache',
                 'Connection': 'keep-alive',
+                'Access-Control-Allow-Origin': '*'
             });
                 
             } else {
