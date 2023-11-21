@@ -60,7 +60,7 @@ router.post('/update/payment', async (req, res) => {
 });
 
 router.get('/connect/payment', async (req, res) => {
-    const { userId } = req.query;
+    const { userId, order_id } = req.query;
     try {
         const user = await User.findOne({ where: { userId: userId.toString() } });
 
