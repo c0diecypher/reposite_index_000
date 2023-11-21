@@ -88,10 +88,10 @@ router.get('/connect/payment', async (req, res) => {
             if (!emitter.listenerCount('newStatus')) {
                     emitter.on('newStatus', (status) => {
                         console.log('Emitted new status:', status);
-                        // Здесь вы можете добавить любую дополнительную логику
+                        res.write(`${status}`);
                     });
                 }
-
+                
                 // Затем генерируем событие нового статуса с обновленным значением
                 emitter.emit('newStatus', order.status);
             
