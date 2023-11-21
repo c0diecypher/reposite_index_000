@@ -86,6 +86,13 @@ router.get('/connect/payment', async (req, res) => {
             if (order) {
             emitter.emit('newStatus', order.status);
             
+            emitter.on('newStatus', (status) => {
+                console.log('Emitted new status:', status);
+                // Здесь вы можете добавить любую дополнительную логику
+            });
+                
+            
+            
             res.writeHead(200, {
                 'Content-Type': 'text/event-stream',
                 'Cache-Control': 'no-cache',
