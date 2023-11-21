@@ -1,4 +1,6 @@
 const express = require('express');
+const { Client } = require('pg');
+const { PostgresPubSub } = require('pg-pubsub');
 const router = express.Router();
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -8,6 +10,11 @@ const User = require('./models');
 const axios = require('axios');
 router.use(express.json());
 router.use(cors());
+
+const dbClient = new Client();
+await dbClient.connect();
+
+const pubsub = new PostgresPubSub({ client: dbClient });
 
 router.post('/get/payment', async (req, res) => {
     const { userId, order_id } = req.body;
@@ -82,6 +89,10 @@ router.get('/connect/payment', async (req, res) => {
   });
 });
 
+pubsub.subscribe('order_status_updates', (payload) => {
+  emitter.emit('newStatus', payload);
+});
+
 router.post('/connect/payment/post', async (req, res) => {
         const { userId, order_id } = req.body;
         // Проверяем, что data существует
@@ -96,7 +107,7 @@ router.post('/connect/payment/post', async (req, res) => {
         
             if (order) {
 
-                emitter.emit('newStatus', order.status);
+                pubsub.publish('order_status_updates', order.status);
                 res.status(200)
                
                 
