@@ -61,8 +61,9 @@ router.post('/update/payment', async (req, res) => {
 
 router.get('/connect/payment', async (req, res) => {
     const { userId, order_id } = req.query;
+    console.log(userId,order_id);
     try {
-        const user = await User.findOne({ where: { userId: userId.toString() } });
+        const user = await User.findOne({ where: { userId: userId } });
 
         if (user) {
             const userOrderArray = JSON.parse(user.userOrder);
