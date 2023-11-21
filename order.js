@@ -84,22 +84,24 @@ router.get('/connect/payment', async (req, res) => {
             const order = userOrderArray.find(order => order.order_id === order_id);
         
             if (order) {
-                    res.writeHead(200, {
-                    'Content-Type': 'text/event-stream',
-                    'Cache-Control': 'no-cache',
-                    'Connection': 'keep-alive',
-                    'Access-Control-Allow-Origin': 'https://zipperapp.vercel.app'
-                });
             
-                 emitter.on('newStatus', (status) => {
+            if (!emitter.listenerCount('newStatus')) {
+                    emitter.on('newStatus', (status) => {
                         console.log('Emitted new status:', status);
-                        res.write(`${JSON.stringify(status)} \n\n`);
+                        res.write(`${status}`);
                     });
+                }
                 
                 // Затем генерируем событие нового статуса с обновленным значением
                 emitter.emit('newStatus', order.status);
                 
-               
+                }
+            res.writeHead(200, {
+                'Content-Type': 'text/event-stream',
+                'Cache-Control': 'no-cache',
+                'Connection': 'keep-alive',
+                'Access-Control-Allow-Origin': 'https://zipperapp.vercel.app'
+            });
                 
             } else {
                 res.status(404).json({ error: 'Заказ не найден' });
