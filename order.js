@@ -60,10 +60,16 @@ router.post('/update/payment', async (req, res) => {
 });
 
 router.get('/connect/payment', async (req, res) => {
-    const { userId, order_id } = req.query;
-    console.log(userId,order_id);
+        const { data } = req.query;
+
+        // Парсим данные из JSON строки
+        const requestData = JSON.parse(data);
+        
+        // Извлекаем userId и order_id из requestData
+        const { userId, order_id } = requestData;
+        console.log(userId, order_id);
     try {
-        const user = await User.findOne({ where: { userId: userId } });
+        const user = await User.findOne({ where: { userId.toString() } });
 
         if (user) {
             const userOrderArray = JSON.parse(user.userOrder);
