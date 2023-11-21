@@ -96,7 +96,7 @@ router.post('/connect/payment/post', async (req, res) => {
         
             if (order) {
         // Предположим, что вы используете Sequelize
-            const updatedOrder = await Order.update(
+            const updatedOrder = await userOrderArray.update(
               { status: 'NewStatus' },
               { where: { order_id: order.order_id }, returning: true, plain: true }
             );
