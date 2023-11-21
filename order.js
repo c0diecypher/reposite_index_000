@@ -85,9 +85,10 @@ router.get('/connect/payment', async (req, res) => {
         
             if (order) {
             emitter.on('newStatus', (status) => {
+                console.log('Received new status:', status);
                 res.write(`data: ${JSON.stringify({ status: order.status })}\n\n`);
             });
-
+            
             res.writeHead(200, {
                 'Content-Type': 'text/event-stream',
                 'Cache-Control': 'no-cache',
