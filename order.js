@@ -35,7 +35,6 @@ router.post('/get/payment', async (req, res) => {
 
 router.post('/update/payment', async (req, res) => {
     const { userId, order_id } = req.body;
-
     try {
         const user = await User.findOne({ where: { userId: userId.toString() } });
 
@@ -56,6 +55,39 @@ router.post('/update/payment', async (req, res) => {
         }
     } catch (error) {
         console.error('Ошибка при обновлении данных платежа:', error);
+        res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    }
+});
+
+router.get('/connect/payment', async (req, res) => {
+    const { userId } = req.query;
+    try {
+        const user = await User.findOne({ where: { userId: userId.toString() } });
+
+        if (user) {
+            const userOrderArray = JSON.parse(user.userOrder);
+        
+            const order = userOrderArray.find(order => order.order_id === order_id);
+        
+            if (order) {
+            emitter.on('newStatus', (status) => {
+                res.write(`data: ${JSON.stringify({ status: order.status })}\n\n`);
+            });
+
+            res.writeHead(200, {
+                'Content-Type': 'text/event-stream',
+                'Cache-Control': 'no-cache',
+                'Connection': 'keep-alive',
+            });
+                
+            } else {
+                res.status(404).json({ error: 'Заказ не найден' });
+            }
+        } else {
+            res.status(404).json({ error: 'Пользователь не найден' });
+        }
+    } catch (error) {
+        console.error('Ошибка при запросе статуса из базы данных:', error);
         res.status(500).json({ error: 'Внутренняя ошибка сервера' });
     }
 });
