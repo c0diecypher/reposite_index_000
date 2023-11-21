@@ -100,6 +100,7 @@ router.post('/connect/payment/post', async (req, res) => {
             // Ищем заказ по order_id
             const order = userOrderArray.find(order => order.order_id === order_id);
 
+            
             if (order) {
                 try {
                     // Обновление статуса в объекте order на основе данных из базы данных
@@ -130,6 +131,8 @@ router.post('/connect/payment/post', async (req, res) => {
     } catch (error) {
         console.error('Ошибка при запросе пользователя из базы данных:', error);
         res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    }
+});
     
 //Загрузка из БД в корзину данные с WAIT
 router.post('/load/basket', async (req, res) => {
