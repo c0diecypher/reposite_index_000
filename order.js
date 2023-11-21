@@ -82,39 +82,24 @@ router.get('/connect/payment', async (req, res) => {
   });
 });
 
-router.post('/connect/payment/post', async (req, res) => {
-    const { userId, order_id } = req.body;
+router.get('/connect/payment/post', async (req, res) => {
+        const { userId, order_id } = req.body;
+        // Проверяем, что data существует
 
     try {
         const user = await User.findOne({ where: { userId: userId.toString() } });
 
         if (user) {
             const userOrderArray = JSON.parse(user.userOrder);
-
-            // Ищем заказ по order_id
+        
             const order = userOrderArray.find(order => order.order_id === order_id);
-
+        
             if (order) {
-                try {
-                    // Обновление статуса в объекте order на основе данных из базы данных
-                    const updatedOrder = await User.findOne({
-                        where: { order_id: order.order_id },
-                        attributes: ['status']
-                    });
 
-                    const updatedStatus = updatedOrder ? updatedOrder.status : null;
-
-                    // Обновление статуса в объекте order
-                    order.status = updatedStatus;
-
-                    // Отправка обновленного статуса заказа
-                    emitter.emit('newStatus', { status: updatedStatus });
-
-                    res.status(200).json({ success: true });
-                } catch (error) {
-                    console.error('Ошибка при запросе статуса из базы данных:', error);
-                    res.status(500).json({ error: 'Внутренняя ошибка сервера' });
-                }
+                emitter.emit('newStatus', order.status);
+                res.status(200)
+               
+                
             } else {
                 res.status(404).json({ error: 'Заказ не найден' });
             }
@@ -122,7 +107,7 @@ router.post('/connect/payment/post', async (req, res) => {
             res.status(404).json({ error: 'Пользователь не найден' });
         }
     } catch (error) {
-        console.error('Ошибка при запросе пользователя из базы данных:', error);
+        console.error('Ошибка при запросе статуса из базы данных:', error);
         res.status(500).json({ error: 'Внутренняя ошибка сервера' });
     }
 });
