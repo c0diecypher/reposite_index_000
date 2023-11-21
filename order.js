@@ -82,7 +82,7 @@ router.get('/connect/payment', async (req, res) => {
   });
 });
 
-router.post('/connect/payment/post', async (req, res) => {
+router.get('/connect/payment/post', async (req, res) => {
         const { userId, order_id } = req.body;
         // Проверяем, что data существует
 
