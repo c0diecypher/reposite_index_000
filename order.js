@@ -95,9 +95,17 @@ router.post('/connect/payment/post', async (req, res) => {
             const order = userOrderArray.find(order => order.order_id === order_id);
         
             if (order) {
+        // Предположим, что вы используете Sequelize
+            const updatedOrder = await Order.update(
+              { status: 'NewStatus' },
+              { where: { order_id: order.order_id }, returning: true, plain: true }
+            );
 
-                emitter.emit('newStatus', order.status);
-                res.status(200).json({ success: true });
+            const updatedStatus = updatedOrder[1].dataValues.status;
+    
+            emitter.emit('newStatus', updatedStatus);
+    
+            res.status(200).json({ success: true });
                
                 
             } else {
