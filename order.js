@@ -97,7 +97,7 @@ router.post('/connect/payment/post', async (req, res) => {
             if (order) {
 
                 emitter.emit('newStatus', order.status);
-                res.status(200)
+                res.status(200).json({ success: true });
                
                 
             } else {
