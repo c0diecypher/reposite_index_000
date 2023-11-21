@@ -62,30 +62,19 @@ router.post('/update/payment', async (req, res) => {
 });
 
 router.get('/connect/payment', async (req, res) => {
- res.writeHead(200, {
-  'Content-Type': 'text/event-stream',
-  'Cache-Control': 'no-cache',
-  'Connection': 'keep-alive',
-  'Access-Control-Allow-Origin': 'https://zipperapp.vercel.app'
- });
-            
-   const listener = (status) => {
-    console.log(`Order status updated: Order ID ${status.order_id}, New Status: ${status.status}`);
-    res.write(`data: ${JSON.stringify(status)}\n\n`);
-  };
-
-  emitter.on('newStatus', listener);
-
-  // Закрытие соединения при отключении клиента
-  req.on('close', () => {
-    emitter.off('newStatus', listener);
-  });
-});
-
-router.post('/connect/payment/post', async (req, res) => {
-        const { userId, order_id } = req.body;
+        const { data } = req.query;
         // Проверяем, что data существует
+        if (!data) {
+            res.status(400).json({ error: 'Отсутствует параметр data' });
+            return;
+        }
 
+        // Парсим данные из JSON строки
+        const requestData = JSON.parse(decodeURIComponent(data));
+
+        // Извлекаем userId и order_id из requestData
+        const { userId, order_id } = requestData.data;
+        console.log(userId, order_id);
     try {
         const user = await User.findOne({ where: { userId: userId.toString() } });
 
@@ -95,9 +84,21 @@ router.post('/connect/payment/post', async (req, res) => {
             const order = userOrderArray.find(order => order.order_id === order_id);
         
             if (order) {
-
+                    res.writeHead(200, {
+                    'Content-Type': 'text/event-stream',
+                    'Cache-Control': 'no-cache',
+                    'Connection': 'keep-alive',
+                    'Access-Control-Allow-Origin': 'https://zipperapp.vercel.app'
+                });
+            
+                 emitter.on('newStatus', (status) => {
+                        console.log('Emitted new status:', status);
+                        res.write(`${JSON.stringify(status)} \n\n`);
+                    });
+                
+                // Затем генерируем событие нового статуса с обновленным значением
                 emitter.emit('newStatus', order.status);
-                res.status(200)
+                
                
                 
             } else {
