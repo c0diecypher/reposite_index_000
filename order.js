@@ -61,7 +61,7 @@ router.post('/update/payment', async (req, res) => {
     }
 });
 
-router.get('/connect/payment', async (req, res) => {
+router.get('/connect/payment?data={JSON.stringify({data})}', async (req, res) => {
  res.writeHead(200, {
   'Content-Type': 'text/event-stream',
   'Cache-Control': 'no-cache',
@@ -82,7 +82,7 @@ router.get('/connect/payment', async (req, res) => {
   });
 });
 
-router.post('/connect/payment/post', async (req, res) => {
+router.post('/connect/payment/post?data={JSON.stringify({data})}', async (req, res) => {
         const { userId, order_id } = req.body;
         // Проверяем, что data существует
 
