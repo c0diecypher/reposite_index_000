@@ -69,7 +69,7 @@ router.get('/connect/payment', async (req, res) => {
         const { userId, order_id } = requestData;
         console.log(userId, order_id);
     try {
-        const user = await User.findOne({ where: { userId.toString() } });
+        const user = await User.findOne({ where: { userId: userId.toString() } });
 
         if (user) {
             const userOrderArray = JSON.parse(user.userOrder);
