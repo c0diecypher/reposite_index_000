@@ -93,8 +93,13 @@ router.get('/connect/payment', async (req, res) => {
                 }
                 
                 // Затем генерируем событие нового статуса с обновленным значением
-                emitter.emit('newStatus', order.status);
-            
+                emitter.emit('updateStatus', order.status);
+                if (!emitter.listenerCount('updateStatus')) {
+                    emitter.on('updateStatus', (status) => {
+                        console.log('Emitted new status:', status);
+                        res.write(`${status}`);
+                    });
+                }
             res.writeHead(200, {
                 'Content-Type': 'text/event-stream',
                 'Cache-Control': 'no-cache',
