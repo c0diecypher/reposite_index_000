@@ -104,7 +104,7 @@ router.post('/connect/payment/post', async (req, res) => {
             if (order) {
                 try {
                     // Обновление статуса в объекте order на основе данных из базы данных
-                    const updatedOrder = await Order.findOne({
+                    const updatedOrder = await userOrder.findOne({
                         where: { order_id: order.order_id },
                         attributes: ['status']
                     });
