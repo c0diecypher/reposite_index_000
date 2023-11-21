@@ -11,10 +11,6 @@ const axios = require('axios');
 router.use(express.json());
 router.use(cors());
 
-const dbClient = new Client();
-await dbClient.connect();
-
-const pubsub = new PostgresPubSub({ client: dbClient });
 
 router.post('/get/payment', async (req, res) => {
     const { userId, order_id } = req.body;
@@ -89,9 +85,16 @@ router.get('/connect/payment', async (req, res) => {
   });
 });
 
-pubsub.subscribe('order_status_updates', (payload) => {
-  emitter.emit('newStatus', payload);
-});
+// Асинхронный блок для использования await
+(async () => {
+  const dbClient = new Client();
+  await dbClient.connect();
+
+  const pubsub = new PostgresPubSub({ client: dbClient });
+
+  pubsub.subscribe('order_status_updates', (payload) => {
+    emitter.emit('newStatus', payload);
+  });
 
 router.post('/connect/payment/post', async (req, res) => {
         const { userId, order_id } = req.body;
@@ -122,6 +125,8 @@ router.post('/connect/payment/post', async (req, res) => {
         res.status(500).json({ error: 'Внутренняя ошибка сервера' });
     }
 });
+await dbClient.end();
+})();
 //Загрузка из БД в корзину данные с WAIT
 router.post('/load/basket', async (req, res) => {
     const { userId } = req.body;
