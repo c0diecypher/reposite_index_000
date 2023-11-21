@@ -84,10 +84,7 @@ router.get('/connect/payment', async (req, res) => {
             const order = userOrderArray.find(order => order.order_id === order_id);
         
             if (order) {
-            emitter.on('newStatus', (status) => {
-                console.log('Received new status:', status);
-                res.write(`data: ${JSON.stringify({ status: order.status })}\n\n`);
-            });
+            emitter.emit('newStatus', order.status);
             
             res.writeHead(200, {
                 'Content-Type': 'text/event-stream',
