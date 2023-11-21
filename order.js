@@ -67,6 +67,10 @@ router.get('/connect/payment', async (req, res) => {
         
         // Извлекаем userId и order_id из requestData
         const { userId, order_id } = requestData;
+        if (!userId) {
+            res.status(400).json({ error: 'Отсутствует параметр userId' });
+            return;
+        }
         console.log(userId, order_id);
     try {
         const user = await User.findOne({ where: { userId: userId.toString() } });
