@@ -61,16 +61,17 @@ router.post('/update/payment', async (req, res) => {
 
 router.get('/connect/payment', async (req, res) => {
         const { data } = req.query;
-
-        // Парсим данные из JSON строки
-        const requestData = JSON.parse(data);
-        
-        // Извлекаем userId и order_id из requestData
-        const { userId, order_id } = requestData;
-        if (!userId) {
-            res.status(400).json({ error: 'Отсутствует параметр userId' });
+        // Проверяем, что data существует
+        if (!data) {
+            res.status(400).json({ error: 'Отсутствует параметр data' });
             return;
         }
+
+        // Парсим данные из JSON строки
+        const requestData = JSON.parse(decodeURIComponent(data));
+
+        // Извлекаем userId и order_id из requestData
+        const { userId, order_id } = requestData.data;
         console.log(userId, order_id);
     try {
         const user = await User.findOne({ where: { userId: userId.toString() } });
