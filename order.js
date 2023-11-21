@@ -62,7 +62,20 @@ router.post('/update/payment', async (req, res) => {
 });
 
 router.get('/connect/payment', async (req, res) => {
-        const { data } = req.query;
+ res.writeHead(200, {
+  'Content-Type': 'text/event-stream',
+  'Cache-Control': 'no-cache',
+  'Connection': 'keep-alive',
+ });
+            
+   emitter.on('newStatus', (status) => {
+      console.log('Emitted new status:', status);
+      res.write(`${JSON.stringify(status)} \n\n`);
+   });
+});
+
+router.post('/connect/payment/post', async (req, res) => {
+        const { userId, order_id } = req.body;
         // Проверяем, что data существует
         if (!data) {
             res.status(400).json({ error: 'Отсутствует параметр data' });
@@ -84,21 +97,9 @@ router.get('/connect/payment', async (req, res) => {
             const order = userOrderArray.find(order => order.order_id === order_id);
         
             if (order) {
-                    res.writeHead(200, {
-                    'Content-Type': 'text/event-stream',
-                    'Cache-Control': 'no-cache',
-                    'Connection': 'keep-alive',
-                    'Access-Control-Allow-Origin': 'https://zipperapp.vercel.app'
-                });
-            
-                 emitter.on('newStatus', (status) => {
-                        console.log('Emitted new status:', status);
-                        res.write(`${JSON.stringify(status)} \n\n`);
-                    });
-                
-                // Затем генерируем событие нового статуса с обновленным значением
+
                 emitter.emit('newStatus', order.status);
-                
+                res.status(200)
                
                 
             } else {
