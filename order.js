@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const { EventEmitter } = require('events');
+const emitter = new EventEmitter();
 const User = require('./models'); 
 const axios = require('axios');
 router.use(express.json());
