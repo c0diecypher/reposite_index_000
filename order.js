@@ -88,7 +88,7 @@ router.get('/connect/payment', async (req, res) => {
             if (!emitter.listenerCount('newStatus')) {
                     emitter.on('newStatus', (status) => {
                         console.log('Emitted new status:', status);
-                        res.write(`${status}`);
+                        res.write(`${JSON.stringify(status)} \n\n`);
                     });
                 }
                 
