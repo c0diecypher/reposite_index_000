@@ -70,7 +70,7 @@ router.get('/connect/payment', async (req, res) => {
  });
             
    const listener = (status) => {
-    console.log('Emitted new status:', status);
+    console.log(`Order status updated: Order ID ${status.order_id}, New Status: ${status.status}`);
     res.write(`data: ${JSON.stringify(status)}\n\n`);
   };
 
