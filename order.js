@@ -83,28 +83,21 @@ router.get('/connect/payment', async (req, res) => {
 });
 
 router.post('/connect/payment/post', async (req, res) => {
-        const { userId, order_id } = req.body;
-        // Проверяем, что data существует
+    const { userId, order_id } = req.body;
 
     try {
         const user = await User.findOne({ where: { userId: userId.toString() } });
 
         if (user) {
             const userOrderArray = JSON.parse(user.userOrder);
-        
-            const order = userOrderArray.find(order => order.order_id === order_id);
-        
-            if (user) {
-            const userOrderArray = JSON.parse(user.userOrder);
 
             // Ищем заказ по order_id
             const order = userOrderArray.find(order => order.order_id === order_id);
 
-            
             if (order) {
                 try {
                     // Обновление статуса в объекте order на основе данных из базы данных
-                    const updatedOrder = await userOrder.findOne({
+                    const updatedOrder = await Order.findOne({
                         where: { order_id: order.order_id },
                         attributes: ['status']
                     });
