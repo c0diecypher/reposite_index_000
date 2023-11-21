@@ -68,10 +68,17 @@ router.get('/connect/payment', async (req, res) => {
   'Connection': 'keep-alive',
  });
             
-   emitter.on('newStatus', (status) => {
-      console.log('Emitted new status:', status);
-      res.write(`${JSON.stringify(status)} \n\n`);
-   });
+   const listener = (status) => {
+    console.log('Emitted new status:', status);
+    res.write(`data: ${JSON.stringify(status)}\n\n`);
+  };
+
+  emitter.on('newStatus', listener);
+
+  // Закрытие соединения при отключении клиента
+  req.on('close', () => {
+    emitter.off('newStatus', listener);
+  });
 });
 
 router.post('/connect/payment/post', async (req, res) => {
