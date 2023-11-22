@@ -110,6 +110,17 @@ bot.on('message', async(msg) => {
     }
 });
 
+bot.on('message', async(msg) => {
+  const chatId = msg.chat.id;
+  const referrerId = msg.from.id;
+  const text = msg.text;
+  referralDict[chatId] = referrerId;
+  const referralLink = `Your referral link: https://t.me/zipperstore_bot?start=${referrerId}`;
+    if(text === '/refferal'){
+        await bot.sendMessage(chatId, `Welcome! ${referralLink}`);
+    }
+});
+
 app.post('/customer/settings/client/buy/offer', async (req, res) => {
     const { queryId, price, size, name, userId, order_id } = req.body;
     console.log(queryId, price, size, name, userId, order_id);
