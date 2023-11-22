@@ -109,30 +109,28 @@ bot.on('message', async(msg) => {
       
     }
 });
-const referralData = {};
-const usedReferralDict = {};
-bot.onText(/\/reffer/, (msg) => {
+const referralDict = {};
+
+// Обработчик команды /start
+bot.onText(/\/regreffer/, (msg) => {
     const chatId = msg.chat.id;
     const referrerId = msg.from.id;
 
-    // Проверка, использован ли реферальный ID
-    if (usedReferralDict[referrerId]) {
-        bot.sendMessage(chatId, 'Referral ID has already been used.');
-    } else {
-        // Сохранение реферера
-        referralDict[chatId] = referrerId;
+    // Сохранение реферера для текущего пользователя
+    referralDict[chatId] = referrerId;
 
-        // Создание реферальной ссылки
-        const referralLink = `Your referral link: https://t.me/zipperstore_bot?start=${referrerId}`;
+    // Создание реферальной ссылки
+    const referralLink = `Your referral link: https://t.me/YourBot?start=${referrerId}`;
 
-        bot.sendMessage(chatId, `Welcome! ${referralLink}`);
-    }
+    bot.sendMessage(chatId, `Welcome! ${referralLink}`);
 });
-bot.onText(/\/referralsystem/, (msg) => {
+
+// Обработчик команды /referral
+bot.onText(/\/referral/, (msg) => {
     const chatId = msg.chat.id;
 
-    if (referralData[chatId]) {
-        const referrerId = referralData[chatId];
+    if (referralDict[chatId]) {
+        const referrerId = referralDict[chatId];
 
         // Получение информации о реферере
         const referrer = msg.from;
