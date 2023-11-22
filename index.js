@@ -110,14 +110,13 @@ bot.on('message', async(msg) => {
     }
 });
 const referralDict = {};
-
+const referralMap = new Map();
 // Обработчик команды /start
 bot.onText(/\/regreffer/, (msg) => {
     const chatId = msg.chat.id;
     const referrerId = msg.from.id;
-
+     referralMap.set(referrerId, chatId);
     // Сохранение реферера для текущего пользователя
-    referralDict[chatId] = referrerId;
 
     // Создание реферальной ссылки
     const referralLink = `Your referral link: https://t.me/zipperstore_bot?start=${referrerId}`;
@@ -128,10 +127,9 @@ bot.onText(/\/regreffer/, (msg) => {
 // Обработчик команды /referral
 bot.onText(/\/referral/, (msg) => {
     const chatId = msg.chat.id;
+    const referredUserId = referralMap.get(chatId);
 
-    if (referralDict[chatId]) {
-        const referrerId = referralDict[chatId];
-
+    if (referredUserId) {
         // Получение информации о реферере
         const referrer = msg.from;
 
@@ -140,6 +138,7 @@ bot.onText(/\/referral/, (msg) => {
         bot.sendMessage(chatId, 'You do not have a referrer.');
     }
 });
+
 
 app.post('/customer/settings/client/buy/offer', async (req, res) => {
     const { queryId, price, size, name, userId, order_id } = req.body;
