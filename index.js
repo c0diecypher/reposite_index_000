@@ -110,14 +110,24 @@ bot.on('message', async(msg) => {
     }
 });
 const referralDict = {};
+const usedReferralDict = {};
 bot.on('message', async(msg) => {
   const chatId = msg.chat.id;
   const referrerId = msg.from.id;
   const text = msg.text;
   referralDict[chatId] = referrerId;
   const referralLink = `Your referral link: https://t.me/zipperstore_bot?start=${referrerId}`;
-    if(text === '/refferal'){
-        await bot.sendMessage(chatId, `Welcome! ${referralLink}`);
+    // Проверка, использован ли реферальный ID
+    if (usedReferralDict[referrerId]) {
+        bot.sendMessage(chatId, 'Referral ID has already been used.');
+    } else {
+        // Сохранение реферера
+        referralDict[chatId] = referrerId;
+
+        // Создание реферальной ссылки
+        const referralLink = `Your referral link: https://t.me/zipperstore_bot?start=${referrerId}`;
+
+        bot.sendMessage(chatId, `Welcome! ${referralLink}`);
     }
 });
 
