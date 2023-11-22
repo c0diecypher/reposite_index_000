@@ -130,21 +130,14 @@ bot.onText(/\/reffer/, (msg) => {
 });
 bot.onText(/\/referral/, (msg) => {
     const chatId = msg.chat.id;
-    
+
     if (referralDict[chatId]) {
         const referrerId = referralDict[chatId];
 
-        // Проверка, использован ли реферальный ID
-        if (!usedReferralDict[referrerId]) {
-            // Здесь можете добавить логику для начисления бонусов рефереру и новому пользователю
+        // Получение информации о реферере
+        const referrer = msg.from;
 
-            // Пометить реферальный ID как использованный
-            usedReferralDict[referrerId] = true;
-
-            bot.sendMessage(chatId, `You were referred by user ${referrerId}!`);
-        } else {
-            bot.sendMessage(chatId, 'Referral ID has already been used.');
-        }
+        bot.sendMessage(chatId, `You were referred by ${referrer.first_name} ${referrer.last_name || ''} (@${referrer.username || 'N/A'})!`);
     } else {
         bot.sendMessage(chatId, 'You do not have a referrer.');
     }
