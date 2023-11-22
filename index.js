@@ -109,7 +109,7 @@ bot.on('message', async(msg) => {
       
     }
 });
-
+const referralDict = {};
 bot.on('message', async(msg) => {
   const chatId = msg.chat.id;
   const referrerId = msg.from.id;
