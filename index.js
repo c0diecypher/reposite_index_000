@@ -123,7 +123,7 @@ bot.onText(/\/reffer/, (msg) => {
         referralDict[chatId] = referrerId;
 
         // Создание реферальной ссылки
-        const referralLink = `Your referral link: https://t.me/YourBot?start=${referrerId}`;
+        const referralLink = `Your referral link: https://t.me/zipperstore_bot?start=${referrerId}`;
 
         bot.sendMessage(chatId, `Welcome! ${referralLink}`);
     }
