@@ -109,7 +109,7 @@ bot.on('message', async(msg) => {
       
     }
 });
-const referralDict = {};
+const referralData = {};
 const usedReferralDict = {};
 bot.onText(/\/reffer/, (msg) => {
     const chatId = msg.chat.id;
@@ -128,11 +128,11 @@ bot.onText(/\/reffer/, (msg) => {
         bot.sendMessage(chatId, `Welcome! ${referralLink}`);
     }
 });
-bot.onText(/\/referral/, (msg) => {
+bot.onText(/\/referralsystem/, (msg) => {
     const chatId = msg.chat.id;
 
-    if (referralDict[chatId]) {
-        const referrerId = referralDict[chatId];
+    if (referralData[chatId]) {
+        const referrerId = referralData[chatId];
 
         // Получение информации о реферере
         const referrer = msg.from;
