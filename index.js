@@ -123,7 +123,7 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
     try {
         // Проверяем, что referralId и referralCode не одинаковы
         if (referralId === referralCode) {
-            bot.sendMessage(chatId, 'Ты пидорас или педофил?');
+            bot.sendMessage(chatId, 'Нельзя применять собственный реферальный код. Попробуйте пригласить друзей!');
             return;
         }
 
