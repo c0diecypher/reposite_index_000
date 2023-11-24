@@ -51,7 +51,7 @@ const User = sequelize.define('User', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  userOrderStatus: {
+  referralLink: {
     type: DataTypes.STRING, 
     allowNull: true,
     unique: true,
