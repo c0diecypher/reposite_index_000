@@ -127,34 +127,26 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
             return;
         }
 
-        // Ищем пользователя в базе данных по referralId
-        const userWithReferralId = await User.findOne({ where: {  referralId: referralId.toString() } });
-
-        if (userWithReferralId) {
-            bot.sendMessage(chatId, 'Реферальные коды можно использовать только один раз.');
-            return;
-        }
-
         // Ищем пользователя в базе данных по userId (referralCode)
         const existingUser = await User.findOne({ where: { userId: referralCode.toString() } });
 
         if (!existingUser) {
-            bot.sendMessage(chatId, 'Данный реферальный код не существует.');
+            bot.sendMessage(chatId, 'Данный реферальный код не существует. Пожалуйста, уточните правильный реферальный код.');
             return;
         }
 
-        // Если пользователь существует, проверяем, был ли уже использован этот referralId
-        const currentReferral = existingUser.referralId ? JSON.parse(existingUser.referralId) : null;
+        // Проверяем, использовался ли уже referralId
+        const currentReferrals = existingUser.referralId ? JSON.parse(existingUser.referralId) : [];
 
-        if (currentReferral && currentReferral.referralId !== referralId) {
-            bot.sendMessage(chatId, 'Вы уже использовали реферальный код.');
+        if (currentReferrals.some(ref => ref === referralId)) {
+            bot.sendMessage(chatId, 'Этот реферальный код уже был использован данным пользователем. Реферальные коды можно использовать только один раз.');
             return;
         }
 
-        // Обновляем запись в таблице Users
+        // Обновляем запись в таблице Users, добавляя referralId
         await User.update(
             {
-                referralId: JSON.stringify({ referralId: referralId })
+                referralId: JSON.stringify([...currentReferrals, referralId])
             },
             {
                 where: { userId: referralCode.toString() },
