@@ -106,6 +106,20 @@ bot.on('message', async(msg) => {
           await existingUser.update({
             referralLink: referralLink
           });
+          console.log(userData, 'Данные в базе данных успешно обновлены.');
+        } else {
+          console.log(userData, 'Данные в базе данных остались без изменений.');
+        }
+      } else {
+        const user = {
+          userId: userId.toString(),
+          referralLink: referralLink
+        };
+
+        await User.create(user);
+
+        console.log('Новая запись создана в базе данных:', userData);
+      }
   console.log(chatId);
     if(text === '/start'){
         await bot.sendMessage(chatId,start,{
