@@ -131,7 +131,7 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
         const userWithReferralId = await User.findOne({ where: { referralId: referralId.toString() } });
 
         if (userWithReferralId) {
-            bot.sendMessage(chatId, 'Этот реферальный код уже был использован данным пользователем. Реферальные коды можно использовать только один раз.');
+            bot.sendMessage(chatId, 'Реферальные коды можно использовать только один раз.');
             return;
         }
 
