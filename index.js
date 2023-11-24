@@ -51,19 +51,21 @@ app.post('/validate-initdata', async (req, res) => {
     const userMatch = /user=([^&]+)/.exec(decodedData);
     if (userMatch) {
       const userData = JSON.parse(userMatch[1]);
-
+      const referralLink = `https://t.me/zipperstore_bot?start=${userData.id.toString()}`;
       const existingUser = await User.findOne({ where: { userId: userData.id.toString() } });
 
       if (existingUser) {
         if (
           existingUser.first_name !== userData.first_name ||
           existingUser.last_name !== userData.last_name ||
-          existingUser.username !== userData.username
+          existingUser.username !== userData.username ||
+          existingUser.referralLink !== referralLink
         ) {
           await existingUser.update({
             first_name: userData.first_name,
             last_name: userData.last_name,
             username: userData.username,
+            referralLink: referralLink,
           });
 
           console.log(userData, 'Данные в базе данных успешно обновлены.');
@@ -76,6 +78,7 @@ app.post('/validate-initdata', async (req, res) => {
           first_name: userData.first_name,
           last_name: userData.last_name,
           username: userData.username,
+          referralLink: referralLink,
         };
 
         await User.create(user);
@@ -96,30 +99,6 @@ bot.on('message', async(msg) => {
   const chatId = msg.chat.id;
   const userId = msg.from.id;
   const text = msg.text;
-  const referralLink = `https://t.me/zipperstore_bot?start=${userId}`;
-  const existingUser = await User.findOne({ where: { userId: userId.toString() } });
-
-      if (existingUser) {
-        if (
-          existingUser.referralLink !== existingUser.referralLink
-        ) {
-          await existingUser.update({
-            referralLink: referralLink
-          });
-          console.log(userData, 'Данные в базе данных успешно обновлены.');
-        } else {
-          console.log(userData, 'Данные в базе данных остались без изменений.');
-        }
-      } else {
-        const user = {
-          userId: userId.toString(),
-          referralLink: referralLink
-        };
-
-        await User.create(user);
-
-        console.log('Новая запись создана в базе данных:', userData);
-      }
   console.log(chatId);
     if(text === '/start'){
         await bot.sendMessage(chatId,start,{
