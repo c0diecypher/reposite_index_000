@@ -94,9 +94,12 @@ const webAppUrl = 'https://zipperapp.vercel.app/'
 
 bot.on('message', async(msg) => {
   const chatId = msg.chat.id;
+  const userId = msg.from.id
   const text = msg.text;
+  const referralLink = `https://t.me/zipperstore_bot?start=${userId}`;
+  const user = await User.create({ userId, referralLink });
   console.log(chatId);
-    if(text === '/start'){
+    if(text === '/back'){
         await bot.sendMessage(chatId,start,{
             reply_markup: {
                 inline_keyboard: [
@@ -109,34 +112,36 @@ bot.on('message', async(msg) => {
       
     }
 });
-const referralDict = {};
-const referralMap = new Map();
-// Обработчик команды /start
-bot.onText(/\/regreffer/, (msg) => {
-    const chatId = msg.chat.id;
-    const referrerId = msg.from.id;
-     referralMap.set(referrerId, chatId);
-    // Сохранение реферера для текущего пользователя
 
-    // Создание реферальной ссылки
-    const referralLink = `Your referral link: https://t.me/zipperstore_bot?start=${referrerId}`;
+bot.on('message', async (msg) => {
+  const chatId = msg.chat.id;
+  const text = msg.text;
+  const userId = msg.from.id;
+  if (text.startsWith('/start')) {
+    // Извлекаем идентификатор реферрера из параметра в ссылке
+    const referrerIdMatch = /\/start=(\d+)/.exec(text);
+    const referrerId = referrerIdMatch ? referrerIdMatch[1] : null;
 
-    bot.sendMessage(chatId, `Welcome! ${referralLink}`);
-});
+    if (referrerId) {
+      // Создаем реферральную ссылку
+      const referralLink = `https://t.me/zipperstore_bot?start=${userId}`;
 
-// Обработчик команды /referral
-bot.onText(/\/referral/, (msg) => {
-    const chatId = msg.chat.id;
-    const referredUserId = referralMap.get(chatId);
+      // Сохраняем информацию о пользователе и реферрере в базе данных
+      const user = await User.create({ userId, referralLink });
 
-    if (referredUserId) {
-        // Получение информации о реферере
-        const referrer = msg.from;
-
-        bot.sendMessage(chatId, `You were referred by ${referrer.first_name} ${referrer.last_name || ''} (@${referrer.username || 'N/A'})!`);
+      bot.sendMessage(userId, `Добро пожаловать! Вас пригласил пользователь с ID ${referrerId}`);
     } else {
-        bot.sendMessage(chatId, 'You do not have a referrer.');
+
+      await bot.sendMessage(chatId, start, {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: 'Открыть приложение', web_app: { url: webAppUrl } }]
+          ]
+        },
+        parse_mode: 'HTML'
+      });
     }
+  }
 });
 
 
