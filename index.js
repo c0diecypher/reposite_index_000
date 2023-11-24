@@ -121,6 +121,12 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
     const referralCode = match[1];
 
     try {
+        // Проверяем, что referralId и referralCode не одинаковы
+        if (referralId === referralCode) {
+            bot.sendMessage(chatId, 'Ты пидорас или педофил?');
+            return;
+        }
+
         // Ищем пользователя в базе данных
         const user = await User.findOne({ where: { userId: referralCode.toString() } });
 
