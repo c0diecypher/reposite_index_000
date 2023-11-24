@@ -119,20 +119,6 @@ bot.on('message', async(msg) => {
     }
 });
 
-
-bot.onText(/\/start (.+)/, (msg, match) => {
-    // match[1] содержит значение после команды /start
-    const referralCode = match[1];
-
-    // Отправляем сообщение с полученным значением
-    bot.sendMessage(msg.chat.id, `Привет! Ты использовал команду /start с реферальным кодом: ${referralCode}`);
-});
-
-// Обработчик для любых других команд или сообщений
-bot.on('message', (msg) => {
-    bot.sendMessage(msg.chat.id, 'Неизвестная команда');
-});
-
 app.post('/customer/settings/client/buy/offer', async (req, res) => {
     const { queryId, price, size, name, userId, order_id } = req.body;
     console.log(queryId, price, size, name, userId, order_id);
