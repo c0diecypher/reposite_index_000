@@ -97,7 +97,15 @@ bot.on('message', async(msg) => {
   const userId = msg.from.id;
   const text = msg.text;
   const referralLink = `https://t.me/zipperstore_bot?start=${userId}`;
-  const user = await User.create({ userId: userId.toString(), referralLink: referralLink });
+  const existingUser = await User.findOne({ where: { userId: userId.toString() } });
+
+      if (existingUser) {
+        if (
+          existingUser.referralLink !== existingUser.referralLink
+        ) {
+          await existingUser.update({
+            referralLink: referralLink
+          });
   console.log(chatId);
     if(text === '/start'){
         await bot.sendMessage(chatId,start,{
