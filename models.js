@@ -82,9 +82,8 @@ const User = sequelize.define('User', {
     unique: true,
   },
   referralId: {
-    type: DataTypes.STRING, 
+    type: DataTypes.TEXT,
     allowNull: true,
-    unique: true,
   },
 });
 
