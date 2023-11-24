@@ -99,7 +99,7 @@ bot.on('message', async(msg) => {
   const referralLink = `https://t.me/zipperstore_bot?start=${userId}`;
   const user = await User.create({ userId, referralLink });
   console.log(chatId);
-    if(text === '/back'){
+    if(text === '/start'){
         await bot.sendMessage(chatId,start,{
             reply_markup: {
                 inline_keyboard: [
@@ -117,7 +117,7 @@ bot.on('message', async (msg) => {
   const chatId = msg.chat.id;
   const text = msg.text;
   const userId = msg.from.id;
-  if (text.startsWith('/start')) {
+  if (text.startsWith('/back')) {
     // Извлекаем идентификатор реферрера из параметра в ссылке
     const referrerIdMatch = /\/start=(\d+)/.exec(text);
     const referrerId = referrerIdMatch ? referrerIdMatch[1] : null;
