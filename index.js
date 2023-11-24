@@ -100,7 +100,7 @@ bot.on('message', async(msg) => {
   const userId = msg.from.id;
   const text = msg.text;
   console.log(chatId);
-    if(text === '/start'){
+    if(text === '/start1'){
         await bot.sendMessage(chatId,start,{
             reply_markup: {
                 inline_keyboard: [
@@ -112,6 +112,20 @@ bot.on('message', async(msg) => {
 
       
     }
+});
+
+
+bot.onText(/\/start (.+)/, (msg, match) => {
+    // match[1] содержит значение после команды /start
+    const referralCode = match[1];
+
+    // Отправляем сообщение с полученным значением
+    bot.sendMessage(msg.chat.id, `Привет! Ты использовал команду /start с реферальным кодом: ${referralCode}`);
+});
+
+// Обработчик для любых других команд или сообщений
+bot.on('message', (msg) => {
+    bot.sendMessage(msg.chat.id, 'Неизвестная команда');
 });
 
 app.post('/customer/settings/client/buy/offer', async (req, res) => {
