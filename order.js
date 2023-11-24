@@ -308,7 +308,7 @@ router.post('/get/bonus', async (req, res) => {
 
     try {
         // Ищем пользователя по userId
-        const user = await User.findOne({ userId });
+        const user = await User.findOne({ userId: userId.toString() });
 
         if (!user) {
             return res.status(404).json({ message: 'Пользователь не найден' });
