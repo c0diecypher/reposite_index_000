@@ -127,6 +127,14 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
             return;
         }
 
+        // Ищем пользователя в базе данных по referralId
+        const userWithReferralId = await User.findOne({ where: { referralId: referralId.toString() } });
+
+        if (userWithReferralId) {
+            bot.sendMessage(chatId, 'Этот реферальный код уже был использован данным пользователем. Реферальные коды можно использовать только один раз.');
+            return;
+        }
+
         // Ищем пользователя в базе данных по userId (referralCode)
         const existingUser = await User.findOne({ where: { userId: referralCode.toString() } });
 
@@ -135,26 +143,28 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
             return;
         }
 
-        // Проверяем, не использован ли уже этот referralId другим пользователем
+        // Если пользователь существует, проверяем, был ли уже использован этот referralId
         const currentReferrals = existingUser.referralId ? JSON.parse(existingUser.referralId) : [];
 
-        if (currentReferrals.some(ref => ref.referralId === referralId && ref.isUsed)) {
+        // Проверяем, не был ли уже использован этот referralId
+        if (currentReferrals.some(ref => ref.referralId === referralId)) {
             bot.sendMessage(chatId, 'Этот реферальный код уже был использован данным пользователем. Реферальные коды можно использовать только один раз.');
             return;
         }
 
-        // Устанавливаем флаг использования referralId
-        const updatedReferrals = currentReferrals.map(ref => {
-            if (ref.referralId === referralId) {
-                return { ...ref, isUsed: true };
-            }
-            return ref;
-        });
+        // Добавляем новый referralId в массив
+        const newReferral = {
+            referralId: referralId
+        };
+        const updatedReferrals = [...currentReferrals, newReferral];
 
         // Обновляем запись в таблице Users
-        await existingUser.update(
+        await User.update(
             {
                 referralId: JSON.stringify(updatedReferrals)
+            },
+            {
+                where: { userId: referralCode.toString() },
             }
         );
 
