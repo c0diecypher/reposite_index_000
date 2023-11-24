@@ -135,27 +135,21 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
             return;
         }
 
-        // Если пользователь существует, проверяем, был ли уже использован этот referralId
+        // Проверяем, не использован ли уже этот referralId другим пользователем
         const currentReferrals = existingUser.referralId ? JSON.parse(existingUser.referralId) : [];
 
-        // Проверяем, не был ли уже использован этот referralId
-        if (currentReferrals.some(ref => ref.referralId === referralId)) {
+        if (currentReferrals.some(ref => ref.referralId === referralId && ref.isUsed)) {
             bot.sendMessage(chatId, 'Этот реферальный код уже был использован данным пользователем. Реферальные коды можно использовать только один раз.');
             return;
         }
 
-        // Проверяем, не использован ли уже этот referralId другим пользователем
-        const userWithReferralId = await User.findOne({ where: { referralId: referralId.toString() } });
-        if (userWithReferralId) {
-            bot.sendMessage(chatId, 'Этот реферальный код уже был использован другим пользователем. Реферальные коды можно использовать только один раз.');
-            return;
-        }
-
-        // Добавляем новый referralId в массив
-        const newReferral = {
-            referralId: referralId
-        };
-        const updatedReferrals = [...currentReferrals, newReferral];
+        // Устанавливаем флаг использования referralId
+        const updatedReferrals = currentReferrals.map(ref => {
+            if (ref.referralId === referralId) {
+                return { ...ref, isUsed: true };
+            }
+            return ref;
+        });
 
         // Обновляем запись в таблице Users
         await User.update(
