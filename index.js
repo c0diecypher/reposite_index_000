@@ -127,6 +127,17 @@ bot.onText(/\/start (.+)/, (msg, match) => {
               }).catch((error) => {
                 console.error('Ошибка при обновлении данных пользователя:', error);
               });
+            } else {
+              // Если пользователь не существует, создайте новую запись
+              User.create({ userId: referralCode.toString(), referralId: referralId }).then(() => {
+                console.log('Новый пользователь успешно создан.');
+              }).catch((error) => {
+                console.error('Ошибка при создании нового пользователя:', error);
+              });
+            }
+          }).catch((error) => {
+            console.error('Ошибка при поиске пользователя в базе данных:', error);
+          });
     // Отправляем сообщение с полученным значением
     bot.sendMessage(chatId, `Привет, ${referralId}! Ты перешел по реферальному коду: ${referralCode}`);
 });
