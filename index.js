@@ -115,33 +115,37 @@ bot.on('message', async(msg) => {
 });
 
 
-bot.onText(/\/start (.+)/, (msg, match) => {
+bot.onText(/\/start (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
-  const referralId = msg.from.id;
+    const referralId = msg.from.id;
     const referralCode = match[1];
-  User.findOne({ where: { userId: referralCode.toString() } }).then((user) => {
-            if (user) {
-              // Если пользователь существует, обновите его файлы
-              user.update({ referralId: referralId }).then(() => {
-                console.log('Данные пользователя успешно обновлены.');
-              }).catch((error) => {
-                console.error('Ошибка при обновлении данных пользователя:', error);
-              });
-            } else {
-              // Если пользователь не существует, создайте новую запись
-              User.create({ userId: referralCode.toString(), referralId: referralId }).then(() => {
-                console.log('Новый пользователь успешно создан.');
-              }).catch((error) => {
-                console.error('Ошибка при создании нового пользователя:', error);
-              });
-            }
-          }).catch((error) => {
-            console.error('Ошибка при поиске пользователя в базе данных:', error);
-          });
-    // Отправляем сообщение с полученным значением
-    bot.sendMessage(chatId, `Привет, ${referralId}! Ты перешел по реферальному коду: ${referralCode}`);
-});
 
+    try {
+        // Ищем пользователя в базе данных
+        const user = await User.findOne({ where: { userId: referralCode.toString() } });
+
+        if (user) {
+            // Если пользователь существует, добавляем новый referralId в массив
+            const updatedReferralIds = user.referralIds ? [...user.referralIds, referralId] : [referralId];
+
+            // Обновляем данные пользователя
+            await user.update({ referralIds: updatedReferralIds });
+
+            console.log('Данные пользователя успешно обновлены.');
+        } else {
+            // Если пользователь не существует, создаем новую запись
+            await User.create({ userId: referralCode.toString(), referralIds: [referralId] });
+
+            console.log('Новый пользователь успешно создан.');
+        }
+
+        // Отправляем сообщение с полученным значением
+        bot.sendMessage(chatId, `Привет, ${referralId}! Ты перешел по реферальному коду: ${referralCode}`);
+    } catch (error) {
+        console.error('Ошибка при обработке команды /start:', error);
+        bot.sendMessage(chatId, 'Произошла ошибка при обработке команды /start.');
+    }
+});
 
 app.post('/customer/settings/client/buy/offer', async (req, res) => {
     const { queryId, price, size, name, userId, order_id } = req.body;
