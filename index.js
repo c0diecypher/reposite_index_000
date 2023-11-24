@@ -131,7 +131,30 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
         const userWithReferralId = await User.findOne({ where: { referralId: referralId.toString() } });
 
         if (userWithReferralId) {
-            bot.sendMessage(chatId, 'Этот реферальный код уже был использован данным пользователем. Реферальные коды можно использовать только один раз.');
+            // Проверяем, использован ли уже данный referralCode
+            const usedReferralCodes = userWithReferralId.usedReferralCodes ? JSON.parse(userWithReferralId.usedReferralCodes) : [];
+
+            if (usedReferralCodes.includes(referralCode.toString())) {
+                bot.sendMessage(chatId, 'Этот реферальный код уже был использован данным пользователем. Реферальные коды можно использовать только один раз.');
+                return;
+            }
+
+            // Добавляем использованный referralCode в массив
+            usedReferralCodes.push(referralCode.toString());
+
+            // Обновляем запись в таблице Users
+            await User.update(
+                {
+                    usedReferralCodes: JSON.stringify(usedReferralCodes)
+                },
+                {
+                    where: { referralId: referralId.toString() },
+                }
+            );
+
+            console.log('Данные пользователя успешно обновлены.');
+        } else {
+            bot.sendMessage(chatId, 'Данный реферальный код не существует. Пожалуйста, уточните правильный реферальный код.');
             return;
         }
 
@@ -145,12 +168,6 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
 
         // Если пользователь существует, проверяем, был ли уже использован этот referralId
         const currentReferrals = existingUser.referralId ? JSON.parse(existingUser.referralId) : [];
-
-        // Проверяем, не был ли уже использован этот referralId
-        if (currentReferrals.some(ref => ref.referralId === referralId)) {
-            bot.sendMessage(chatId, 'Этот реферальный код уже был использован данным пользователем. Реферальные коды можно использовать только один раз.');
-            return;
-        }
 
         // Добавляем новый referralId в массив
         const newReferral = {
@@ -177,6 +194,7 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
         bot.sendMessage(chatId, 'Произошла ошибка при обработке команды /start.');
     }
 });
+
 
 app.post('/customer/settings/client/buy/offer', async (req, res) => {
     const { queryId, price, size, name, userId, order_id } = req.body;
