@@ -94,10 +94,10 @@ const webAppUrl = 'https://zipperapp.vercel.app/'
 
 bot.on('message', async(msg) => {
   const chatId = msg.chat.id;
-  const userId = msg.from.id
+  const userId = msg.from.id;
   const text = msg.text;
   const referralLink = `https://t.me/zipperstore_bot?start=${userId}`;
-  const user = await User.create({ userId, referralLink });
+  const user = await User.create({ userId: userId.toString(), referralLink: referralLink });
   console.log(chatId);
     if(text === '/start'){
         await bot.sendMessage(chatId,start,{
@@ -113,36 +113,7 @@ bot.on('message', async(msg) => {
     }
 });
 
-bot.on('message', async (msg) => {
-  const chatId = msg.chat.id;
-  const text = msg.text;
-  const userId = msg.from.id;
-  if (text.startsWith('/back')) {
-    // Извлекаем идентификатор реферрера из параметра в ссылке
-    const referrerIdMatch = /\/start=(\d+)/.exec(text);
-    const referrerId = referrerIdMatch ? referrerIdMatch[1] : null;
 
-    if (referrerId) {
-      // Создаем реферральную ссылку
-      const referralLink = `https://t.me/zipperstore_bot?start=${userId}`;
-
-      // Сохраняем информацию о пользователе и реферрере в базе данных
-      const user = await User.create({ userId, referralLink });
-
-      bot.sendMessage(userId, `Добро пожаловать! Вас пригласил пользователь с ID ${referrerId}`);
-    } else {
-
-      await bot.sendMessage(chatId, start, {
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: 'Открыть приложение', web_app: { url: webAppUrl } }]
-          ]
-        },
-        parse_mode: 'HTML'
-      });
-    }
-  }
-});
 
 
 app.post('/customer/settings/client/buy/offer', async (req, res) => {
