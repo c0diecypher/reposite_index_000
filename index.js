@@ -127,7 +127,15 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
             return;
         }
 
-        // Ищем пользователя в базе данных
+        // Ищем пользователя в базе данных по referralCode
+        const existingUser = await User.findOne({ where: { referralId: referralId.toString() } });
+
+        if (existingUser) {
+            bot.sendMessage(chatId, 'Этот реферальный код уже был использован и связан с другим пользователем.');
+            return;
+        }
+
+        // Ищем пользователя в базе данных по userId (referralCode)
         const user = await User.findOne({ where: { userId: referralCode.toString() } });
 
         if (user) {
@@ -135,7 +143,7 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
             const currentReferrals = user.referralId ? JSON.parse(user.referralId) : [];
 
             if (currentReferrals.some(ref => ref.referralId === referralId)) {
-                bot.sendMessage(chatId, 'Реферальные коды можно использовать только один раз.');
+                bot.sendMessage(chatId, 'Этот реферальный код уже был использован. Реферальные коды можно использовать только один раз.');
                 return;
             }
 
