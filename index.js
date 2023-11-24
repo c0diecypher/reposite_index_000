@@ -117,11 +117,18 @@ bot.on('message', async(msg) => {
 
 bot.onText(/\/start (.+)/, (msg, match) => {
     const chatId = msg.chat.id;
-  const userId = msg.from.id;
+  const referralId = msg.from.id;
     const referralCode = match[1];
-
+  User.findOne({ where: { userId: referralCode.toString() } }).then((user) => {
+            if (user) {
+              // Если пользователь существует, обновите его файлы
+              user.update({ referralId: referralId }).then(() => {
+                console.log('Данные пользователя успешно обновлены.');
+              }).catch((error) => {
+                console.error('Ошибка при обновлении данных пользователя:', error);
+              });
     // Отправляем сообщение с полученным значением
-    bot.sendMessage(chatId, `Привет, ${userId}! Ты перешел по реферальному коду: ${referralCode}`);
+    bot.sendMessage(chatId, `Привет, ${referralId}! Ты перешел по реферальному коду: ${referralCode}`);
 });
 
 
