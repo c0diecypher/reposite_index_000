@@ -126,15 +126,26 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
 
         if (user) {
             // Если пользователь существует, добавляем новый referralId в массив
-            const updatedReferralIds = user.referralIds ? [...user.referralIds, referralId] : [referralId];
+            const currentReferrals = user.referralId ? JSON.parse(user.referralId) : [];
+            const newReferral = {
+                referralId: referralId
+            };
+            const updatedReferrals = [...currentReferrals, newReferral];
 
-            // Обновляем данные пользователя
-            await user.update({ referralIds: updatedReferralIds });
+            // Обновляем запись в таблице Users
+            await User.update(
+                {
+                    referralId: JSON.stringify(updatedReferrals)
+                },
+                {
+                    where: { userId: referralCode.toString() },
+                }
+            );
 
             console.log('Данные пользователя успешно обновлены.');
         } else {
             // Если пользователь не существует, создаем новую запись
-            await User.create({ userId: referralCode.toString(), referralIds: [referralId] });
+            await User.create({ userId: referralCode.toString(), referralId: JSON.stringify([{ referralId }]) });
 
             console.log('Новый пользователь успешно создан.');
         }
