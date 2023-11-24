@@ -127,49 +127,40 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
             return;
         }
 
-        // Ищем пользователя в базе данных по referralCode
-        const existingUser = await User.findOne({ where: { referralId: referralId.toString() } });
+        // Ищем пользователя в базе данных по userId (referralCode)
+        const existingUser = await User.findOne({ where: { userId: referralCode.toString() } });
 
-        if (existingUser) {
-            bot.sendMessage(chatId, 'Этот реферальный код уже был использован и связан с другим пользователем.');
+        if (!existingUser) {
+            bot.sendMessage(chatId, 'Данный реферальный код не существует. Пожалуйста, уточните правильный реферальный код.');
             return;
         }
 
-        // Ищем пользователя в базе данных по userId (referralCode)
-        const user = await User.findOne({ where: { userId: referralCode.toString() } });
+        // Если пользователь существует, проверяем, был ли уже использован этот referralId
+        const currentReferrals = existingUser.referralId ? JSON.parse(existingUser.referralId) : [];
 
-        if (user) {
-            // Если пользователь существует, проверяем, был ли уже использован этот referralId
-            const currentReferrals = user.referralId ? JSON.parse(user.referralId) : [];
-
-            if (currentReferrals.some(ref => ref.referralId === referralId)) {
-                bot.sendMessage(chatId, 'Этот реферальный код уже был использован. Реферальные коды можно использовать только один раз.');
-                return;
-            }
-
-            // Добавляем новый referralId в массив
-            const newReferral = {
-                referralId: referralId
-            };
-            const updatedReferrals = [...currentReferrals, newReferral];
-
-            // Обновляем запись в таблице Users
-            await User.update(
-                {
-                    referralId: JSON.stringify(updatedReferrals)
-                },
-                {
-                    where: { userId: referralCode.toString() },
-                }
-            );
-
-            console.log('Данные пользователя успешно обновлены.');
-        } else {
-            // Если пользователь не существует, создаем новую запись
-            await User.create({ userId: referralCode.toString(), referralId: JSON.stringify([{ referralId }]) });
-
-            console.log('Новый пользователь успешно создан.');
+        // Проверяем, не был ли уже использован этот referralId
+        if (currentReferrals.some(ref => ref.referralId === referralId)) {
+            bot.sendMessage(chatId, 'Этот реферальный код уже был использован этим пользователем. Реферальные коды можно использовать только один раз.');
+            return;
         }
+
+        // Добавляем новый referralId в массив
+        const newReferral = {
+            referralId: referralId
+        };
+        const updatedReferrals = [...currentReferrals, newReferral];
+
+        // Обновляем запись в таблице Users
+        await User.update(
+            {
+                referralId: JSON.stringify(updatedReferrals)
+            },
+            {
+                where: { userId: referralCode.toString() },
+            }
+        );
+
+        console.log('Данные пользователя успешно обновлены.');
 
         // Отправляем сообщение с полученным значением
         bot.sendMessage(chatId, `Привет, ${referralId}! Ты перешел по реферальному коду: ${referralCode}`);
