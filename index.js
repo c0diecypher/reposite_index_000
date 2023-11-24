@@ -100,7 +100,7 @@ bot.on('message', async(msg) => {
   const userId = msg.from.id;
   const text = msg.text;
   const match = text.match(/\/start (.+)/);
-    const referralCode = match ? match[1] : null;
+    const referralCode = match ? match[1];
   console.log(chatId);
     if (text === '/start') {
         if (referralCode) {
