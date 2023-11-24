@@ -81,6 +81,11 @@ const User = sequelize.define('User', {
     allowNull: true,
     unique: true,
   },
+  referralId: {
+    type: DataTypes.STRING, 
+    allowNull: true,
+    unique: true,
+  },
 });
 
 User.sync({ force: false });
