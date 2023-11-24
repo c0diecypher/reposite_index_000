@@ -99,18 +99,23 @@ bot.on('message', async(msg) => {
   const chatId = msg.chat.id;
   const userId = msg.from.id;
   const text = msg.text;
+  const match = text.match(/^\/start (.+)$/);
+    const referralCode = match ? match[1] : null;
   console.log(chatId);
-    if(text === '/start1'){
-        await bot.sendMessage(chatId,start,{
-            reply_markup: {
-                inline_keyboard: [
-                    [{text: 'Open App', web_app: {url: webAppUrl}}]
-                ]
-            },
-            parse_mode: 'HTML'
-        })
-
-      
+    if (text === '/start') {
+        if (referralCode) {
+            // Реферальный код есть, отправляем сообщение с ним
+            await bot.sendMessage(chatId, `Привет! ${userId} Ты использовал команду /start с реферальным кодом: ${referralCode}`);
+        } else {
+          await bot.sendMessage(chatId,start,{
+              reply_markup: {
+                  inline_keyboard: [
+                      [{text: 'Open App', web_app: {url: webAppUrl}}]
+                  ]
+              },
+              parse_mode: 'HTML'
+          })
+        }
     }
 });
 
