@@ -152,12 +152,9 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
         });
 
         // Обновляем запись в таблице Users
-        await User.update(
+        await existingUser.update(
             {
                 referralId: JSON.stringify(updatedReferrals)
-            },
-            {
-                where: { userId: referralCode.toString() },
             }
         );
 
