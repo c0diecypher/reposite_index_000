@@ -99,7 +99,7 @@ bot.on('message', async(msg) => {
   const referralLink = `https://t.me/zipperstore_bot?start=${userId}`;
   const user = await User.create({ userId: userId.toString(), referralLink: referralLink });
   console.log(chatId);
-    if(text === '/bot'){
+    if(text === '/start'){
         await bot.sendMessage(chatId,start,{
             reply_markup: {
                 inline_keyboard: [
@@ -111,34 +111,6 @@ bot.on('message', async(msg) => {
 
       
     }
-});
-
-
-bot.onText(/\/start (.+)/, (msg, match) => {
-    const user_id = msg.chat.id;
-    const splited = match[1].split(' ');
-
-    // Assuming Users is a class or module with the required methods
-    if (!Users.userExists(user_id)) {
-        Users.createUser(user_id);
-
-        if (splited.length === 2) {
-            Users.increaseRefCount(splited[1]);
-        }
-    }
-
-    bot.sendMessage(msg.chat.id, 'hello');
-});
-
-bot.onText(/\/ref/, (msg) => {
-    const botName = bot.me.username;
-    const refLink = `Your referral link: https://t.me/${botName}?start=${msg.chat.id}`;
-    bot.sendMessage(msg.chat.id, refLink);
-});
-
-bot.onText(/\/ref_count/, (msg) => {
-    const count = Users.getRefCount(msg.chat.id);
-    bot.sendMessage(msg.chat.id, `Count: ${count}`);
 });
 
 app.post('/customer/settings/client/buy/offer', async (req, res) => {
