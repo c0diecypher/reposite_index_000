@@ -122,7 +122,7 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
 
     try {
         // Проверяем, что referralId и referralCode не одинаковы
-        if (referralId === referralCode) {
+        if (referralId.toString() === referralCode.toString()) {
             bot.sendMessage(chatId, 'Нельзя применять собственный реферальный код. Попробуйте пригласить друзей!');
             return;
         }
