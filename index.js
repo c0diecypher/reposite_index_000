@@ -131,8 +131,15 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
         const user = await User.findOne({ where: { userId: referralCode.toString() } });
 
         if (user) {
-            // Если пользователь существует, добавляем новый referralId в массив
+            // Если пользователь существует, проверяем, был ли уже использован этот referralId
             const currentReferrals = user.referralId ? JSON.parse(user.referralId) : [];
+
+            if (currentReferrals.some(ref => ref.referralId === referralId)) {
+                bot.sendMessage(chatId, 'Реферальные коды можно использовать только один раз.');
+                return;
+            }
+
+            // Добавляем новый referralId в массив
             const newReferral = {
                 referralId: referralId
             };
