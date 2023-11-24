@@ -145,7 +145,7 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
         });
 
         if (allUsersWithReferralId) {
-            bot.sendMessage(chatId, 'Этот реферальный код уже был использован другим пользователем!!!');
+            bot.sendMessage(chatId, 'Вы уже используете реферальный код.');
             return;
         }
 
