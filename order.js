@@ -74,7 +74,7 @@ router.get('/connect/payment', async (req, res) => {
 
         // Извлекаем userId и order_id из requestData
         const { userId, order_id } = requestData.data;
-        console.log(userId, order_id);
+        
     try {
         const user = await User.findOne({ where: { userId: userId.toString() } });
 
@@ -119,7 +119,7 @@ router.post('/load/basket', async (req, res) => {
 
     try {
         const user = await User.findOne({ where: { userId: userId.toString() } });
-        console.log('HUECOC', user);
+        
         if (user) {
             const userOrderArray = JSON.parse(user.userOrder);
                 
@@ -156,7 +156,7 @@ router.post('/load/basket', async (req, res) => {
 //Создание ордера на оплачу в коризине
 router.post('/customer/settings/client/buy/offer/pay/basket', async (req, res) => {
     const { productId,queryId, price, size, name, userId, order_id, time } = req.body;
-    console.log(productId,queryId, price, size, name, userId, order_id);
+    
   
     // Проверьте, что userId совпадает с ожидаемым
     const allowedUserId = userId;
@@ -167,15 +167,12 @@ router.post('/customer/settings/client/buy/offer/pay/basket', async (req, res) =
     try {
         const apikey = 'cpfmxaq0su2dy63v4g9zowjh';
         const project_id = '225';
-        console.log(project_id, apikey);
+        
         const ProductName = name;
         const ProductSize = size;
         ProductOrder = order_id;
         const ProductPrice = price.replace(/\s/g, '').replace(/\u00a0/g, '');
-        console.log(ProductPrice);
-        console.log(ProductOrder);
-        console.log(ProductSize);
-        console.log(ProductName);
+        
         const config = {
                   headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -225,13 +222,12 @@ Zipper App снова ждет ваших заказов! ⚡`;
           
             const response = await axios.post('https://p2pkassa.online/api/v1/link', dataToSend, config);
             const result = response.data;
-             console.log(result);
+             
             if (result && result.link && result.id) {
               // Создаем URL для второго запроса
               const paymentUrl = result.link;
               paymentId = result.id;
-              console.log(paymentUrl);
-              console.log(paymentId);
+              
               // Отправляем второй POST-запрос
 
               const dataToPayment = {
@@ -266,7 +262,7 @@ router.post('/load/basket/paid', async (req, res) => {
 
     try {
         const user = await User.findOne({ where: { userId: userId.toString() } });
-        console.log('HUECOC', user);
+       
         if (user) {
             const userOrderArray = JSON.parse(user.userOrder);
                 
