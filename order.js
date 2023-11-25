@@ -206,9 +206,14 @@ router.post('/get/bonus', async (req, res) => {
             const referredUser = await User.findOne({ where: { userId: primaryReferralId.toString() } });
             
                if (referredUser) {
-                    const userOrderArray = JSON.parse(user.userOrder);
+                    const userOrderArray = JSON.parse(referredUser.userOrder);
                 
                     const paidOrders = userOrderArray.filter(order => order.status === 'PAID');
+
+                    if (!paidOrders) {
+                        console.log(`ну ждем`);
+                        return res.status(200).send('OK');
+                    }
                     console.log('DATA', paidOrders);
                      if (paidOrders.length > 0) {
                     // Если есть оплаченные заказы, обновляем userBonus
