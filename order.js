@@ -221,13 +221,12 @@ router.post('/get/bonus', async (req, res) => {
 
         // Помечаем referralId как обработанный
         referral.processed = true;
+        // Сохраняем обновленную информацию в базе данных
+        await User.update({ processed: true }, { where: { userId: referralId.toString() } });
       } else {
         console.log(`Пользователь с referralId ${referralId} не найден`);
       }
     }
-
-    // Сохраняем обновленные данные в базе данных
-    await user.save();
 
     // После обработки всех referralId, эмиттируем событие newBonus с общей суммой userBonus
     const bonus = user.userBonus;
