@@ -303,7 +303,7 @@ router.post('/load/basket/paid', async (req, res) => {
     }
 });
 
-router.get('/get/bonus', async (req, res) => {
+router.get('/connect/bonus', async (req, res) => {
     res.writeHead(200,{
         'Connection': 'keep-alive',
         'Content-Type': 'text/event-stream',
@@ -315,7 +315,7 @@ router.get('/get/bonus', async (req, res) => {
 });
 
 router.post('/get/bonus', async (req, res) => {
-    const { userId } req.body;
+    const userId = req.body;
     
     emitter.emit('newBonus', bonus)
     res.status(200);
