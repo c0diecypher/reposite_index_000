@@ -210,9 +210,9 @@ router.post('/get/bonus', async (req, res) => {
 
                     // Сохраняем обновленные данные в базе данных
                     await user.save();
-
+                    const bonus = user.userBonus
                     // Эмиттируем событие newBonus с обновленным userBonus
-                    emitter.emit('newBonus', user.userBonus);
+                    emitter.emit('newBonus', bonus);
                         return res.status(200).send('OK');
                     } else {
                         res.status(404).json({ error: 'Заказ не найден' });
