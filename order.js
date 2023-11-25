@@ -302,6 +302,7 @@ router.post('/load/basket/paid', async (req, res) => {
 
 router.get('/connect/bonus', async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', 'https://zipperapp.vercel.app');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.writeHead(200,{
         'Connection': 'keep-alive',
         'Content-Type': 'text/event-stream',
@@ -323,7 +324,7 @@ router.post('/get/bonus', async (req, res) => {
     }
 
     // Отправляем событие newBonus с userBonus в качестве данных
-    emitter.emit('newBonus', { userId: userId, userBonus: user.userBonus });
+    emitter.emit('newBonus', userId, user.userBonus );
 
     // Возвращаем успешный статус
     return res.status(200).send('OK');
