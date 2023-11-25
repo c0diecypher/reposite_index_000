@@ -301,7 +301,7 @@ router.get('/connect/basket', async (req, res) => {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
     })
-    emitter.on('newBasket', (bonus) => {
+    emitter.on('newBasket', (basket) => {
         console.log('Emitted new status:', basket);
         res.write(`data: ${JSON.stringify(basket)} \n\n`)
     })
@@ -336,7 +336,7 @@ router.post('/get/basket', async (req, res) => {
                 return null;
             });
     
-
+    console.log(mappedData);
     emitter.emit('newBasket', mappedData );
 
     // Возвращаем успешный статус
