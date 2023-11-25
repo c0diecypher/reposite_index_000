@@ -61,57 +61,6 @@ router.post('/update/payment', async (req, res) => {
     }
 });
 
-router.get('/connect/payment', async (req, res) => {
-        const { data } = req.query;
-        // Проверяем, что data существует
-        if (!data) {
-            res.status(400).json({ error: 'Отсутствует параметр data' });
-            return;
-        }
-
-        // Парсим данные из JSON строки
-        const requestData = JSON.parse(decodeURIComponent(data));
-
-        // Извлекаем userId и order_id из requestData
-        const { userId, order_id } = requestData.data;
-        
-    try {
-        const user = await User.findOne({ where: { userId: userId.toString() } });
-
-        if (user) {
-            const userOrderArray = JSON.parse(user.userOrder);
-        
-            const order = userOrderArray.find(order => order.order_id === order_id);
-        
-            if (order) {
-                    res.writeHead(200, {
-                    'Content-Type': 'text/event-stream',
-                    'Cache-Control': 'no-cache',
-                    'Connection': 'keep-alive',
-                    'Access-Control-Allow-Origin': 'https://zipperapp.vercel.app'
-                });
-            
-                 emitter.on('newStatus', (status) => {
-                        console.log('Emitted new status:', status);
-                        res.write(`${JSON.stringify(status)} \n\n`);
-                    });
-                
-                // Затем генерируем событие нового статуса с обновленным значением
-                emitter.emit('newStatus', order.status);
-                
-               
-                
-            } else {
-                res.status(404).json({ error: 'Заказ не найден' });
-            }
-        } else {
-            res.status(404).json({ error: 'Пользователь не найден' });
-        }
-    } catch (error) {
-        console.error('Ошибка при запросе статуса из базы данных:', error);
-        res.status(500).json({ error: 'Внутренняя ошибка сервера' });
-    }
-});
     
 //Создание ордера на оплачу в коризине
 router.post('/customer/settings/client/buy/offer/pay/basket', async (req, res) => {
@@ -225,7 +174,6 @@ router.get('/connect/bonus', async (req, res) => {
         'Cache-Control': 'no-cache',
     })
     emitter.on('newBonus', (bonus) => {
-        console.log('Emitted new status:', bonus);
         res.write(`data: ${JSON.stringify(bonus)} \n\n`)
     })
 });
@@ -262,7 +210,6 @@ router.get('/connect/basket', async (req, res) => {
         'Cache-Control': 'no-cache',
     })
     emitter.on('newBasket', (basket) => {
-        console.log('Emitted new status:', basket);
         res.write(`data: ${JSON.stringify(basket)} \n\n`)
     })
 });
@@ -319,14 +266,12 @@ router.get('/connect/basketpaid', async (req, res) => {
         'Cache-Control': 'no-cache',
     })
     emitter.on('newBasketPaid', (basketpaid) => {
-        console.log('Emitted new status:', basketpaid);
         res.write(`data: ${JSON.stringify(basketpaid)} \n\n`)
     })
 });
 
 router.post('/get/basketpaid', async (req, res) => {
     const { userId } = req.body;
-    console.log(userId);
     try {
         const user = await User.findOne({ where: { userId: userId.toString() } });
         if (user) {
