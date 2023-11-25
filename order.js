@@ -310,7 +310,7 @@ router.get('/get/bonus', async (req, res) => {
         'Cache-Control': 'no-cache',
     })
     emitter.on('newBonus', (bonus) => {
-        res.write(`data: ${JSON.stringify(bonus))} \n\n`)
+        res.write(`data: ${JSON.stringify(bonus)} \n\n`)
     })
 });
 
