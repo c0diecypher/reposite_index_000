@@ -303,23 +303,22 @@ router.post('/load/basket/paid', async (req, res) => {
     }
 });
 
+router.get('/get/bonus', async (req, res) => {
+    res.writeHead(200,{
+        'Connection': 'keep-alive',
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+    })
+    emitter.on('newBonus', (bonus) => {
+        res.write(`data: ${JSON.stringify(bonus)) \n\n}`)
+    })
+});
+
 router.post('/get/bonus', async (req, res) => {
-    const { userId } = req.body;
-
-    try {
-        // Ищем пользователя по userId
-        const user = await User.findOne({ where: { userId: userId.toString() } });
-
-        if (!user) {
-            return res.status(404).json({ message: 'Пользователь не найден' });
-        }
-
-        // Возвращаем userBonus
-        return res.status(200).json({ userBonus: user.userBonus });
-    } catch (error) {
-        console.error('Ошибка при обработке запроса /get/bonus:', error);
-        res.status(500).json({ message: 'Произошла ошибка' });
-    }
+    const { userId } req.body;
+    
+    emitter.emit('newBonus', bonus)
+    res.status(200);
 });
 
 
