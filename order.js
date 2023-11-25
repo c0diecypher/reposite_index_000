@@ -192,6 +192,10 @@ router.post('/get/bonus', async (req, res) => {
         // Парсим текстовый массив JSON в объект
         const referralIds = JSON.parse(user.referralId);
 
+        if (!referralIds) {
+            return res.status(200).send('OK');
+        }
+        
          const referralIdMatch = user.referralId.match(/\d+/);
 
         // Если есть совпадение, извлекаем число
@@ -205,7 +209,7 @@ router.post('/get/bonus', async (req, res) => {
                     const userOrderArray = JSON.parse(user.userOrder);
                 
                     const paidOrders = userOrderArray.filter(order => order.status === 'PAID');
-                
+                    console.log('DATA', paidOrders);
                      if (paidOrders.length > 0) {
                     // Если есть оплаченные заказы, обновляем userBonus
                     user.userBonus = 1000; // Ваша логика для обновления userBonus
