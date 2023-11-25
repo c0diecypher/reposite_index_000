@@ -301,8 +301,8 @@ router.post('/load/basket/paid', async (req, res) => {
 });
 
 router.get('/connect/bonus', async (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', 'https://zipperapp.vercel.app');
     res.writeHead(200,{
-        'Access-Control-Allow-Origin', 'https://zipperapp.vercel.app'
         'Connection': 'keep-alive',
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
