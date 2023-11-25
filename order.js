@@ -207,7 +207,7 @@ router.post('/get/bonus', async (req, res) => {
             
                if (referredUser) {
                     const userOrderArray = JSON.parse(referredUser.userOrder);
-                
+                    console.log('DATAArray', userOrderArray);
                     const paidOrders = userOrderArray.filter(order => order.status === 'PAID');
 
                     if (!paidOrders) {
