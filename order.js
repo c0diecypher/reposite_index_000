@@ -320,8 +320,8 @@ router.post('/get/bonus', async (req, res) => {
     if (!user) {
         return res.status(404).json({ message: 'Пользователь не найден' });
     }
-    console.log(user.userBonus);
-    const pq = '120';
+    
+    const pq = user.userBonus;
     emitter.emit('newBonus', pq );
 
     // Возвращаем успешный статус
