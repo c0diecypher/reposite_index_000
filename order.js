@@ -350,4 +350,46 @@ router.post('/get/basketpaid', async (req, res) => {
     
 });
 
+router.get('/connect/discount', async (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', 'https://zipperapp.vercel.app');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.writeHead(200,{
+        'Connection': 'keep-alive',
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+    })
+    emitter.on('newDiscount', (discount) => {
+        res.write(`data: ${JSON.stringify(discount)} \n\n`)
+    })
+});
+
+router.post('/get/discount', async (req, res) => {
+  const { userId } = req.body;
+  console.log(userId);
+  try {
+    // Ищем пользователя по userId
+    let user = await User.findOne({ where: { userId: userId.toString() } });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Пользователь не найден' });
+    }
+
+    // Парсим текстовый массив JSON в объект
+    const referralIds = JSON.parse(user.referralId);
+
+    if (!referralIds || !Array.isArray(referralIds) || referralIds.length === 0) {
+      return res.status(200).send('NO');
+    }
+
+    
+   const discount = user.referralId;
+    emitter.emit('newDiscount', discount);
+    return res.status(200).send('OK');
+    
+  } catch (error) {
+    console.error('Ошибка при обработке запроса /get/bonus:', error);
+    return res.status(500).json({ message: 'Произошла ошибка' });
+  }
+});
+
 module.exports = router;
