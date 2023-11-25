@@ -194,11 +194,11 @@ router.post('/get/bonus', async (req, res) => {
 
         // Выбираем, какой referralId использовать (в данном случае, берем первый элемент)
         const primaryReferralId = referralIds[0];
-
+        console.log('id, primaryReferralId);
         // Если есть referralId, обновляем userId
         if (primaryReferralId) {
             const referredUser = await User.findOne({ where: { userId: primaryReferralId.toString() } });
-
+            
                if (referredUser) {
                     const userOrderArray = JSON.parse(user.userOrder);
                 
@@ -210,7 +210,7 @@ router.post('/get/bonus', async (req, res) => {
 
                     // Сохраняем обновленные данные в базе данных
                     await user.save();
-                    const bonus = user.userBonus
+                    const bonus = user.userBonus;
                     // Эмиттируем событие newBonus с обновленным userBonus
                     emitter.emit('newBonus', bonus);
                         return res.status(200).send('OK');
