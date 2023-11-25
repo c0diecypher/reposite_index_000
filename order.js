@@ -216,8 +216,13 @@ router.post('/get/bonus', async (req, res) => {
                     }
                     console.log('DATA', paidOrders);
                      if (paidOrders.length > 0) {
-                    // Если есть оплаченные заказы, обновляем userBonus
-                    user.userBonus = 1000; // Ваша логика для обновления userBonus
+                            // Если есть оплаченные заказы, обновляем userBonus
+                            user.userBonus = 1000; // Ваша логика для обновления userBonus
+                        } else {
+                            // Если нет оплаченных заказов, устанавливаем userBonus в 0
+                            user.userBonus = 0;
+                        }
+
 
                     // Сохраняем обновленные данные в базе данных
                     await user.save();
