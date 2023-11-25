@@ -218,7 +218,7 @@ router.post('/get/bonus', async (req, res) => {
           // Помечаем referralId как проверенный
           referral.check = true;
         } else {
-          console.log(`Нет оплаченных заказов для пользователя с referralId ${referralId}`);
+          user.userBonus = '0';
         }
       } else {
         console.log(`Пользователь с referralId ${referralId} не найден`);
