@@ -305,6 +305,7 @@ router.get('/connect/bonus', async (req, res) => {
         'Connection': 'keep-alive',
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
+        'Access-Control-Allow-Origin', 'https://zipperapp.vercel.app'
     })
     emitter.on('newBonus', (bonus) => {
         res.write(`data: ${JSON.stringify(bonus)} \n\n`)
