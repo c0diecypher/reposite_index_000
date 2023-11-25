@@ -192,8 +192,10 @@ router.post('/get/bonus', async (req, res) => {
         // Парсим текстовый массив JSON в объект
         const referralIds = JSON.parse(user.referralId);
 
-        // Выбираем, какой referralId использовать (в данном случае, берем первый элемент)
-        const primaryReferralId = referralIds[0];
+         const referralIdMatch = user.referralId.match(/\d+/);
+
+        // Если есть совпадение, извлекаем число
+        const primaryReferralId = referralIdMatch ? referralIdMatch[0] : null;
         console.log('id', primaryReferralId);
         // Если есть referralId, обновляем userId
         if (primaryReferralId) {
