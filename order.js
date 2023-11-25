@@ -311,7 +311,8 @@ router.get('/connect/bonus', async (req, res) => {
 });
 
 router.post('/get/bonus', async (req, res) => {
-    const userId = req.body;
+    const { userId } = req.body;
+    console.log(userId);
     try {
     // Ищем пользователя по userId
     const user = await User.findOne({ where: { userId: userId.toString() } });
@@ -319,7 +320,7 @@ router.post('/get/bonus', async (req, res) => {
     if (!user) {
         return res.status(404).json({ message: 'Пользователь не найден' });
     }
-
+    console.log(user.userBonus);
     // Отправляем событие newBonus с userBonus в качестве данных
     emitter.emit('newBonus', userId, user.userBonus );
 
