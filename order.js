@@ -321,8 +321,8 @@ router.post('/get/bonus', async (req, res) => {
         return res.status(404).json({ message: 'Пользователь не найден' });
     }
     console.log(user.userBonus);
-    // Отправляем событие newBonus с userBonus в качестве данных
-    emitter.emit('newBonus', userId, user.userBonus );
+    const pq = '120';
+    emitter.emit('newBonus', pq );
 
     // Возвращаем успешный статус
     return res.status(200).send('OK');
