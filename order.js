@@ -113,46 +113,6 @@ router.get('/connect/payment', async (req, res) => {
     }
 });
     
-//Загрузка из БД в корзину данные с WAIT
-router.post('/load/basket', async (req, res) => {
-    const { userId } = req.body;
-
-    try {
-        const user = await User.findOne({ where: { userId: userId.toString() } });
-        
-        if (user) {
-            const userOrderArray = JSON.parse(user.userOrder);
-                
-            // Ищем все товары с статусом 'WAIT'
-            const waitOrders = userOrderArray.filter(order => order.status === 'WAIT');
-            // Проверка на undefined перед использованием map
-            const mappedData = waitOrders.map(order => {
-                if (order) {
-                    // Добавьте дополнительные проверки на свойства объекта, если это необходимо
-                    return {
-                        id: order.id,
-                        name: order.name,
-                        order_id: order.order_id,
-                        price: order.price,
-                        size: order.size,
-                        status: order.status,
-                        time: order.time,
-                    };
-                }
-                return null;
-            });
-            
-
-            // Отправляем данные на клиент
-            res.status(200).json(mappedData);
-        } else {
-            res.status(404).json({ error: 'Пользователь не найден' });
-        }
-    } catch (error) {
-        console.error('Ошибка при обновлении данных платежа:', error);
-        res.status(200).json([]);
-    }
-});
 //Создание ордера на оплачу в коризине
 router.post('/customer/settings/client/buy/offer/pay/basket', async (req, res) => {
     const { productId,queryId, price, size, name, userId, order_id, time } = req.body;
@@ -333,6 +293,102 @@ router.post('/get/bonus', async (req, res) => {
     
 });
 
+router.get('/connect/basket', async (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', 'https://zipperapp.vercel.app');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.writeHead(200,{
+        'Connection': 'keep-alive',
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+    })
+    emitter.on('newBasket', (bonus) => {
+        console.log('Emitted new status:', basket);
+        res.write(`data: ${JSON.stringify(basket)} \n\n`)
+    })
+});
 
+router.post('/get/basket', async (req, res) => {
+    const { userId } = req.body;
+    console.log(userId);
+    try {
+    // Ищем пользователя по userId
+    const user = await User.findOne({ where: { userId: userId.toString() } });
+
+    if (user) {
+            const userOrderArray = JSON.parse(user.userOrder);
+                
+            // Ищем все товары с статусом 'WAIT'
+            const waitOrders = userOrderArray.filter(order => order.status === 'WAIT');
+            // Проверка на undefined перед использованием map
+            const mappedData = waitOrders.map(order => {
+                if (order) {
+                    // Добавьте дополнительные проверки на свойства объекта, если это необходимо
+                    return {
+                        id: order.id,
+                        name: order.name,
+                        order_id: order.order_id,
+                        price: order.price,
+                        size: order.size,
+                        status: order.status,
+                        time: order.time,
+                    };
+                }
+                return null;
+            });
+    
+
+    emitter.emit('newBasket', mappedData );
+
+    // Возвращаем успешный статус
+    return res.status(200).send('OK');
+} else {
+  res.status(404).json({ error: 'Пользователь не найден' });
+}
+    } catch (error) {
+        console.error('Ошибка при обновлении данных платежа:', error);
+        res.status(200).json([]);
+    }
+    
+});
+
+router.post('/load/basket', async (req, res) => {
+    const { userId } = req.body;
+
+    try {
+        const user = await User.findOne({ where: { userId: userId.toString() } });
+        
+        if (user) {
+            const userOrderArray = JSON.parse(user.userOrder);
+                
+            // Ищем все товары с статусом 'WAIT'
+            const waitOrders = userOrderArray.filter(order => order.status === 'WAIT');
+            // Проверка на undefined перед использованием map
+            const mappedData = waitOrders.map(order => {
+                if (order) {
+                    // Добавьте дополнительные проверки на свойства объекта, если это необходимо
+                    return {
+                        id: order.id,
+                        name: order.name,
+                        order_id: order.order_id,
+                        price: order.price,
+                        size: order.size,
+                        status: order.status,
+                        time: order.time,
+                    };
+                }
+                return null;
+            });
+            
+
+            // Отправляем данные на клиент
+            res.status(200).json(mappedData);
+        } else {
+            res.status(404).json({ error: 'Пользователь не найден' });
+        }
+    } catch (error) {
+        console.error('Ошибка при обновлении данных платежа:', error);
+        res.status(200).json([]);
+    }
+});
 
 module.exports = router;
