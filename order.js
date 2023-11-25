@@ -183,17 +183,45 @@ router.post('/get/bonus', async (req, res) => {
     console.log(userId);
     try {
     // Ищем пользователя по userId
-    const user = await User.findOne({ where: { userId: userId.toString() } });
+    let user = await User.findOne({ where: { userId: userId.toString() } });
 
-    if (!user) {
-        return res.status(404).json({ message: 'Пользователь не найден' });
-    }
+        if (!user) {
+            return res.status(404).json({ message: 'Пользователь не найден' });
+        }
+
+        // Парсим текстовый массив JSON в объект
+        const referralIds = JSON.parse(user.referralId);
+
+        // Выбираем, какой referralId использовать (в данном случае, берем первый элемент)
+        const primaryReferralId = referralIds[0];
+
+        // Если есть referralId, обновляем userId
+        if (primaryReferralId) {
+            const referredUser = await User.findOne({ where: { userId: primaryReferralId.toString() } });
+
+               if (referredUser) {
+                    const userOrderArray = JSON.parse(user.userOrder);
+                
+                    const paidOrders = userOrderArray.filter(order => order.status === 'PAID');
+                
+                     if (paidOrders.length > 0) {
+                    // Если есть оплаченные заказы, обновляем userBonus
+                    user.userBonus = 1000; // Ваша логика для обновления userBonus
+
+                    // Сохраняем обновленные данные в базе данных
+                    await user.save();
+
+                    // Эмиттируем событие newBonus с обновленным userBonus
+                    emitter.emit('newBonus', user.userBonus);
+                        return res.status(200).send('OK');
+                    } else {
+                        res.status(404).json({ error: 'Заказ не найден' });
+                    }
+                } else {
+                    res.status(404).json({ error: 'Пользователь не найден' });
+                }
+        }
     
-    const pq = user.userBonus;
-    emitter.emit('newBonus', pq );
-
-    // Возвращаем успешный статус
-    return res.status(200).send('OK');
 } catch (error) {
     console.error('Ошибка при обработке запроса /get/bonus:', error);
     return res.status(500).json({ message: 'Произошла ошибка' });
