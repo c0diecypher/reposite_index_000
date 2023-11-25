@@ -64,7 +64,6 @@ const User = sequelize.define('User', {
   userBonus: {
     type: DataTypes.STRING, 
     allowNull: true,
-    unique: true,
   },
   userRank: {
     type: DataTypes.STRING, 
