@@ -179,69 +179,55 @@ router.get('/connect/bonus', async (req, res) => {
 });
 
 router.post('/get/bonus', async (req, res) => {
-    const { userId } = req.body;
-    console.log(userId);
-    try {
+  const { userId } = req.body;
+  console.log(userId);
+  try {
     // Ищем пользователя по userId
     let user = await User.findOne({ where: { userId: userId.toString() } });
 
-        if (!user) {
-            return res.status(404).json({ message: 'Пользователь не найден' });
+    if (!user) {
+      return res.status(404).json({ message: 'Пользователь не найден' });
+    }
+
+    // Парсим текстовый массив JSON в объект
+    const referralIds = JSON.parse(user.referralId);
+
+    if (!referralIds || !Array.isArray(referralIds)) {
+      return res.status(200).send('OK');
+    }
+
+    for (const referral of referralIds) {
+      const referralId = referral.referralId;
+      const referredUser = await User.findOne({ where: { userId: referralId.toString() } });
+
+      if (referredUser) {
+        const userOrderArray = JSON.parse(referredUser.userOrder);
+        console.log('DATAArray', userOrderArray);
+
+        const paidOrders = userOrderArray.filter(order => order.status === 'PAID');
+
+        if (paidOrders.length > 0) {
+          // Добавляем +1000 к userBonus за каждый оплаченный заказ
+          user.userBonus = (user.userBonus || 0) + (1000 * paidOrders.length);
+          // Сохраняем обновленные данные в базе данных
+          await user.save();
+          const bonus = user.userBonus;
+          // Эмиттируем событие newBonus с обновленным userBonus
+          emitter.emit('newBonus', bonus);
+          return res.status(200).send('OK');
+        } else {
+          console.log(`Нет оплаченных заказов для пользователя с referralId ${referralId}`);
         }
+      } else {
+        console.log(`Пользователь с referralId ${referralId} не найден`);
+      }
+    }
 
-        // Парсим текстовый массив JSON в объект
-        const referralIds = JSON.parse(user.referralId);
-
-        if (!referralIds) {
-            return res.status(200).send('OK');
-        }
-        
-         const referralIdMatch = user.referralId.match(/\d+/);
-
-        // Если есть совпадение, извлекаем число
-        const primaryReferralId = referralIdMatch ? referralIdMatch[0] : null;
-        console.log('id', primaryReferralId);
-        // Если есть referralId, обновляем userId
-        if (primaryReferralId) {
-            const referredUser = await User.findOne({ where: { userId: primaryReferralId.toString() } });
-            
-               if (referredUser) {
-                    const userOrderArray = JSON.parse(referredUser.userOrder);
-                    console.log('DATAArray', userOrderArray);
-                    const paidOrders = userOrderArray.filter(order => order.status === 'PAID');
-
-                    if (!paidOrders) {
-                        console.log(`ну ждем`);
-                        return res.status(200).send('OK');
-                    }
-                    console.log('DATA', paidOrders);
-                     if (paidOrders.length > 0) {
-                            // Если есть оплаченные заказы, обновляем userBonus
-                            user.userBonus = '1000'; // Ваша логика для обновления userBonus
-                        } else {
-                            // Если нет оплаченных заказов, устанавливаем userBonus в 0
-                            user.userBonus = '0';
-                        }
-
-
-                    // Сохраняем обновленные данные в базе данных
-                    await user.save();
-                    const bonus = user.userBonus;
-                    // Эмиттируем событие newBonus с обновленным userBonus
-                    emitter.emit('newBonus', bonus);
-                        return res.status(200).send('OK');
-                    } else {
-                        res.status(404).json({ error: 'Заказ не найден' });
-                    }
-                } else {
-                    res.status(404).json({ error: 'Пользователь не найден' });
-                }
-    
-        } catch (error) {
-            console.error('Ошибка при обработке запроса /get/bonus:', error);
-            return res.status(500).json({ message: 'Произошла ошибка' });
-        }
-    
+    return res.status(200).send('OK');
+  } catch (error) {
+    console.error('Ошибка при обработке запроса /get/bonus:', error);
+    return res.status(500).json({ message: 'Произошла ошибка' });
+  }
 });
 
 router.get('/connect/basket', async (req, res) => {
