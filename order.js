@@ -196,8 +196,17 @@ router.post('/get/bonus', async (req, res) => {
       return res.status(200).send('OK');
     }
 
+    // Проверяем, были ли уже обработаны эти referralId
+    const processedReferralIds = user.processedReferralIds || [];
+
     for (const referral of referralIds) {
       const referralId = referral.referralId;
+
+      // Проверяем, был ли уже обработан этот referralId
+      if (processedReferralIds.includes(referralId)) {
+        continue; // Пропускаем уже обработанный referralId
+      }
+
       const referredUser = await User.findOne({ where: { userId: referralId.toString() } });
 
       if (referredUser) {
@@ -209,15 +218,20 @@ router.post('/get/bonus', async (req, res) => {
         if (paidOrders.length > 0) {
           // Добавляем +1000 за каждый оплаченный заказ
           user.userBonus = (user.userBonus || 0) + (1000 * paidOrders.length);
-          // Сохраняем обновленные данные в базе данных
-          await user.save();
         } else {
           console.log(`Нет оплаченных заказов для пользователя с referralId ${referralId}`);
         }
+
+        // Добавляем referralId в список обработанных
+        processedReferralIds.push(referralId);
       } else {
         console.log(`Пользователь с referralId ${referralId} не найден`);
       }
     }
+
+    // Сохраняем список обработанных referralId в базе данных
+    user.processedReferralIds = processedReferralIds;
+    await user.save();
 
     // После обработки всех referralId, эмиттируем событие newBonus с общей суммой userBonus
     const bonus = user.userBonus;
