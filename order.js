@@ -207,14 +207,10 @@ router.post('/get/bonus', async (req, res) => {
         const paidOrders = userOrderArray.filter(order => order.status === 'PAID');
 
         if (paidOrders.length > 0) {
-          // Добавляем +1000 к userBonus за каждый оплаченный заказ
+          // Добавляем +1000 за каждый оплаченный заказ
           user.userBonus = (user.userBonus || 0) + (1000 * paidOrders.length);
           // Сохраняем обновленные данные в базе данных
           await user.save();
-          const bonus = user.userBonus;
-          // Эмиттируем событие newBonus с обновленным userBonus
-          emitter.emit('newBonus', bonus);
-          return res.status(200).send('OK');
         } else {
           console.log(`Нет оплаченных заказов для пользователя с referralId ${referralId}`);
         }
@@ -223,6 +219,9 @@ router.post('/get/bonus', async (req, res) => {
       }
     }
 
+    // После обработки всех referralId, эмиттируем событие newBonus с общей суммой userBonus
+    const bonus = user.userBonus;
+    emitter.emit('newBonus', bonus);
     return res.status(200).send('OK');
   } catch (error) {
     console.error('Ошибка при обработке запроса /get/bonus:', error);
