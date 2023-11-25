@@ -309,6 +309,7 @@ router.get('/connect/bonus', async (req, res) => {
         'Cache-Control': 'no-cache',
     })
     emitter.on('newBonus', (bonus) => {
+        console.log('Emitted new status:', bonus);
         res.write(`data: ${JSON.stringify(bonus)} \n\n`)
     })
 });
