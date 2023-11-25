@@ -236,12 +236,11 @@ router.post('/get/bonus', async (req, res) => {
                 } else {
                     res.status(404).json({ error: 'Пользователь не найден' });
                 }
-        }
     
-} catch (error) {
-    console.error('Ошибка при обработке запроса /get/bonus:', error);
-    return res.status(500).json({ message: 'Произошла ошибка' });
-}
+        } catch (error) {
+            console.error('Ошибка при обработке запроса /get/bonus:', error);
+            return res.status(500).json({ message: 'Произошла ошибка' });
+        }
     
 });
 
