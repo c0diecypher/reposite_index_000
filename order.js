@@ -194,7 +194,7 @@ router.post('/get/bonus', async (req, res) => {
 
         // Выбираем, какой referralId использовать (в данном случае, берем первый элемент)
         const primaryReferralId = referralIds[0];
-        console.log('id, primaryReferralId);
+        console.log('id', primaryReferralId);
         // Если есть referralId, обновляем userId
         if (primaryReferralId) {
             const referredUser = await User.findOne({ where: { userId: primaryReferralId.toString() } });
