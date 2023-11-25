@@ -125,7 +125,6 @@ router.post('/load/basket', async (req, res) => {
                 
             // Ищем все товары с статусом 'WAIT'
             const waitOrders = userOrderArray.filter(order => order.status === 'WAIT');
-            console.log('HINIYA', waitOrders);
             // Проверка на undefined перед использованием map
             const mappedData = waitOrders.map(order => {
                 if (order) {
@@ -142,7 +141,7 @@ router.post('/load/basket', async (req, res) => {
                 }
                 return null;
             });
-            console.log('PIDORAS', mappedData);
+            
 
             // Отправляем данные на клиент
             res.status(200).json(mappedData);
@@ -273,7 +272,6 @@ router.post('/load/basket/paid', async (req, res) => {
                 
             // Ищем все товары с статусом 'WAIT'
             const waitOrders = userOrderArray.filter(order => ['PAID', 'SENT', 'TRANSITCN', 'TRANSITRU', 'DELIVERED'].includes(order.status));
-            console.log('HINIYA', waitOrders);
             // Проверка на undefined перед использованием map
             const mappedData = waitOrders.map(order => {
                 if (order) {
@@ -290,7 +288,6 @@ router.post('/load/basket/paid', async (req, res) => {
                 }
                 return null;
             });
-            console.log('PIDORAS', mappedData);
 
             // Отправляем данные на клиент
             res.status(200).json(mappedData);
