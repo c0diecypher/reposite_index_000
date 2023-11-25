@@ -192,9 +192,9 @@ router.post('/get/bonus', async (req, res) => {
     // Парсим текстовый массив JSON в объект
     const referralIds = JSON.parse(user.referralId);
 
-    if (!referralIds || referralIds.trim() === '' || referralIds === 'null') {
-      return res.status(200).send('NO');
-    }
+    if (!Array.isArray(referralIds) || referralIds.length === 0) {
+          return res.status(200).send('NO');
+        }
 
     for (const referral of referralIds) {
       const referralId = referral.referralId;
@@ -377,9 +377,9 @@ router.post('/get/discount', async (req, res) => {
     // Парсим текстовый массив JSON в объект
     const referralIds = JSON.parse(user.referralId);
 
-    if (!referralIds || referralIds.trim() === '' || referralIds === 'null') {
-      return res.status(200).send('NO');
-    }
+    if (!Array.isArray(referralIds) || referralIds.length === 0) {
+          return res.status(200).send('NO');
+        }
 
     
    const discount = user.referralId;
