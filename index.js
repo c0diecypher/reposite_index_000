@@ -271,7 +271,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
 
         const currentBonus = user.userBonus || 0; // Default to 0 if userBonus is not set
         const changeBonus = remainingBonus;
-        const updatedBonus = currentBonus + parseInt(changeBonus, 10); // Assuming remainingBonus is a number
+        const updatedBonus = parseInt(changeBonus, 10); // Assuming remainingBonus is a number
 
         // Update the userBonus field
         user.userBonus = updatedBonus;
