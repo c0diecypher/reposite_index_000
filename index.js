@@ -237,7 +237,7 @@ let status = null;
 let paymentId = null;
 let ProductOrder = null;
 app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
-    const { productId,queryId, price, size, name, userId, order_id, time } = req.body;
+    const { productId,queryId, price, size, name, userId, order_id, time, remainingBonus } = req.body;
     console.log(productId,queryId, price, size, name, userId, order_id);
   
     // Проверьте, что userId совпадает с ожидаемым
@@ -268,6 +268,14 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
         const user = await User.findOne({ where: { userId: userId.toString() } });
 
         if (user) {
+
+        const currentBonus = user.userBonus || 0; // Default to 0 if userBonus is not set
+        const changeBonus = remainingBonus;
+        const updatedBonus = currentBonus + parseInt(changeBonus, 10); // Assuming remainingBonus is a number
+
+        // Update the userBonus field
+        user.userBonus = updatedBonus;
+        await user.save(); // Save the changes to the database
             // Извлекаем данные пользователя
             const userId = user.userId;
             const userFio = user.userFio || 'Не указано';
