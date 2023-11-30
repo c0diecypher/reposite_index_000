@@ -311,6 +311,39 @@ router.get('/connect/basketpaid', async (req, res) => {
     })
 });
 
+router.post('/customers/user/basket/delete/item', async (req, res) => {
+    const { userId, productId } = req.body;
+
+    try {
+        const user = await User.findOne({ where: { userId: userId.toString() } });
+
+        if (user) {
+            const userOrderArray = JSON.parse(user.userOrder);
+
+            // Находим индекс элемента с определенным productId
+            const indexToRemove = userOrderArray.findIndex(item => item.id === productId);
+
+            if (indexToRemove !== -1) {
+                // Удаляем элемент из массива
+                userOrderArray.splice(indexToRemove, 1);
+
+                // Обновляем данные пользователя в базе данных
+                await User.update({ userOrder: JSON.stringify(userOrderArray) }, { where: { userId: userId.toString() } });
+
+                res.status(200).json({ success: true, message: 'Товар успешно удален из корзины' });
+            } else {
+                res.status(404).json({ error: 'Товар с указанным id не найден в корзине пользователя' });
+            }
+        } else {
+            res.status(404).json({ error: 'Пользователь не найден' });
+        }
+    } catch (error) {
+        console.error('Ошибка при удалении товара', error);
+        res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    }
+});
+            
+
 router.post('/get/basketpaid', async (req, res) => {
     const { userId } = req.body;
     try {
