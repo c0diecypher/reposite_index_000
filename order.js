@@ -325,7 +325,7 @@ router.post('/customers/user/basket/delete/item', async (req, res) => {
 
             if (itemToRemove) {
                 // Получаем saveUserBonus из элемента
-                const saveUserBonus = itemToRemove.saveUserBonus || 0;
+                const saveUserBonus = itemToRemove.saveBonus || 0;
 
                 // Обновляем userBonus в базе данных
                 await User.update({ userBonus: user.userBonus + (saveUserBonus || 0) }, { where: { userId: userId.toString() } });
