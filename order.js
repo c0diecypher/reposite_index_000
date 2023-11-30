@@ -312,7 +312,7 @@ router.get('/connect/basketpaid', async (req, res) => {
 });
 
 router.post('/customers/user/basket/delete/item', async (req, res) => {
-    const { userId, productId, order_id } = req.body;
+    const { userId, orderId } = req.body;
 
     try {
         const user = await User.findOne({ where: { userId: userId.toString() } });
@@ -320,8 +320,8 @@ router.post('/customers/user/basket/delete/item', async (req, res) => {
         if (user) {
             const userOrderArray = JSON.parse(user.userOrder);
 
-            // Находим первый элемент с определенным productId
-            const indexToRemove = userOrderArray.findIndex(item => item.order_id === order_id);
+            // Находим первый элемент с определенным order_id
+            const indexToRemove = userOrderArray.findIndex(item => item.order_id === orderId);
 
             if (indexToRemove !== -1) {
                 // Удаляем только один элемент из массива
@@ -332,7 +332,7 @@ router.post('/customers/user/basket/delete/item', async (req, res) => {
 
                 res.status(200).json({ success: true, message: 'Товар успешно удален из корзины' });
             } else {
-                res.status(404).json({ error: 'Товар с указанным id не найден в корзине пользователя' });
+                res.status(404).json({ error: 'Товар с указанным order_id не найден в корзине пользователя' });
             }
         } else {
             res.status(404).json({ error: 'Пользователь не найден' });
