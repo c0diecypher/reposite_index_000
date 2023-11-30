@@ -328,8 +328,8 @@ router.post('/customers/user/basket/delete/item', async (req, res) => {
                 // Получаем newBonus из элемента и преобразуем его в число
                 const newBonus = Number(itemToRemove.newBonus) || 0;
 
-                // Проверяем, равно ли newBonus 0, и обновляем userBonus
-                if (newBonus === 0) {
+                // Проверяем, не равно ли newBonus 50, и обновляем userBonus
+                if (newBonus !== 50) {
                     // Получаем saveUserBonus из элемента и преобразуем его в число
                     const saveUserBonus = Number(itemToRemove.saveBonus) || 0;
 
@@ -355,6 +355,7 @@ router.post('/customers/user/basket/delete/item', async (req, res) => {
         res.status(500).json({ error: 'Внутренняя ошибка сервера' });
     }
 });
+
             
 
 router.post('/get/basketpaid', async (req, res) => {
