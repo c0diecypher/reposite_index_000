@@ -321,11 +321,11 @@ router.post('/customers/user/basket/delete/item', async (req, res) => {
             const userOrderArray = JSON.parse(user.userOrder);
 
             // Находим первый элемент с определенным productId
-            const itemToRemove = userOrderArray.find(item => item.id === productId);
+            const indexToRemove = userOrderArray.findIndex(item => item.id === productId);
 
-            if (itemToRemove) {
+            if (indexToRemove !== -1) {
                 // Удаляем только один элемент из массива
-                userOrderArray.splice(userOrderArray.indexOf(itemToRemove), 1);
+                userOrderArray.splice(indexToRemove, 1);
 
                 // Обновляем данные пользователя в базе данных
                 await User.update({ userOrder: JSON.stringify(userOrderArray) }, { where: { userId: userId.toString() } });
