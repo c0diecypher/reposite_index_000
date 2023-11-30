@@ -328,20 +328,26 @@ router.post('/customers/user/basket/delete/item', async (req, res) => {
                 // Получаем newBonus из элемента и преобразуем его в число
                 const newBonus = Number(itemToRemove.newBonus) || 0;
 
-                // Устанавливаем saveUserBonus в 0, если newBonus равен 50
-                
-
-                // Проверяем, не равно ли newBonus 50, и обновляем userBonus
+                // Проверяем, не равно ли newBonus 50, и обновляем userBonus и saveUserBonus
                 if (newBonus !== 50) {
-                    const saveUserBonus = newBonus !== ? Number(itemToRemove.saveBonus) || 0 : 0;
-                    await User.update({ userBonus: Number(user.userBonus) + saveUserBonus }, { where: { userId: userId.toString() } });
+                    const saveUserBonus = Number(itemToRemove.saveBonus) || 0;
+                    const updatedUserBonus = Number(user.userBonus) + saveUserBonus;
+
+                    // Обновляем userBonus и saveUserBonus в базе данных
+                    await User.update(
+                        { userBonus: updatedUserBonus },
+                        { where: { userId: userId.toString() } }
+                    );
                 }
 
                 // Удаляем элемент из массива
                 userOrderArray.splice(userOrderArray.indexOf(itemToRemove), 1);
 
                 // Обновляем userOrder в базе данных
-                await User.update({ userOrder: JSON.stringify(userOrderArray) }, { where: { userId: userId.toString() } });
+                await User.update(
+                    { userOrder: JSON.stringify(userOrderArray) },
+                    { where: { userId: userId.toString() } }
+                );
 
                 res.status(200).json({ success: true, message: 'Товар успешно удален из корзины' });
             } else {
@@ -355,7 +361,6 @@ router.post('/customers/user/basket/delete/item', async (req, res) => {
         res.status(500).json({ error: 'Внутренняя ошибка сервера' });
     }
 });
-
             
 
 router.post('/get/basketpaid', async (req, res) => {
