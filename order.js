@@ -327,13 +327,12 @@ router.post('/customers/user/basket/delete/item', async (req, res) => {
             if (itemToRemove) {
                 // Получаем newBonus из элемента и преобразуем его в число
                 const newBonus = Number(itemToRemove.newBonus) || 0;
-
-                // Проверяем, не равно ли newBonus 50, и обновляем userBonus и saveUserBonus
-                if (newBonus !== 50) {
-                    const saveUserBonus = Number(itemToRemove.saveBonus) || 0;
+                const saveUserBonus = Number(itemToRemove.saveBonus) || 0;
+                // Проверяем, не равно ли newBonus 0, и обновляем userBonus и saveUserBonus
+                if (newBonus === 0) {
                     const updatedUserBonus = Number(user.userBonus) + saveUserBonus;
 
-                    // Обновляем userBonus и saveUserBonus в базе данных
+                    // Обновляем userBonus в базе данных
                     await User.update(
                         { userBonus: updatedUserBonus },
                         { where: { userId: userId.toString() } }
