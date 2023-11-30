@@ -312,7 +312,7 @@ router.get('/connect/basketpaid', async (req, res) => {
 });
 
 router.post('/customers/user/basket/delete/item', async (req, res) => {
-    const { userId, orderId } = req.body;
+    const { userId, orderId, productId } = req.body;
 
     try {
         const user = await User.findOne({ where: { userId: userId.toString() } });
@@ -321,7 +321,7 @@ router.post('/customers/user/basket/delete/item', async (req, res) => {
             const userOrderArray = JSON.parse(user.userOrder);
 
             // Находим первый элемент с определенным order_id
-            const indexToRemove = userOrderArray.findIndex(item => item.order_id === orderId);
+            const indexToRemove = userOrderArray.findIndex(item => item.order_id === productId);
 
             if (indexToRemove !== -1) {
                 // Удаляем только один элемент из массива
