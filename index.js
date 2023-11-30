@@ -237,7 +237,7 @@ let status = null;
 let paymentId = null;
 let ProductOrder = null;
 app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
-    const { productId,queryId, price, size, name, userId, order_id, time, remainingBonus, saveBonus } = req.body;
+    const { productId,queryId, price, size, name, userId, order_id, time, remainingBonus, saveBonus, newBonus } = req.body;
     console.log(productId,queryId, price, size, name, userId, order_id);
   
     // Проверьте, что userId совпадает с ожидаемым
@@ -253,6 +253,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
         const ProductName = name;
         const ProductSize = size;
         const saveUserBonus = saveBonus;
+        const getUserBonus = newBonus;
         ProductOrder = order_id;
         const ProductPrice = price.replace(/\s/g, '').replace(/\u00a0/g, '');
         console.log(ProductPrice);
@@ -351,6 +352,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
                                 status: status,
                                 time: time,
                                 saveBonus: saveUserBonus,
+                                newBonus: getUserBonus,
                               };
               
               const updatedOrders = currentOrders.concat(newOrder);
