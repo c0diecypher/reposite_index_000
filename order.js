@@ -311,6 +311,11 @@ router.get('/connect/basketpaid', async (req, res) => {
     })
 });
 
+
+Извините за недоразумение. Понял вас правильно теперь. В таком случае, вам нужно изменить условие следующим образом:
+
+javascript
+Copy code
 router.post('/customers/user/basket/delete/item', async (req, res) => {
     const { userId, orderId, productId } = req.body;
 
@@ -333,7 +338,7 @@ router.post('/customers/user/basket/delete/item', async (req, res) => {
                     const saveUserBonus = Number(itemToRemove.saveBonus) || 0;
 
                     // Обновляем userBonus в базе данных
-                    await User.update({ where: { userId: userId.toString() } });
+                    await User.update({ userBonus: Number(user.userBonus) + saveUserBonus }, { where: { userId: userId.toString() } });
                 }
 
                 // Удаляем элемент из массива
