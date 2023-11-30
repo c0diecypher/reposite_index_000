@@ -333,7 +333,7 @@ router.post('/customers/user/basket/delete/item', async (req, res) => {
 
                 // Проверяем, не равно ли newBonus 50, и обновляем userBonus
                 if (newBonus < 50) {
-                    const saveUserBonus = newBonus < ? Number(itemToRemove.saveBonus) || 0 : 0;
+                    const saveUserBonus = newBonus < Number(itemToRemove.saveBonus) || 0 : 0;
                     await User.update({ userBonus: Number(user.userBonus) + saveUserBonus }, { where: { userId: userId.toString() } });
                 }
 
