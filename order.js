@@ -328,14 +328,11 @@ router.post('/customers/user/basket/delete/item', async (req, res) => {
                 // Получаем newBonus из элемента и преобразуем его в число
                 const newBonus = Number(itemToRemove.newBonus) || 0;
 
-                // Проверяем, не равно ли newBonus 50, и обновляем userBonus
-                if (newBonus !== 50) {
-                    // Получаем saveUserBonus из элемента и преобразуем его в число
-                    const saveUserBonus = Number(itemToRemove.saveBonus) || 0;
+                // Устанавливаем saveUserBonus в 0, если newBonus равен 50
+                const saveUserBonus = newBonus !== 50 ? Number(itemToRemove.saveBonus) || 0 : 0;
 
-                    // Обновляем userBonus в базе данных
-                    await User.update({ userBonus: Number(user.userBonus) + saveUserBonus }, { where: { userId: userId.toString() } });
-                }
+                // Обновляем userBonus в базе данных
+                await User.update({ userBonus: Number(user.userBonus) + saveUserBonus }, { where: { userId: userId.toString() } });
 
                 // Удаляем элемент из массива
                 userOrderArray.splice(userOrderArray.indexOf(itemToRemove), 1);
