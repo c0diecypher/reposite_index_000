@@ -53,7 +53,7 @@ app.post('/validate-initdata', async (req, res) => {
       const userData = JSON.parse(userMatch[1]);
       const referralLink = `https://t.me/zipperstore_bot?start=${userData.id.toString()}`;
       const existingUser = await User.findOne({ where: { userId: userData.id.toString() } });
-
+      const bonus = '1000';
       if (existingUser) {
         if (
           existingUser.first_name !== userData.first_name ||
@@ -79,7 +79,7 @@ app.post('/validate-initdata', async (req, res) => {
           last_name: userData.last_name,
           username: userData.username,
           referralLink: referralLink,
-          userBonus: 1000,
+          userBonus: bonus,
         };
 
         await User.create(user);
