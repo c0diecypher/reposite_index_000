@@ -320,34 +320,28 @@ router.post('/customers/user/basket/delete/item', async (req, res) => {
 
         if (user) {
             const userOrderArray = JSON.parse(user.userOrder);
-            console.log('userBonus do', user.userBonus);
+
             // Находим первый элемент с определенным order_id
             const itemToRemove = userOrderArray.find(item => item.order_id === productId);
 
             if (itemToRemove) {
                 // Получаем newBonus из элемента и преобразуем его в число
                 const newBonus = Number(itemToRemove.newBonus) || 0;
-                console.log('userBonus posle', user.userBonus);
-                // Проверяем, равен ли newBonus 0, и обновляем userBonus и saveUserBonus
-                if (newBonus === 0) {
+
+                // Проверяем, не равно ли newBonus 50, и обновляем userBonus
+                if (newBonus !== 50) {
+                    // Получаем saveUserBonus из элемента и преобразуем его в число
                     const saveUserBonus = Number(itemToRemove.saveBonus) || 0;
-                    const updatedUserBonus = Number(user.userBonus);
-                    console.log('userBonus 50', user.userBonus);
+
                     // Обновляем userBonus в базе данных
-                    await User.update(
-                        { userBonus: updatedUserBonus },
-                        { where: { userId: userId.toString() } }
-                    );
+                    await User.update({ userBonus: Number(user.userBonus)}, { where: { userId: userId.toString() } });
                 }
 
                 // Удаляем элемент из массива
                 userOrderArray.splice(userOrderArray.indexOf(itemToRemove), 1);
 
                 // Обновляем userOrder в базе данных
-                await User.update(
-                    { userOrder: JSON.stringify(userOrderArray) },
-                    { where: { userId: userId.toString() } }
-                );
+                await User.update({ userOrder: JSON.stringify(userOrderArray) }, { where: { userId: userId.toString() } });
 
                 res.status(200).json({ success: true, message: 'Товар успешно удален из корзины' });
             } else {
@@ -361,6 +355,7 @@ router.post('/customers/user/basket/delete/item', async (req, res) => {
         res.status(500).json({ error: 'Внутренняя ошибка сервера' });
     }
 });
+
             
 
 router.post('/get/basketpaid', async (req, res) => {
