@@ -56,8 +56,8 @@ router.post('/update/payment', async (req, res) => {
             res.status(404).json({ error: 'Пользователь не найден' });
         }
     } catch (error) {
-        console.error('Ошибка при обновлении данных платежа:', error);
-        res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+        console.error('Данные оплаты пусты', error);
+        res.status(200).json([]);
     }
 });
 
@@ -302,7 +302,7 @@ router.post('/get/basket', async (req, res) => {
   res.status(404).json({ error: 'Пользователь не найден' });
 }
     } catch (error) {
-        console.error('Ошибка при обновлении данных платежа:', error);
+        console.error('Данные корзины пусты', error);
         res.status(200).json([]);
     }
     
@@ -395,7 +395,7 @@ router.post('/get/basketpaid', async (req, res) => {
   res.status(404).json({ error: 'Пользователь не найден' });
 }
     } catch (error) {
-        console.error('Ошибка при обновлении данных платежа:', error);
+        console.error('Данные оплаченной корзины пусты', error);
         res.status(200).json([]);
     }
     
