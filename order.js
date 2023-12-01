@@ -326,9 +326,12 @@ router.post('/customers/user/basket/delete/item', async (req, res) => {
             if (itemToRemove) {
                 // Получаем saveUserBonus из элемента
                 const saveUserBonus = Number(itemToRemove.saveBonus) || 0;
+                const getUserBonus = Number(itemToRemove.newBonus) || 0;
+
+                if (getUserBonus === 0){
                 // Обновляем userBonus в базе данных
                 await User.update({ userBonus: Number(user.userBonus) + saveUserBonus }, { where: { userId: userId.toString() } });
-
+                }
                 // Удаляем элемент из массива
                 userOrderArray.splice(userOrderArray.indexOf(itemToRemove), 1);
 
