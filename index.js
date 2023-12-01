@@ -269,15 +269,19 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
         // Поиск пользователя в базе данных
         const user = await User.findOne({ where: { userId: userId.toString() } });
 
-        if (user) {
+       if (user) {
 
-        const currentBonus = user.userBonus || 0; // Default to 0 if userBonus is not set
-        const changeBonus = remainingBonus;
-        const updatedBonus = parseInt(changeBonus, 10); // Assuming remainingBonus is a number
-
-        // Update the userBonus field
-        user.userBonus = updatedBonus;
-        await user.save(); // Save the changes to the database
+            const currentBonus = user.userBonus || 0; // Значение по умолчанию 0, если userBonus не установлен
+            const changeBonus = remainingBonus;
+            const updatedBonus = parseInt(changeBonus, 10); // Предполагается, что remainingBonus - это число
+        
+            // Проверяем, что newBonus не равен 0
+            const newBonus = newBonus; // Замените эту переменную на ваше реальное значение
+            if (newBonus !== 0) {
+                // Обновляем поле userBonus только если newBonus не равен 0
+                user.userBonus = updatedBonus;
+                await user.save(); // Сохраняем изменения в базе данных
+            }
             // Извлекаем данные пользователя
             const userId = user.userId;
             const userFio = user.userFio || 'Не указано';
