@@ -194,7 +194,7 @@ router.post('/get/bonus', async (req, res) => {
     const referralIds = JSON.parse(user.referralId);
 
     if (!Array.isArray(referralIds) || referralIds.length === 0) {
-      return res.status(200).send('NO');
+      return res.status(200).json({ userBonus: user.userBonus });
     }
 
     for (const referral of referralIds) {
@@ -213,39 +213,27 @@ router.post('/get/bonus', async (req, res) => {
 
         const paidOrders = userOrderArray.filter(order => order.status === 'PAID');
 
-        if (paidOrders.length > 0) {
-          // Добавляем +1000 за каждый оплаченный заказ
-          const currentBonus = parseInt(user.userBonus) || 0;
-          user.userBonus = (currentBonus + 1000).toString();
+        // Добавляем +1000 за каждый оплаченный заказ
+        const currentBonus = parseInt(user.userBonus) || 0;
+        user.userBonus = (currentBonus + 1000).toString();
 
-          // Помечаем referralId как проверенный
-          referral.check = true;
-          
-          // Сохраняем обновленные данные в базе данных
-          user.referralId = JSON.stringify(referralIds);
-          await user.save();
-
-          // Отправляем событие newBonus с общей суммой userBonus
-          const bonus = user.userBonus;
-          emitter.emit('newBonus', bonus);
-        } else {
-          // Если нет оплаченных заказов, бонус не увеличивается
-          const currentBonus = parseInt(user.userBonus) || 0;
-          user.userBonus = currentBonus.toString();
-          referral.check = false;
-          // Сохраняем обновленные данные в базе данных
-          await user.save();
-
-          // Отправляем событие newBonus с общей суммой userBonus
-          const bonus = user.userBonus;
-          emitter.emit('newBonus', bonus);
-        }
+        // Помечаем referralId как проверенный
+        referral.check = true;
       } else {
         console.log(`Пользователь с referralId ${referralId} не найден`);
       }
     }
 
-    return res.status(200).send('OK');
+    // Сохраняем обновленные данные в базе данных
+    user.referralId = JSON.stringify(referralIds);
+    await user.save();
+
+    // Отправляем событие newBonus с общей суммой userBonus
+    const bonus = user.userBonus;
+    emitter.emit('newBonus', bonus);
+
+    // Отправляем текущее значение userBonus
+    return res.status(200).json({ userBonus: user.userBonus });
   } catch (error) {
     console.error('Ошибка при обработке запроса /get/bonus:', error);
     return res.status(500).json({ message: 'Произошла ошибка' });
