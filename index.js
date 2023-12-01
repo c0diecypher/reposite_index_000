@@ -273,11 +273,13 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
 
         const currentBonus = user.userBonus || 0; // Default to 0 if userBonus is not set
         const changeBonus = remainingBonus;
-        const updatedBonus = parseInt(changeBonus, 10); // Assuming remainingBonus is a number
-
-        // Update the userBonus field
-        user.userBonus = updatedBonus;
-        await user.save(); // Save the changes to the database
+        const newBonus = Number(itemToRemove.newBonus) || 0;
+          if (newBonus === 0) {
+            const updatedBonus = parseInt(changeBonus, 10); // Assuming remainingBonus is a number
+             user.userBonus = updatedBonus;
+            await user.save(); // Save the changes to the database
+                  }
+    
             // Извлекаем данные пользователя
             const userId = user.userId;
             const userFio = user.userFio || 'Не указано';
