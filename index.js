@@ -59,8 +59,7 @@ app.post('/validate-initdata', async (req, res) => {
           existingUser.first_name !== userData.first_name ||
           existingUser.last_name !== userData.last_name ||
           existingUser.username !== userData.username ||
-          existingUser.referralLink !== referralLink ||
-          existingUser.bonus !== bonus
+          existingUser.referralLink !== referralLink
         ) {
           await existingUser.update({
             first_name: userData.first_name,
@@ -80,7 +79,6 @@ app.post('/validate-initdata', async (req, res) => {
           last_name: userData.last_name,
           username: userData.username,
           referralLink: referralLink,
-          userBonus: bonus,
         };
 
         await User.create(user);
