@@ -232,7 +232,7 @@ router.post('/get/bonus', async (req, res) => {
           // Если нет оплаченных заказов, бонус не увеличивается
           const currentBonus = parseInt(user.userBonus) || 0;
           user.userBonus = currentBonus.toString();
-          
+          referral.check = false;
           // Сохраняем обновленные данные в базе данных
           await user.save();
 
