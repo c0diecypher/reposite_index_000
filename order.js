@@ -194,13 +194,9 @@ router.post('/get/bonus', async (req, res) => {
     const referralIds = JSON.parse(user.referralId);
 
     if (!Array.isArray(referralIds) || referralIds.length === 0) {
-      // В случае отсутствия реферралов отправляем только текущее значение userBonus
-      return res.status(200).json({ userBonus: user.userBonus });
+      return res.status(200).send('NO');
     }
 
-    let shouldEmit = true;
-
-    // Обработка referralIds
     for (const referral of referralIds) {
       const referralId = referral.referralId;
 
@@ -218,30 +214,43 @@ router.post('/get/bonus', async (req, res) => {
         const paidOrders = userOrderArray.filter(order => order.status === 'PAID');
 
         if (paidOrders.length > 0) {
-          shouldEmit = false; // Не отправлять событие, так как есть оплаченные заказы
-          break;
+          // Добавляем +1000 за каждый оплаченный заказ
+          const currentBonus = parseInt(user.userBonus) || 0;
+          user.userBonus = (currentBonus + 1000).toString();
+
+          // Помечаем referralId как проверенный
+          referral.check = true;
+          
+          // Сохраняем обновленные данные в базе данных
+          user.referralId = JSON.stringify(referralIds);
+          await user.save();
+
+          // Отправляем событие newBonus с общей суммой userBonus
+          const bonus = user.userBonus;
+          emitter.emit('newBonus', bonus);
         } else {
-          console.log('Нет оплаченных заказов, userBonus не увеличивается');
+          // Если нет оплаченных заказов, бонус не увеличивается
+          const currentBonus = parseInt(user.userBonus) || 0;
+          user.userBonus = currentBonus.toString();
+          
+          // Сохраняем обновленные данные в базе данных
+          await user.save();
+
+          // Отправляем событие newBonus с общей суммой userBonus
+          const bonus = user.userBonus;
+          emitter.emit('newBonus', bonus);
         }
       } else {
         console.log(`Пользователь с referralId ${referralId} не найден`);
       }
     }
 
-    // Отправка только текущего значения userBonus
-    res.status(200).json({ userBonus: user.userBonus });
-
-    // Отправка события только если нет оплаченных заказов
-    if (shouldEmit) {
-      const bonus = user.userBonus;
-      emitter.emit('newBonus', bonus);
-    }
+    return res.status(200).send('OK');
   } catch (error) {
     console.error('Ошибка при обработке запроса /get/bonus:', error);
     return res.status(500).json({ message: 'Произошла ошибка' });
   }
 });
-
 
 router.get('/connect/basket', async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', 'https://zipperapp.vercel.app');
