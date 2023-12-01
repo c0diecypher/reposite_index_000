@@ -273,7 +273,10 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
 
         const currentBonus = user.userBonus || 0; // Default to 0 if userBonus is not set
         const changeBonus = remainingBonus;
+        const userOrderArray = JSON.parse(user.userOrder);
+        const itemToRemove = userOrderArray.find(item => item.order_id === productId);
         const newBonus = Number(itemToRemove.newBonus) || 0;
+          
           if (newBonus === 0) {
             const updatedBonus = parseInt(changeBonus, 10); // Assuming remainingBonus is a number
              user.userBonus = updatedBonus;
