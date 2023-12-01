@@ -321,13 +321,18 @@ router.post('/customers/user/basket/delete/item', async (req, res) => {
             const userOrderArray = JSON.parse(user.userOrder);
 
             // Находим первый элемент с определенным order_id
-            const indexToRemove = userOrderArray.findIndex(item => item.order_id === productId);
+            const itemToRemove = userOrderArray.find(item => item.order_id === productId);
 
-            if (indexToRemove !== -1) {
-                // Удаляем только один элемент из массива
-                userOrderArray.splice(indexToRemove, 1);
+            if (itemToRemove) {
+                // Получаем saveUserBonus из элемента
+                const saveUserBonus = Number(itemToRemove.saveBonus) || 0;
+                // Обновляем userBonus в базе данных
+                await User.update({ userBonus: Number(user.userBonus) + saveUserBonus }, { where: { userId: userId.toString() } });
 
-                // Обновляем данные пользователя в базе данных
+                // Удаляем элемент из массива
+                userOrderArray.splice(userOrderArray.indexOf(itemToRemove), 1);
+
+                // Обновляем userOrder в базе данных
                 await User.update({ userOrder: JSON.stringify(userOrderArray) }, { where: { userId: userId.toString() } });
 
                 res.status(200).json({ success: true, message: 'Товар успешно удален из корзины' });
