@@ -276,8 +276,7 @@ app.post('/customer/settings/client/buy/offer/pay', async (req, res) => {
             const updatedBonus = parseInt(changeBonus, 10); // Предполагается, что remainingBonus - это число
         
             // Проверяем, что newBonus не равен 0
-            const newBonus = newBonus; // Замените эту переменную на ваше реальное значение
-            if (newBonus !== 0) {
+            if (getUserBonus !== 0) {
                 // Обновляем поле userBonus только если newBonus не равен 0
                 user.userBonus = updatedBonus;
                 await user.save(); // Сохраняем изменения в базе данных
