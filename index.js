@@ -80,6 +80,9 @@ app.post('/validate-initdata', async (req, res) => {
             });
         
             console.log(userData, 'Бонус в базе данных успешно обновлен.');
+            } else {
+            console.log(userData, 'Бонус уже был зачислен ранее. Данные в базе данных остались без изменений.');
+          }
         }
       } else {
         const user = {
