@@ -245,7 +245,8 @@ router.post('/get/bonus/:userId', async (req, res) => {
   }
 });
 
-router.get('/connect/basket', async (req, res) => {
+router.get('/connect/basket/:userId', async (req, res) => {
+    const userId = req.params.userId;
     res.setHeader('Access-Control-Allow-Origin', 'https://zipperapp.vercel.app');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.writeHead(200,{
@@ -253,12 +254,12 @@ router.get('/connect/basket', async (req, res) => {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
     })
-    emitter.on('newBasket', (basket) => {
+    emitter.on(`newBasket_${userId}`, (basket) => {
         res.write(`data: ${JSON.stringify(basket)} \n\n`)
     })
 });
 
-router.post('/get/basket', async (req, res) => {
+router.post('/get/basket/:userId', async (req, res) => {
     const { userId } = req.body;
     console.log(userId);
     try {
@@ -287,7 +288,7 @@ router.post('/get/basket', async (req, res) => {
                 return null;
             });
     
-    emitter.emit('newBasket', mappedData );
+    emitter.emit(`newBasket_${userId}`, mappedData );
 
     // Возвращаем успешный статус
     return res.status(200).send('OK');
@@ -301,7 +302,8 @@ router.post('/get/basket', async (req, res) => {
     
 });
 
-router.get('/connect/basketpaid', async (req, res) => {
+router.get('/connect/basketpaid/:userId', async (req, res) => {
+    const userId = req.params.userId;
     res.setHeader('Access-Control-Allow-Origin', 'https://zipperapp.vercel.app');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.writeHead(200,{
@@ -309,7 +311,7 @@ router.get('/connect/basketpaid', async (req, res) => {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
     })
-    emitter.on('newBasketPaid', (basketpaid) => {
+    emitter.on(`newBasketPaid_${userId}`, (basketpaid) => {
         res.write(`data: ${JSON.stringify(basketpaid)} \n\n`)
     })
 });
@@ -355,7 +357,7 @@ router.post('/customers/user/basket/delete/item', async (req, res) => {
 });
             
 
-router.post('/get/basketpaid', async (req, res) => {
+router.post('/get/basketpaid/:userId', async (req, res) => {
     const { userId } = req.body;
     try {
         const user = await User.findOne({ where: { userId: userId.toString() } });
@@ -380,7 +382,7 @@ router.post('/get/basketpaid', async (req, res) => {
                 return null;
             });
     
-    emitter.emit('newBasketPaid', mappedData );
+    emitter.emit(`newBasketPaid_${userId}`, mappedData );
 
     // Возвращаем успешный статус
     return res.status(200).send('OK');
