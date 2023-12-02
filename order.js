@@ -226,8 +226,7 @@ router.post('/get/bonus/:userId', async (req, res) => {
          console.log('Нет оплаченных заказов, userBonus не увеличивается');
         }
       } else {
-        const bonus = user.userBonus;
-        emitter.emit(`newBonus_${userId}`, bonus);
+        console.log('Нет приглашенного друга');
       }
     }
 
