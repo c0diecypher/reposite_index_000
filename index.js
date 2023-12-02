@@ -75,7 +75,10 @@ app.post('/validate-initdata', async (req, res) => {
             userBonus: bonus,
           });
 
-          console.log(userData, 'Данные в базе данных успешно обновлены.');
+           console.log(userData, 'Данные в базе данных успешно обновлены, включая userBonus.');
+          } else {
+            console.log(userData, 'Данные в базе данных успешно обновлены. Активация userBonus запрещена.');
+          }
         } else {
             console.log(userData, 'Бонус в базе данных успешно обновлен.');
         }
