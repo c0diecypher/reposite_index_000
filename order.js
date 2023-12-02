@@ -206,8 +206,9 @@ router.post('/get/bonus/:userId', async (req, res) => {
       if (referral.check) {
         continue; // Пропускаем уже обработанный referralId
       }
-        
+
       const referredUser = await User.findOne({ where: { userId: referralId.toString() } });
+
       if (referredUser) {
         const userOrderArray = JSON.parse(referredUser.userOrder);
         console.log('DATAArray', userOrderArray);
@@ -226,7 +227,7 @@ router.post('/get/bonus/:userId', async (req, res) => {
          console.log('Нет оплаченных заказов, userBonus не увеличивается');
         }
       } else {
-        console.log('Нет приглашенного друга');
+        console.log(`Пользователь с referralId ${referralId} не найден`);
       }
     }
 
