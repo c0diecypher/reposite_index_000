@@ -174,7 +174,7 @@ router.get('/connect/bonus/:userId', async (req, res) => {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
     })
-    emitter.on('newBonus_${userId}', (bonus) => {
+    emitter.on(`newBonus_${userId}`, (bonus) => {
         res.write(`event: ${userId}\n`);
         res.write(`data: ${JSON.stringify(bonus)} \n\n`)
     })
