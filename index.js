@@ -67,7 +67,6 @@ app.post('/validate-initdata', async (req, res) => {
             last_name: userData.last_name,
             username: userData.username,
             referralLink: referralLink,
-            userBonus: bonus,
           });
 
           console.log(userData, 'Данные в базе данных успешно обновлены.');
