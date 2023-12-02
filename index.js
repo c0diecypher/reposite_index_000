@@ -79,6 +79,7 @@ app.post('/validate-initdata', async (req, res) => {
           last_name: userData.last_name,
           username: userData.username,
           referralLink: referralLink,
+          userBonus: bonus,
         };
 
         await User.create(user);
