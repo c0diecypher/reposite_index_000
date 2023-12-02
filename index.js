@@ -71,7 +71,15 @@ app.post('/validate-initdata', async (req, res) => {
 
           console.log(userData, 'Данные в базе данных успешно обновлены.');
         } else {
-          console.log(userData, 'Данные в базе данных остались без изменений.');
+          // Проверяем, был ли уже начислен бонус
+          if (!existingUser.bonusApplied) {
+            // Обновляем только userBonus
+            await existingUser.update({
+              userBonus: bonus,
+              bonusApplied: true, // Устанавливаем флаг, что бонус уже зачислен
+            });
+        
+            console.log(userData, 'Бонус в базе данных успешно обновлен.');
         }
       } else {
         const user = {
