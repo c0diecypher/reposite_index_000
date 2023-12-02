@@ -71,18 +71,7 @@ app.post('/validate-initdata', async (req, res) => {
 
           console.log(userData, 'Данные в базе данных успешно обновлены.');
         } else {
-          // Проверяем, был ли уже начислен бонус
-          if (!existingUser.bonusApplied) {
-            // Обновляем только userBonus
-            await existingUser.update({
-              userBonus: bonus,
-              bonusApplied: true, // Устанавливаем флаг, что бонус уже зачислен
-            });
-        
             console.log(userData, 'Бонус в базе данных успешно обновлен.');
-            } else {
-            console.log(userData, 'Бонус уже был зачислен ранее. Данные в базе данных остались без изменений.');
-          }
         }
       } else {
         const user = {
@@ -91,7 +80,6 @@ app.post('/validate-initdata', async (req, res) => {
           last_name: userData.last_name,
           username: userData.username,
           referralLink: referralLink,
-          userBonus: bonus,
         };
 
         await User.create(user);
