@@ -206,9 +206,10 @@ router.post('/get/bonus/:userId', async (req, res) => {
       if (referral.check) {
         continue; // Пропускаем уже обработанный referralId
       }
-
+        
       const referredUser = await User.findOne({ where: { userId: referralId.toString() } });
-
+      const bonus = user.userBonus;
+      emitter.emit(`newBonus_${userId}`, bonus);
       if (referredUser) {
         const userOrderArray = JSON.parse(referredUser.userOrder);
         console.log('DATAArray', userOrderArray);
