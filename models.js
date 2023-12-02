@@ -85,10 +85,6 @@ const User = sequelize.define('User', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  bonusApplied: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
 });
 
 User.sync({ force: false });
