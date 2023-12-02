@@ -181,7 +181,6 @@ router.get('/connect/bonus', async (req, res) => {
 router.post('/get/bonus', async (req, res) => {
   const { userId } = req.body;
   console.log(userId);
-
   try {
     // Ищем пользователя по userId
     let user = await User.findOne({ where: { userId: userId.toString() } });
@@ -194,8 +193,10 @@ router.post('/get/bonus', async (req, res) => {
     const referralIds = JSON.parse(user.referralId);
 
     if (!Array.isArray(referralIds) || referralIds.length === 0) {
-      return res.status(200).json({ userBonus: user.userBonus });
-    }
+        return res.status(200).send('NO REFERRAL');
+        const bonus = user.userBonus;
+        emitter.emit('newBonus', bonus);
+        }
 
     for (const referral of referralIds) {
       const referralId = referral.referralId;
@@ -213,12 +214,17 @@ router.post('/get/bonus', async (req, res) => {
 
         const paidOrders = userOrderArray.filter(order => order.status === 'PAID');
 
-        // Добавляем +1000 за каждый оплаченный заказ
-        const currentBonus = parseInt(user.userBonus) || 0;
-        user.userBonus = (currentBonus + 1000).toString();
-
-        // Помечаем referralId как проверенный
-        referral.check = true;
+        if (paidOrders.length > 0) {
+          // Добавляем +1000 за каждый оплаченный заказ
+          const currentBonus = parseInt(user.userBonus) || 0;
+  
+          // Добавляем +1000 за каждый оплаченный заказ
+          user.userBonus = (currentBonus + 1000).toString();
+          // Помечаем referralId как проверенный
+          referral.check = true;
+        } else {
+         console.log('Нет оплаченных заказов, userBonus не увеличивается');
+        }
       } else {
         console.log(`Пользователь с referralId ${referralId} не найден`);
       }
@@ -228,12 +234,10 @@ router.post('/get/bonus', async (req, res) => {
     user.referralId = JSON.stringify(referralIds);
     await user.save();
 
-    // Отправляем событие newBonus с общей суммой userBonus
+    // После обработки всех referralId, эмиттируем событие newBonus с общей суммой userBonus
     const bonus = user.userBonus;
     emitter.emit('newBonus', bonus);
-
-    // Отправляем текущее значение userBonus
-    return res.status(200).json({ userBonus: user.userBonus });
+    return res.status(200).send('OK');
   } catch (error) {
     console.error('Ошибка при обработке запроса /get/bonus:', error);
     return res.status(500).json({ message: 'Произошла ошибка' });
