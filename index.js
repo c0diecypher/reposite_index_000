@@ -32,66 +32,71 @@ let userId = '';
 let photoUrl = '';
 
 app.post('/validate-initdata', async (req, res) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith('twa-init-data')) {
-    return res.status(400).json({ success: false, error: 'Invalid header Authorization' });
-  }
-
-  const initData = authHeader.replace('twa-init-data ', '');
-  console.log('initData logs:', initData);
-
   try {
-    validate(initData, token);
-    console.log(`validate: ${validate}`);
-    const decodedData = decodeURIComponent(initData);
+    const authHeader = req.headers.authorization;
 
+    if (!authHeader || !authHeader.startsWith('twa-init-data ')) {
+      return res.status(400).json({ success: false, error: 'Invalid header Authorization' });
+    }
+
+    const initData = authHeader.replace('twa-init-data ', '');
+    console.log('initData logs:', initData);
+
+    const decodedData = decodeURIComponent(initData);
     console.log(decodedData);
 
-    const userMatch = /user=([^&]+)/.exec(decodedData);
-    if (userMatch) {
-      const userData = JSON.parse(userMatch[1]);
-      const referralLink = `https://t.me/zipperstore_bot?start=${userData.id.toString()}`;
-      const existingUser = await User.findOne({ where: { userId: userData.id.toString() } });
-      const bonus = '1000';
-      if (existingUser) {
-        if (
-          existingUser.first_name !== userData.first_name ||
-          existingUser.last_name !== userData.last_name ||
-          existingUser.username !== userData.username ||
-          existingUser.referralLink !== referralLink
-        ) {
-          await existingUser.update({
-            first_name: userData.first_name,
-            last_name: userData.last_name,
-            username: userData.username,
-            referralLink: referralLink,
-          });
+    // Проверка типа данных и валидация
+    const userDataMatch = /user=([^&]+)/.exec(decodedData);
+    if (!userDataMatch) {
+      throw new Error('Invalid user data');
+    }
 
-          console.log(userData, 'Данные в базе данных успешно обновлены.');
-        } else {
-          console.log(userData, 'Данные в базе данных остались без изменений.');
-        }
+    const userData = JSON.parse(userDataMatch[1]);
+    const referralLink = `https://t.me/zipperstore_bot?start=${userData.id.toString()}`;
+    const bonus = '1000';
+
+    const existingUser = await User.findOne({ where: { userId: userData.id.toString() } });
+
+    if (existingUser) {
+      const updates = {
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        username: userData.username,
+        referralLink: referralLink,
+        startBonus: true,
+      };
+
+      // Проверка, установлен ли startBonus в true перед обновлением userBonus
+      if (!existingUser.startBonus) {
+        updates.userBonus = bonus;
+        console.log(userData, 'Данные в базе данных успешно обновлены, включая userBonus.');
       } else {
-        const user = {
-          userId: userData.id.toString(),
-          first_name: userData.first_name,
-          last_name: userData.last_name,
-          username: userData.username,
-          referralLink: referralLink,
-        };
-
-        await User.create(user);
-
-        console.log('Новая запись создана в базе данных:', userData);
+        console.log(userData, 'Данные в базе данных успешно обновлены. Активация userBonus запрещена.');
       }
-      
+
+      // Обновление данных пользователя в единственном запросе
+      await existingUser.update(updates);
+      console.log(userData, 'Данные в базе данных успешно обновлены.');
+    } else {
+      const user = {
+        userId: userData.id.toString(),
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        username: userData.username,
+        referralLink: referralLink,
+      };
+
+      // Создание новой записи в базе данных
+      await User.create(user);
+      console.log('Новая запись создана в базе данных:', userData);
     }
-      res.json({ success: true, message: 'Authorized valid' });
-    }catch (error) {
-      res.status(400).json({ success: false, error: error.message });
-    }
-  });
+
+    res.json({ success: true, message: 'Authorized valid' });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
 
 const webAppUrl = 'https://zipperapp.vercel.app/'
 
