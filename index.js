@@ -53,14 +53,13 @@ app.post('/validate-initdata', async (req, res) => {
       const userData = JSON.parse(userMatch[1]);
       const referralLink = `https://t.me/zipperstore_bot?start=${userData.id.toString()}`;
       const existingUser = await User.findOne({ where: { userId: userData.id.toString() } });
-      const bonus = `1000`;
+      const bonus = '1000';
       if (existingUser) {
         if (
           existingUser.first_name !== userData.first_name ||
           existingUser.last_name !== userData.last_name ||
           existingUser.username !== userData.username ||
-          existingUser.referralLink !== referralLink ||
-          existingUser.bonus !== bonus
+          existingUser.referralLink !== referralLink
         ) {
           await existingUser.update({
             first_name: userData.first_name,
@@ -69,18 +68,21 @@ app.post('/validate-initdata', async (req, res) => {
             referralLink: referralLink,
             startBonus: true,
           });
-          if (!existingUser.startBonus) {
+
+          console.log(userData, 'Данные в базе данных успешно обновлены.');
+        } else {
+          console.log(userData, 'Данные в базе данных остались без изменений.');
+        }
+        // Проверка, установлен ли startBonus в true перед обновлением userBonus
+        if (!existingUser.startBonus) {
           // Обновление userBonus только если startBonus не активирован
           await existingUser.update({
             userBonus: bonus,
           });
-
-           console.log(userData, 'Данные в базе данных успешно обновлены, включая userBonus.');
-          } else {
-            console.log(userData, 'Данные в базе данных успешно обновлены. Активация userBonus запрещена.');
-          }
+      
+          console.log(userData, 'Данные в базе данных успешно обновлены, включая userBonus.');
         } else {
-            console.log(userData, 'Бонус в базе данных успешно обновлен.');
+          console.log(userData, 'Данные в базе данных успешно обновлены. Активация userBonus запрещена.');
         }
       } else {
         const user = {
