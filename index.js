@@ -49,42 +49,27 @@ app.post('/validate-initdata', async (req, res) => {
     console.log(decodedData);
 
     const userMatch = /user=([^&]+)/.exec(decodedData);
-    if (userMatch) {
-      const userData = JSON.parse(userMatch[1]);
-      const referralLink = `https://t.me/zipperstore_bot?start=${userData.id.toString()}`;
-      const existingUser = await User.findOne({ where: { userId: userData.id.toString() } });
-      const bonus = '1000';
-      if (existingUser) {
-        if (
-          existingUser.first_name !== userData.first_name ||
-          existingUser.last_name !== userData.last_name ||
-          existingUser.username !== userData.username ||
-          existingUser.referralLink !== referralLink
-        ) {
-          await existingUser.update({
-            first_name: userData.first_name,
-            last_name: userData.last_name,
-            username: userData.username,
-            referralLink: referralLink,
-            startBonus: true,
-          });
+     if (existingUser) {
+      const updates = {
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        username: userData.username,
+        referralLink: referralLink,
+        startBonus: true,
+      };
 
-          console.log(userData, 'Данные в базе данных успешно обновлены.');
-        } else {
-          console.log(userData, 'Данные в базе данных остались без изменений.');
-        }
-        // Проверка, установлен ли startBonus в true перед обновлением userBonus
-        if (!existingUser.startBonus) {
-          // Обновление userBonus только если startBonus не активирован
-          await existingUser.update({
-            userBonus: bonus,
-          });
-      
-          console.log(userData, 'Данные в базе данных успешно обновлены, включая userBonus.');
-        } else {
-          console.log(userData, 'Данные в базе данных успешно обновлены. Активация userBonus запрещена.');
-        }
+      // Проверка, установлен ли startBonus в true перед обновлением userBonus
+      if (!existingUser.startBonus) {
+        updates.userBonus = bonus;
+        console.log(userData, 'Данные в базе данных успешно обновлены, включая userBonus.');
       } else {
+        console.log(userData, 'Данные в базе данных успешно обновлены. Активация userBonus запрещена.');
+      }
+
+      // Обновление данных пользователя в единственном запросе
+      await existingUser.update(updates);
+      console.log(userData, 'Данные в базе данных успешно обновлены.');
+    } else {
         const user = {
           userId: userData.id.toString(),
           first_name: userData.first_name,
