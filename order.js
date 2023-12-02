@@ -165,7 +165,8 @@ Zipper App снова ждет ваших заказов! ⚡`;
     }
 });
 
-router.get('/connect/bonus', async (req, res) => {
+router.get('/connect/bonus/:userId', async (req, res) => {
+    const userId = req.params.userId
     res.setHeader('Access-Control-Allow-Origin', 'https://zipperapp.vercel.app');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.writeHead(200,{
@@ -173,12 +174,12 @@ router.get('/connect/bonus', async (req, res) => {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
     })
-    emitter.on('newBonus', (bonus) => {
+    emitter.on(`newBonus_${userId}`, (bonus) => {
         res.write(`data: ${JSON.stringify(bonus)} \n\n`)
     })
 });
 
-router.post('/get/bonus', async (req, res) => {
+router.post('/get/bonus/:userId', async (req, res) => {
   const { userId } = req.body;
   console.log(userId);
   try {
@@ -236,7 +237,7 @@ router.post('/get/bonus', async (req, res) => {
 
     // После обработки всех referralId, эмиттируем событие newBonus с общей суммой userBonus
     const bonus = user.userBonus;
-    emitter.emit('newBonus', bonus);
+    emitter.emit(`newBonus_${userId}`, bonus);
     return res.status(200).send('OK');
   } catch (error) {
     console.error('Ошибка при обработке запроса /get/bonus:', error);
