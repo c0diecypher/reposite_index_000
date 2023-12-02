@@ -59,13 +59,15 @@ app.post('/validate-initdata', async (req, res) => {
           existingUser.first_name !== userData.first_name ||
           existingUser.last_name !== userData.last_name ||
           existingUser.username !== userData.username ||
-          existingUser.referralLink !== referralLink 
+          existingUser.referralLink !== referralLink ||
+          existingUser.bonus !== bonus
         ) {
           await existingUser.update({
             first_name: userData.first_name,
             last_name: userData.last_name,
             username: userData.username,
             referralLink: referralLink,
+            userBonus: bonus,
           });
 
           console.log(userData, 'Данные в базе данных успешно обновлены.');
