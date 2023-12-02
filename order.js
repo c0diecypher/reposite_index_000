@@ -180,7 +180,7 @@ router.get('/connect/bonus/:userId', async (req, res) => {
     })
 });
 
-router.post('/get/bonus', async (req, res) => {
+router.post('/get/bonus/:userId', async (req, res) => {
   const { userId } = req.body;
   console.log(userId);
   try {
