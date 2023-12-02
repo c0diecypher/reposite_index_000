@@ -193,10 +193,10 @@ router.post('/get/bonus', async (req, res) => {
     const referralIds = JSON.parse(user.referralId);
 
     if (!Array.isArray(referralIds) || referralIds.length === 0) {
-        return res.status(200).send('NO REFERRAL');
-        const bonus = user.userBonus;
-        emitter.emit('newBonus', bonus);
-        }
+      const bonus = user.userBonus;
+      emitter.emit('newBonus', bonus);
+      return res.status(200).send('NO REFERRAL');
+    }
 
     for (const referral of referralIds) {
       const referralId = referral.referralId;
