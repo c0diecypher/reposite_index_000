@@ -218,9 +218,12 @@ router.post('/get/bonus/:userId', async (req, res) => {
         if (paidOrders.length > 0) {
           // Добавляем +1000 за каждый оплаченный заказ
           const currentBonus = parseInt(user.userBonus) || 0;
-  
-          // Добавляем +1000 за каждый оплаченный заказ
-          user.userBonus = (currentBonus + 1000).toString();
+
+          // Проверяем флаг true перед начислением дополнительных бонусов
+          if (referral.flag === true) {
+            user.userBonus = (currentBonus + 1000).toString();
+          }
+
           // Помечаем referralId как проверенный
           referral.check = true;
         } else {
