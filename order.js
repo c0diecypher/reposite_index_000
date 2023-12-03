@@ -220,14 +220,14 @@ router.post('/get/bonus/:userId', async (req, res) => {
           const currentBonus = parseInt(user.userBonus) || 0;
 
           // Проверяем флаг true перед начислением дополнительных бонусов
-          if (referral.flag === true) {
             user.userBonus = (currentBonus + 1000).toString();
-          }
 
           // Помечаем referralId как проверенный
           referral.check = true;
         } else {
-         console.log('Нет оплаченных заказов, userBonus не увеличивается');
+          // Эмитируем текущее состояние бонуса независимо от флага
+          const bonus = user.userBonus;
+          emitter.emit(`newBonus_${userId}`, bonus);
         }
       } else {
         console.log(`Пользователь с referralId ${referralId} не найден`);
