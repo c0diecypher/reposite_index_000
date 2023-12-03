@@ -200,40 +200,45 @@ router.post('/get/bonus/:userId', async (req, res) => {
     }
 
     for (const referral of referralIds) {
-      const referralId = referral.referralId;
+  const referralId = referral.referralId;
 
-      // Проверяем, был ли уже обработан этот referralId
-      if (referral.check) {
-          continue;
-      }
+  // Проверяем, был ли уже обработан этот referralId
+  if (referral.check) {
+    continue;
+  }
 
-      const referredUser = await User.findOne({ where: { userId: referralId.toString() } });
+  const referredUser = await User.findOne({ where: { userId: referralId.toString() } });
 
-      if (referredUser) {
-        const userOrderArray = JSON.parse(referredUser.userOrder);
-        console.log('DATAArray', userOrderArray);
+  if (referredUser) {
+    const userOrderArray = JSON.parse(referredUser.userOrder);
+    console.log('DATAArray', userOrderArray);
 
-        const paidOrders = userOrderArray.filter(order => order.status === 'PAID');
+    if (userOrderArray === null) {
+      // Если userOrderArray равен null, эмитируем текущее состояние бонуса
+      const bonus = user.userBonus;
+      emitter.emit(`newBonus_${userId}`, bonus);
+      console.log(`BOOOONUSI ${bonus}`);
+    } else {
+      const paidOrders = userOrderArray.filter(order => order.status === 'PAID');
 
-        if (paidOrders.length > 0) {
-          // Добавляем +1000 за каждый оплаченный заказ
-          const currentBonus = parseInt(user.userBonus) || 0;
+      if (paidOrders.length > 0) {
+        // Добавляем +1000 за каждый оплаченный заказ
+        const currentBonus = parseInt(user.userBonus) || 0;
 
-          // Проверяем флаг true перед начислением дополнительных бонусов
-            user.userBonus = (currentBonus + 1000).toString();
+        // Проверяем флаг true перед начислением дополнительных бонусов
+        user.userBonus = (currentBonus + 1000).toString();
 
-          // Помечаем referralId как проверенный
-          referral.check = true;
-        } else {
-          // Эмитируем текущее состояние бонуса независимо от флага
-          const bonus = user.userBonus;
-          emitter.emit(`newBonus_${userId}`, bonus);
-            console.log(`BOOOONUSI ${bonus}`);
-        }
+        // Помечаем referralId как проверенный
+        referral.check = true;
       } else {
+        // Эмитируем текущее состояние бонуса независимо от флага
         const bonus = user.userBonus;
-          emitter.emit(`newBonus_${userId}`, bonus);
-            console.log(`FREEEEE ${bonus}`);
+        emitter.emit(`newBonus_${userId}`, bonus);
+        console.log(`BOOOONUSI ${bonus}`);
+      }
+    }
+  } else {
+        console.log('нет referralId')
       }
     }
 
