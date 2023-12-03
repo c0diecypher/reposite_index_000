@@ -228,9 +228,12 @@ router.post('/get/bonus/:userId', async (req, res) => {
           // Эмитируем текущее состояние бонуса независимо от флага
           const bonus = user.userBonus;
           emitter.emit(`newBonus_${userId}`, bonus);
+            console.log(`BOOOONUSI ${bonus}`);
         }
       } else {
-        console.log(`Пользователь с referralId ${referralId} не найден`);
+        const bonus = user.userBonus;
+          emitter.emit(`newBonus_${userId}`, bonus);
+            console.log(`FREEEEE ${bonus}`);
       }
     }
 
