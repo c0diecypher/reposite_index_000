@@ -204,9 +204,6 @@ router.post('/get/bonus/:userId', async (req, res) => {
 
       // Проверяем, был ли уже обработан этот referralId
       if (referral.check) {
-        const bonus = user.userBonus;
-          emitter.emit(`newBonus_${userId}`, bonus);
-          return res.status(200).send('NO REFERRAL');
           continue;
       }
 
