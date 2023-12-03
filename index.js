@@ -123,6 +123,7 @@ bot.on('message', async(msg) => {
 bot.onText(/\/start (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
     const referralId = msg.from.id;
+    const referralName = msg.from.first_name;
     const referralCode = match[1];
 
     try {
@@ -182,7 +183,7 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
         console.log('Данные пользователя успешно обновлены.');
 
         // Отправляем сообщение с полученным значением
-        bot.sendMessage(chatId, `Привет, ${referralId}! Ты перешел по реферальному коду: ${referralCode}`);
+        bot.sendMessage(chatId, `Привет, ${referralName}! Ты перешел по реферальному коду: ${referralCode}`);
     } catch (error) {
         console.error('Ошибка при обработке команды /start:', error);
         bot.sendMessage(chatId, 'Произошла ошибка при обработке команды /start.');
