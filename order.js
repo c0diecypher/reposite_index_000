@@ -167,7 +167,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
 
 router.get('/connect/bonus/:userId', async (req, res) => {
     const userId = req.params.userId
-    res.setHeader('Access-Control-Allow-Origin', 'https://zipperapp.vercel.app');
+    res.setHeader('Access-Control-Allow-Origin', 'https://repository-appnextjs-ox8a.vercel.app');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.writeHead(200,{
         'Connection': 'keep-alive',
