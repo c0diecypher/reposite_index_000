@@ -338,6 +338,46 @@ router.post('/get/basket/:userId', async (req, res) => {
     
 });
 
+router.get('/customer/basket/:userId', async (req, res) => {
+    const { userId } = req.params;
+    console.log(userId);
+    try {
+        // Ищем пользователя по userId
+        const user = await User.findOne({ where: { userId: userId.toString() } });
+
+        if (user) {
+            const userOrderArray = JSON.parse(user.userOrder);
+                
+            // Ищем все товары с статусом 'WAIT'
+            const waitOrders = userOrderArray.filter(order => order.status === 'WAIT');
+            // Проверка на undefined перед использованием map
+            const mappedData = waitOrders.map(order => {
+                if (order) {
+                    // Добавьте дополнительные проверки на свойства объекта, если это необходимо
+                    return {
+                        id: order.id,
+                        name: order.name,
+                        order_id: order.order_id,
+                        price: order.price,
+                        size: order.size,
+                        status: order.status,
+                        time: order.time,
+                    };
+                }
+                return null;
+            });
+
+            // Возвращаем успешный статус и корзину пользователя
+            return res.status(200).json({ userId, basket: mappedData });
+        } else {
+            res.status(404).json({ error: 'Пользователь не найден' });
+        }
+    } catch (error) {
+        console.error('Данные корзины пусты', error);
+        res.status(200).json([]);
+    }
+});
+
 router.get('/connect/basketpaid/:userId', async (req, res) => {
     const userId = req.params.userId;
     res.setHeader('Access-Control-Allow-Origin', 'https://zipperapp.vercel.app');
