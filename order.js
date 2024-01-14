@@ -392,44 +392,43 @@ router.get('/connect/basketpaid/:userId', async (req, res) => {
     })
 });
 
-router.post('/customers/user/basket/delete/item', async (req, res) => {
-    const { userId, orderId, productId } = req.body;
+router.get('/customers/user/basket/delete/item', async (req, res) => { 
+    const { userId, orderId, productId } = req.query;
+try {
+    const user = await User.findOne({ where: { userId: userId.toString() } });
 
-    try {
-        const user = await User.findOne({ where: { userId: userId.toString() } });
+    if (user) {
+        const userOrderArray = JSON.parse(user.userOrder);
 
-        if (user) {
-            const userOrderArray = JSON.parse(user.userOrder);
+        // Находим первый элемент с определенным order_id
+        const itemToRemove = userOrderArray.find(item => item.order_id === productId);
 
-            // Находим первый элемент с определенным order_id
-            const itemToRemove = userOrderArray.find(item => item.order_id === productId);
+        if (itemToRemove) {
+            // Получаем saveUserBonus из элемента
+            const saveUserBonus = Number(itemToRemove.saveBonus) || 0;
+            const getUserBonus = Number(itemToRemove.newBonus) || 0;
 
-            if (itemToRemove) {
-                // Получаем saveUserBonus из элемента
-                const saveUserBonus = Number(itemToRemove.saveBonus) || 0;
-                const getUserBonus = Number(itemToRemove.newBonus) || 0;
-
-                if (getUserBonus === 0){
+            if (getUserBonus === 0) {
                 // Обновляем userBonus в базе данных
                 await User.update({ userBonus: Number(user.userBonus) + saveUserBonus }, { where: { userId: userId.toString() } });
-                }
-                // Удаляем элемент из массива
-                userOrderArray.splice(userOrderArray.indexOf(itemToRemove), 1);
-
-                // Обновляем userOrder в базе данных
-                await User.update({ userOrder: JSON.stringify(userOrderArray) }, { where: { userId: userId.toString() } });
-
-                res.status(200).json({ success: true, message: 'Товар успешно удален из корзины' });
-            } else {
-                res.status(404).json({ error: 'Товар с указанным order_id не найден в корзине пользователя' });
             }
+            // Удаляем элемент из массива
+            userOrderArray.splice(userOrderArray.indexOf(itemToRemove), 1);
+
+            // Обновляем userOrder в базе данных
+            await User.update({ userOrder: JSON.stringify(userOrderArray) }, { where: { userId: userId.toString() } });
+
+            res.status(200).json({ success: true, message: 'Товар успешно удален из корзины' });
         } else {
-            res.status(404).json({ error: 'Пользователь не найден' });
+            res.status(404).json({ error: 'Товар с указанным order_id не найден в корзине пользователя' });
         }
-    } catch (error) {
-        console.error('Ошибка при удалении товара', error);
-        res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    } else {
+        res.status(404).json({ error: 'Пользователь не найден' });
     }
+} catch (error) {
+    console.error('Ошибка при удалении товара', error);
+    res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+}
 });
             
 
