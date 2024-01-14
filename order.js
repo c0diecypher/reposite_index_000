@@ -401,7 +401,7 @@ try {
         const userOrderArray = JSON.parse(user.userOrder);
 
         // Находим первый элемент с определенным order_id
-        const itemToRemove = userOrderArray.find(item => item.order_id === productId);
+        const itemToRemove = userOrderArray.find(item => item.order_id === orderId);
 
         if (itemToRemove) {
             // Получаем saveUserBonus из элемента
