@@ -651,6 +651,25 @@ app.get('/customer/settings/client/photo/:userId', (req, res) => {
   });
 });
 
+app.get('/customer/photo/:userId', (req, res) => {
+  const userId = req.params.userId;
+
+  // Получите путь к фотографии из базы данных
+  User.findOne({ where: { userId } }).then((user) => {
+    if (user && user.filePath) {
+      const filePath = user.filePath;
+
+      // Отправьте фотографию как ответ на запрос, используя только относительный 
+       res.json({ userId: userId, img: filePath });
+    } else {
+      res.status(404).send('Фотография не найдена');
+    }
+  }).catch((error) => {
+    console.error('Ошибка при поиске пути к фотографии:', error);
+    res.status(500).send('Ошибка сервера');
+  });
+});
+
 app.get('/userProfile/:userId', (req, res) => {
   const userId = req.params.userId; // Получите userId из параметров запроса
 
