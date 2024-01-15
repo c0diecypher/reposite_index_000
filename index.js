@@ -651,16 +651,21 @@ app.get('/customer/settings/client/photo/:userId', (req, res) => {
   });
 });
 
+
+
 app.get('/customer/photo/:userId', (req, res) => {
   const userId = req.params.userId;
-
+  const baseUrl = 'https://cdn.zipperconnect.space';
   // Получите путь к фотографии из базы данных
   User.findOne({ where: { userId } }).then((user) => {
     if (user && user.filePath) {
       const filePath = user.filePath;
 
-      // Отправьте фотографию как ответ на запрос, используя только относительный 
-       res.json({ userId: userId, img: filePath });
+      // Создайте полный URL пути к фотографии
+      const fullUrl = `${baseUrl}/${filePath}`;
+
+      // Отправьте фотографию как ответ на запрос с полным URL
+      res.json({ userId: userId, img: fullUrl });
     } else {
       res.status(404).send('Фотография не найдена');
     }
