@@ -204,8 +204,8 @@ router.get('/connect/bonus/:userId', async (req, res) => {
     })
 });
 
-router.post('/get/bonus/:userId', async (req, res) => {
-  const { userId } = req.body;
+router.get('/customer/bonus/:userId', async (req, res) => {
+  const { userId } = req.params; // Параметр из URL, а не из body
   console.log(userId);
   try {
     // Ищем пользователя по userId
@@ -220,50 +220,47 @@ router.post('/get/bonus/:userId', async (req, res) => {
 
     if (!Array.isArray(referralIds) || referralIds.length === 0) {
       const bonus = user.userBonus;
-      emitter.emit(`newBonus_${userId}`, bonus);
-      return res.status(200).send('NO REFERRAL');
+      return res.status(200).json({ bonus, message: 'NO REFERRAL' });
     }
 
     for (const referral of referralIds) {
-  const referralId = referral.referralId;
+      const referralId = referral.referralId;
 
-  // Проверяем, был ли уже обработан этот referralId
-  if (referral.check) {
-    continue;
-  }
-
-  const referredUser = await User.findOne({ where: { userId: referralId.toString() } });
-
-  if (referredUser) {
-    const userOrderArray = JSON.parse(referredUser.userOrder);
-    console.log('DATAArray', userOrderArray);
-
-    if (userOrderArray === null) {
-      // Если userOrderArray равен null, эмитируем текущее состояние бонуса
-      const bonus = user.userBonus;
-      emitter.emit(`newBonus_${userId}`, bonus);
-      console.log(`BOOOONUSI ${bonus}`);
-    } else {
-      const paidOrders = userOrderArray.filter(order => order.status === 'PAID');
-
-      if (paidOrders.length > 0) {
-        // Добавляем +1000 за каждый оплаченный заказ
-        const currentBonus = parseInt(user.userBonus) || 0;
-
-        // Проверяем флаг true перед начислением дополнительных бонусов
-        user.userBonus = (currentBonus + 1000).toString();
-
-        // Помечаем referralId как проверенный
-        referral.check = true;
-      } else {
-        // Эмитируем текущее состояние бонуса независимо от флага
-        const bonus = user.userBonus;
-        emitter.emit(`newBonus_${userId}`, bonus);
-        console.log(`BOOOONUSI ${bonus}`);
+      // Проверяем, был ли уже обработан этот referralId
+      if (referral.check) {
+        continue;
       }
-    }
-  } else {
-        console.log('нет referralId')
+
+      const referredUser = await User.findOne({ where: { userId: referralId.toString() } });
+
+      if (referredUser) {
+        const userOrderArray = JSON.parse(referredUser.userOrder);
+        console.log('DATAArray', userOrderArray);
+
+        if (userOrderArray === null) {
+          // Если userOrderArray равен null, отправляем текущее состояние бонуса в ответе
+          const bonus = user.userBonus;
+          return res.status(200).json({ bonus });
+        } else {
+          const paidOrders = userOrderArray.filter(order => order.status === 'PAID');
+
+          if (paidOrders.length > 0) {
+            // Добавляем +1000 за каждый оплаченный заказ
+            const currentBonus = parseInt(user.userBonus) || 0;
+
+            // Проверяем флаг true перед начислением дополнительных бонусов
+            user.userBonus = (currentBonus + 1000).toString();
+
+            // Помечаем referralId как проверенный
+            referral.check = true;
+          } else {
+            // Отправляем текущее состояние бонуса в ответе независимо от флага
+            const bonus = user.userBonus;
+            return res.status(200).json({ bonus });
+          }
+        }
+      } else {
+        console.log('нет referralId');
       }
     }
 
@@ -271,71 +268,13 @@ router.post('/get/bonus/:userId', async (req, res) => {
     user.referralId = JSON.stringify(referralIds);
     await user.save();
 
-    // После обработки всех referralId, эмиттируем событие newBonus с общей суммой userBonus
+    // После обработки всех referralId, отправляем общую сумму userBonus в ответе
     const bonus = user.userBonus;
-    emitter.emit(`newBonus_${userId}`, bonus);
-    return res.status(200).send('OK');
+    return res.status(200).json({ bonus, message: 'OK' });
   } catch (error) {
     console.error('Ошибка при обработке запроса /get/bonus:', error);
     return res.status(500).json({ message: 'Произошла ошибка' });
   }
-});
-
-router.get('/connect/basket/:userId', async (req, res) => {
-    const userId = req.params.userId;
-    res.setHeader('Access-Control-Allow-Origin', 'https://zipperapp.vercel.app');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.writeHead(200,{
-        'Connection': 'keep-alive',
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-    })
-    emitter.on(`newBasket_${userId}`, (basket) => {
-        res.write(`data: ${JSON.stringify(basket)} \n\n`)
-    })
-});
-
-router.post('/get/basket/:userId', async (req, res) => {
-    const { userId } = req.body;
-    console.log(userId);
-    try {
-    // Ищем пользователя по userId
-    const user = await User.findOne({ where: { userId: userId.toString() } });
-
-    if (user) {
-            const userOrderArray = JSON.parse(user.userOrder);
-                
-            // Ищем все товары с статусом 'WAIT'
-            const waitOrders = userOrderArray.filter(order => order.status === 'WAIT');
-            // Проверка на undefined перед использованием map
-            const mappedData = waitOrders.map(order => {
-                if (order) {
-                    // Добавьте дополнительные проверки на свойства объекта, если это необходимо
-                    return {
-                        id: order.id,
-                        name: order.name,
-                        order_id: order.order_id,
-                        price: order.price,
-                        size: order.size,
-                        status: order.status,
-                        time: order.time,
-                    };
-                }
-                return null;
-            });
-    
-    emitter.emit(`newBasket_${userId}`, mappedData );
-
-    // Возвращаем успешный статус
-    return res.status(200).send('OK');
-} else {
-  res.status(404).json({ error: 'Пользователь не найден' });
-}
-    } catch (error) {
-        console.error('Данные корзины пусты', error);
-        res.status(200).json([]);
-    }
-    
 });
 
 router.get('/customer/basket/:userId', async (req, res) => {
