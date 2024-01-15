@@ -378,20 +378,6 @@ router.get('/customer/basket/:userId', async (req, res) => {
     }
 });
 
-router.get('/connect/basketpaid/:userId', async (req, res) => {
-    const userId = req.params.userId;
-    res.setHeader('Access-Control-Allow-Origin', 'https://zipperapp.vercel.app');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.writeHead(200,{
-        'Connection': 'keep-alive',
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-    })
-    emitter.on(`newBasketPaid_${userId}`, (basketpaid) => {
-        res.write(`data: ${JSON.stringify(basketpaid)} \n\n`)
-    })
-});
-
 router.get('/customers/user/basket/delete/item', async (req, res) => { 
     const { userId, orderId, productId } = req.query;
 try {
@@ -432,8 +418,8 @@ try {
 });
             
 
-router.post('/get/basketpaid/:userId', async (req, res) => {
-    const { userId } = req.body;
+router.get('/customer/basketpaid/:userId', async (req, res) => {
+    const { userId } = req.params; // Параметр из URL, а не из body
     try {
         const user = await User.findOne({ where: { userId: userId.toString() } });
         if (user) {
@@ -456,19 +442,19 @@ router.post('/get/basketpaid/:userId', async (req, res) => {
                 }
                 return null;
             });
-    
-    emitter.emit(`newBasketPaid_${userId}`, mappedData );
 
-    // Возвращаем успешный статус
-    return res.status(200).send('OK');
-} else {
-  res.status(404).json({ error: 'Пользователь не найден' });
-}
+            // Используем res.json() вместо emitter.emit
+            res.json(mappedData);
+
+            // Возвращаем успешный статус
+            // res.status(200).send('OK');
+        } else {
+            res.status(404).json({ error: 'Пользователь не найден' });
+        }
     } catch (error) {
         console.error('Данные оплаченной корзины пусты', error);
         res.status(200).json([]);
     }
-    
 });
 
 router.get('/connect/discount', async (req, res) => {
