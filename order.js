@@ -59,7 +59,7 @@ router.get('/get/status', async (req, res) => {
     }
 });
 
-router.get('customer/rank/:userId', async (req, res) => {
+router.get('/customer/rank/:userId', async (req, res) => {
     const { userId } = req.params; 
 
     try {
