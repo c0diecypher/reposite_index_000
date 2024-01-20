@@ -69,7 +69,8 @@ router.get('customer/rank/:userId', async (req, res) => {
             const userRank = user.userRank;
 
             // Теперь вы можете использовать значение userRank как вам нужно
-            res.json({ userId: userId, subscription: userRank });
+            
+            return res.json({ userId: userId, subscription: userRank });
         } else {
             res.status(404).json({ error: 'Пользователь не найден' });
         }
