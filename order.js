@@ -80,7 +80,6 @@ router.get('customer/rank/:userId', async (req, res) => {
     }
 });
 
-
 router.post('/update/payment', async (req, res) => {
     const { userId, order_id } = req.body;
     try {
