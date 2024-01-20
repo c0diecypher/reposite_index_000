@@ -59,6 +59,26 @@ router.get('/get/status', async (req, res) => {
     }
 });
 
+router.get('customer/rank/:userId', async (req, res) => {
+    const { userId } = req.params; 
+
+    try {
+        const user = await User.findOne({ where: { userId: userId.toString() } });
+
+        if (user) {
+            const userRank = user.userRank;
+
+            // Теперь вы можете использовать значение userRank как вам нужно
+            res.json({ userId: userId, subscription: userRank });
+        } else {
+            res.status(404).json({ error: 'Пользователь не найден' });
+        }
+    } catch (error) {
+        console.error('Ошибка при запросе статуса из базы данных:', error);
+        res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    }
+});
+
 
 router.post('/update/payment', async (req, res) => {
     const { userId, order_id } = req.body;
@@ -190,19 +210,7 @@ Zipper App снова ждет ваших заказов! ⚡`;
     }
 });
 
-router.get('/connect/bonus/:userId', async (req, res) => {
-    const userId = req.params.userId
-    res.setHeader('Access-Control-Allow-Origin', 'https://repository-appnextjs-ox8a.vercel.app');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.writeHead(200,{
-        'Connection': 'keep-alive',
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-    })
-    emitter.on(`newBonus_${userId}`, (bonus) => {
-        res.write(`data: ${JSON.stringify(bonus)} \n\n`)
-    })
-});
+
 
 router.get('/customer/bonus/:userId', async (req, res) => {
   const { userId } = req.params; // Параметр из URL, а не из body
