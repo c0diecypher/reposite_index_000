@@ -46,6 +46,11 @@ router.get('/get/status', async (req, res) => {
             const order = userOrderArray.find(order => order.order_id === order_id);
         
             if (order) {
+                if (order.status === 'PAID') {
+                    const currentBonus = parseInt(user.userBonus) || 0;
+                    user.userBonus = (currentBonus + 1).toString();
+                    await user.save()
+                }
                 res.json({ status: order.status });
             } else {
                 res.status(404).json({ error: 'Заказ не найден' });
