@@ -72,15 +72,15 @@
 
 				// Проверка, установлен ли startBonus в true перед обновлением userBonus
 				if (!existingUser.startBonus) {
-					console.log(
-						userData,
-						"Данные в базе данных успешно обновлены. Активация userBonus запрещена."
-					)
-				} else {
-          updates.userBonus = bonus
+					updates.userBonus = bonus
 					console.log(
 						userData,
 						"Данные в базе данных успешно обновлены, включая userBonus."
+					)
+				} else {
+					console.log(
+						userData,
+						"Данные в базе данных успешно обновлены. Активация userBonus запрещена."
 					)
 				}
 
