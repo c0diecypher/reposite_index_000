@@ -268,53 +268,8 @@ router.get('/customer/bonus/:userId', async (req, res) => {
           }
         }
       } else {
-            const userOrderArray = JSON.parse(user.userOrder);
-          
-            if (userOrderArray === null) {
-              // Если userOrderArray равен null, отправляем текущее состояние бонуса в ответе
-              const bonus = user.userBonus;
-              return res.status(200).json({ bonus });
-            } else {
-              const paidOrders = userOrderArray.filter(order => order.status === 'TRANSITRU');
-          
-              if (paidOrders.length > 0) {
-                const currentBonus = parseInt(user.userBonus) || 0;
-          
-                // Получаем userRank из customerId
-                const userRank = user.userRank;
-          
-                // Отслеживаем уникальные userOrder, для которых уже начислен бонус
-                const processedOrders = new Set();
-          
-                // Обрабатываем каждый заказ с статусом 'TRANSITRU'
-                for (const order of paidOrders) {
-                  const uniqueOrderIdentifier = order.userOrder;
-          
-                  // Проверяем, был ли уже начислен бонус для этого заказа
-                  if (!processedOrders.has(uniqueOrderIdentifier)) {
-                    // Начисляем бонус в зависимости от userRank
-                    if (userRank === 'connect+') {
-                      user.userBonus = (currentBonus + 300).toString();
-                    } else if (userRank === 'connect pro') {
-                      user.userBonus = (currentBonus + 500).toString();
-                    } else {
-                      // Если userRank не определен или равен 'connect', 'null', или 'undefined'
-                      user.userBonus = (currentBonus + 100).toString();
-                    }
-          
-                    // Добавляем заказ в множество обработанных заказов
-                    processedOrders.add(uniqueOrderIdentifier);
-                  }
-                }
-          
-                // Сохраняем изменения в базе данных
-                await user.save();
-              } else {
-                const bonus = user.userBonus;
-                return res.status(200).json({ bonus });
-              }
-            }
-          }
+        console.log('нет referralId');
+      }
     }
 
     // Сохраняем обновленные данные в базе данных
