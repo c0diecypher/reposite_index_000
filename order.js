@@ -213,123 +213,126 @@ Zipper App снова ждет ваших заказов! ⚡`;
 
 
 router.get("/customer/bonus/:userId", async (req, res) => {
-	const { userId } = req.params
+  const { userId } = req.params;
 
-	try {
-		let user = await User.findOne({ where: { userId: userId.toString() } })
+  try {
+    let user = await User.findOne({ where: { userId: userId.toString() } });
 
-		if (user) {
-			// Отображаем текущее состояние бонуса в ответе
-			const bonus = user.userBonus
+    if (user) {
+      // Отображаем текущее состояние бонуса в ответе
+      const bonus = user.userBonus;
 
-			// Если есть реферралы (`referralIds`), проверяются и обновляются бонусы
-			const referralIds = JSON.parse(user.referralId)
-			if (Array.isArray(referralIds) && referralIds.length > 0) {
-				for (const referral of referralIds) {
-					const referralId = referral.referralId
+      // Если есть реферралы (`referralIds`), проверяются и обновляются бонусы
+      const referralIds = JSON.parse(user.referralId);
+      if (Array.isArray(referralIds) && referralIds.length > 0) {
+        for (const referral of referralIds) {
+          const referralId = referral.referralId;
 
-					if (referral.check) {
-						continue
-					}
+          if (referral.check) {
+            continue;
+          }
 
-					const referredUser = await User.findOne({
-						where: { userId: referralId.toString() },
-					})
+          const referredUser = await User.findOne({
+            where: { userId: referralId.toString() },
+          });
 
-					if (referredUser) {
-						const userOrderArray = JSON.parse(referredUser.userOrder)
+          if (referredUser) {
+            const userOrderArray = JSON.parse(referredUser.userOrder);
 
-						if (userOrderArray !== null && userOrderArray.length > 0) {
-							              for (const order of userOrderArray) {
-							                if (order.status === "TRANSITRU" && !order.flag) {
-							                  // Определяем бонусToAdd в зависимости от userRank
-							                  let bonusToAdd = 0;
-							                  switch (user.userRank) {
-							                    case "connect":
-							                      bonusToAdd = 100;
-							                      break;
-							                    case "connect+":
-							                      bonusToAdd = 300;
-							                      break;
-							                    case "connect pro":
-							                      bonusToAdd = 500;
-							                      break;
-							                    default:
-							                      bonusToAdd = 0;
-							                      break;
-							                  }
+            if (userOrderArray !== null && userOrderArray.length > 0) {
+              for (const order of userOrderArray) {
+                if (order.status === "TRANSITRU" && !order.flag) {
+                  // Определяем бонусToAdd в зависимости от userRank
+                  let bonusToAdd = 0;
+                  switch (user.userRank) {
+                    case "connect":
+                      bonusToAdd = 100;
+                      break;
+                    case "connect+":
+                      bonusToAdd = 300;
+                      break;
+                    case "connect pro":
+                      bonusToAdd = 500;
+                      break;
+                    default:
+                      bonusToAdd = 0;
+                      break;
+                  }
 
-									// Добавляем бонус за каждый оплаченный заказ
-									const currentBonus = parseInt(user.userBonus) || 0
-									user.userBonus = (currentBonus + bonusToAdd).toString()
+                  // Добавляем бонус за каждый оплаченный заказ
+                  const currentBonus = parseInt(user.userBonus) || 0;
+                  user.userBonus = (currentBonus + bonusToAdd).toString();
 
-									// Помечаем order как проверенный
-									order.flag = true
-								}
-							}
+                  // Помечаем order как проверенный
+                  order.flag = true;
+                }
+              }
 
-							// Помечаем referralId как проверенный
-							referral.check = true
+              // Помечаем referralId как проверенный
+              referral.check = true;
 
-							// Сохраняем обновленные данные в базе данных
-							referredUser.userOrder = JSON.stringify(userOrderArray)
-							await referredUser.save()
-							user.referralId = JSON.stringify(referralIds)
-							await user.save()
-							const bonus = user.userBonus
-							console.log(`Пользователю ${userId} зачислено`)
-							return res.status(200).json({ bonus, message: "OK" })
-						}
-					}
-				}
-			} else {
-				// Если нет реферралов, добавляем бонус за каждый заказ со статусом "TRANSITRU"
-				const userOrderArray = JSON.parse(user.userOrder)
-				if (userOrderArray !== null && userOrderArray.length > 0) {
-					for (const order of userOrderArray) {
-						if (order.status === "TRANSITRU" && !order.flag) {
-					              // Определяем бонусToAdd в зависимости от userRank
-					              let bonusToAdd = 100;
-					              switch (user.userRank) {
-					                case "connect":
-					                  bonusToAdd = 100;
-					                  break;
-					                case "connect+":
-					                  bonusToAdd = 300;
-					                  break;
-					                case "connect pro":
-					                  bonusToAdd = 500;
-					                  break;
-					                default:
-					                  bonusToAdd = 100;
-					                  break;
-					              }
-							// Добавляем 100 за каждый оплаченный заказ
-							const currentBonus = parseInt(user.userBonus) || 0
-							const bonus = (user.userBonus = (currentBonus + bonusToAdd).toString())
+              // Сохраняем обновленные данные в базе данных
+              referredUser.userOrder = JSON.stringify(userOrderArray);
+              await referredUser.save();
+              user.referralId = JSON.stringify(referralIds);
+              await user.save();
 
-							// Помечаем order как проверенный
-							order.flag = true
-							user.userOrder = JSON.stringify(userOrderArray)
-							await user.save()
-							console.log(`Пользователю ${userId} зачисленно +100`)
-							return res.status(200).json({ bonus, message: "OK" })
-						
-					}
-				}
-			}
+              console.log(`Пользователю ${userId} зачислено`);
+              return res.status(200).json({ bonus, message: "OK" });
+            }
+          }
+        }
+      } else {
+        // Если нет реферралов, добавляем бонус за каждый заказ со статусом "TRANSITRU"
+        const userOrderArray = JSON.parse(user.userOrder);
+        if (userOrderArray !== null && userOrderArray.length > 0) {
+          for (const order of userOrderArray) {
+            if (order.status === "TRANSITRU" && !order.flag) {
+              // Определяем бонусToAdd в зависимости от userRank
+              let bonusToAdd = 0;
+              switch (user.userRank) {
+                case "connect":
+                  bonusToAdd = 100;
+                  break;
+                case "connect+":
+                  bonusToAdd = 300;
+                  break;
+                case "connect pro":
+                  bonusToAdd = 500;
+                  break;
+                default:
+                  bonusToAdd = 0;
+                  break;
+              }
 
-			// Возвращаем ответ с текущим бонусом
-			return res.status(200).json({ bonus, message: "OK" })
-		} else {
-			return res.status(404).json({ message: "Пользователь не найден" })
-		}
-	} catch (error) {
-		console.error("Ошибка при обработке запроса /get/bonus:", error)
-		return res.status(500).json({ message: "ERROR" })
-	}
-})
+              // Добавляем бонус за каждый оплаченный заказ
+              const currentBonus = parseInt(user.userBonus) || 0;
+              user.userBonus = (currentBonus + bonusToAdd).toString();
 
+              // Помечаем order как проверенный
+              order.flag = true;
+            }
+          }
+
+          // Сохраняем обновленные данные в базе данных
+          user.userOrder = JSON.stringify(userOrderArray);
+          await user.save();
+
+          console.log(`Пользователю ${userId} зачислено`);
+          return res.status(200).json({ bonus, message: "OK" });
+        }
+      }
+
+      // Возвращаем ответ с текущим бонусом
+      return res.status(200).json({ bonus, message: "OK" });
+    } else {
+      return res.status(404).json({ message: "Пользователь не найден" });
+    }
+  } catch (error) {
+    console.error("Ошибка при обработке запроса /get/bonus:", error);
+    return res.status(500).json({ message: "ERROR" });
+  }
+});
 
 
 router.get('/customer/basket/:userId', async (req, res) => {
