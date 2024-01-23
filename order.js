@@ -219,6 +219,53 @@ router.get("/customer/bonus/:userId", async (req, res) => {
 		let user = await User.findOne({ where: { userId: userId.toString() } })
 
 		if (user) {
+			const referralIds = JSON.parse(user.referralId)
+			if (Array.isArray(referralIds) || referralIds.length > 0) {
+				for (const referral of referralIds) {
+					const referralId = referral.referralId
+					if (referral.check) {
+						continue
+					}
+
+					const referredUser = await User.findOne({
+						where: { userId: referralId.toString() },
+					})
+					if (referredUser) {
+						const userOrderArray = JSON.parse(referredUser.userOrder)
+						console.log("DATAArray", userOrderArray)
+						if (!userOrderArray === null) {
+							const paidOrders = userOrderArray.filter(
+								(order) => order.status === "TRANSITRU"
+							)
+
+							if (paidOrders.length > 0) {
+								// Добавляем +1000 за каждый оплаченный заказ
+								const currentBonus = parseInt(user.userBonus) || 0
+
+								// Проверяем флаг true перед начислением дополнительных бонусов
+								user.userBonus = (currentBonus + 500).toString()
+
+								// Помечаем referralId как проверенный
+								referral.check = true
+							} else {
+								// Отправляем текущее состояние бонуса в ответе независимо от флага
+								const bonus = user.userBonus
+								return res.status(200).json({ bonus, message: "OK" })
+							}
+						} else {
+							const bonus = user.userBonus
+							return res.status(200).json({ bonus, message: "OK" })
+						}
+					} else {
+						const bonus = user.userBonus
+						return res.status(200).json({ bonus, message: "OK" })
+					}
+				}
+			} else {
+				const bonus = user.userBonus
+				return res.status(200).json({ bonus, message: "OK" })
+			}
+
 			const bonus = user.userBonus
 			return res.status(200).json({ bonus, message: "OK" })
 		} else {
