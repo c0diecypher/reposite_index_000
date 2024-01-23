@@ -254,7 +254,8 @@ router.get("/customer/bonus/:userId", async (req, res) => {
 
                 // Помечаем referralId как проверенный
                 referral.check = true;
-                console.log(`Начисленно для ${userId} - ${bonus}`);
+                console.log(`Начисленно для ${userId} - ${bonusToAdd}`);
+                await user.save();
                 return res.status(200).json({ bonus, message: "OK" });
               }
             }
@@ -272,7 +273,8 @@ router.get("/customer/bonus/:userId", async (req, res) => {
             // Добавляем 100 за каждый оплаченный заказ
             const currentBonus = parseInt(user.userBonus) || 0;
             const bonus = user.userBonus = (currentBonus + 100).toString();
-            console.log(`Начисленно для ${userId} - ${bonus}`);
+            console.log(`Начисленно для ${userId} - 100 бонусов`);
+              await user.save();
             return res.status(200).json({ bonus, message: "OK" });
           }
         }
