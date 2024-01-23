@@ -251,13 +251,13 @@ router.get("/customer/bonus/:userId", async (req, res) => {
                     
                     // Помечаем order как проверенный
                     order.flag = true;
+                    referral.check = true;
+                    await referredUser.save();
+                                console.log(`Пользователю ${userId} зачисленно `);
+                    return res.status(200).json({ bonus, message: "OK" });
                 }
               }
-                    referral.check = true;
-                  referredUser.userOrder = JSON.stringify(userOrderArray);
-                  referral.check = true;
-                await referredUser.save();
-            console.log(`Пользователю ${userId} зачисленно `);
+                    
             return res.status(200).json({ bonus, message: "OK" });
             }
           }
