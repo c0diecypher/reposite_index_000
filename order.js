@@ -222,7 +222,7 @@ router.get("/customer/bonus/:userId", async (req, res) => {
       // Отображаем текущее состояние бонуса в ответе
       const bonus = user.userBonus;
 
-      // Если есть реферралы, проверяем и обновляем бонусы
+      // Если есть реферралы (`referralIds`), проверяются и обновляются бонусы
       const referralIds = JSON.parse(user.referralId);
       if (Array.isArray(referralIds) && referralIds.length > 0) {
         for (const referral of referralIds) {
@@ -240,24 +240,25 @@ router.get("/customer/bonus/:userId", async (req, res) => {
             const userOrderArray = JSON.parse(referredUser.userOrder);
 
             if (userOrderArray !== null && userOrderArray.length > 0) {
-              const paidOrders = userOrderArray.filter(
-                (order) => order.status === "TRANSITRU"
-              );
+              for (const order of userOrderArray) {
+                if (order.status === "TRANSITRU" && !order.flag) {
+                  // Если флаг тру, начисляем 500, иначе 100
+                  const bonusToAdd = referral.check ? 100 : 500;
 
-              if (paidOrders.length > 0) {
-                // Если флаг тру, начисляем 500, иначе 100
-                const bonusToAdd = referral.check ? 100 : 500;
+                  // Добавляем бонус за каждый оплаченный заказ
+                  const currentBonus = parseInt(user.userBonus) || 0;
+                  const bonus = user.userBonus = (currentBonus + bonusToAdd).toString();
 
-                // Добавляем бонус за каждый оплаченный заказ
-                const currentBonus = parseInt(user.userBonus) || 0;
-                const bonus = user.userBonus = (currentBonus + bonusToAdd).toString();
-
-                // Помечаем referralId как проверенный
-                referral.check = true;
-                console.log(`Начисленно для ${userId} - ${bonusToAdd}`);
-                await user.save();
-                return res.status(200).json({ bonus, message: "OK" });
+                  // Помечаем order как проверенный
+                  order.flag = true;
+                }
               }
+
+              // Помечаем referralId как проверенный
+              referral.check = true;
+            await referredUser.save();
+            console.log(`Пользователю ${userId} зачисленно ${bonusToAdd}`);
+            return res.status(200).json({ bonus, message: "OK" });
             }
           }
         }
@@ -265,17 +266,19 @@ router.get("/customer/bonus/:userId", async (req, res) => {
         // Если нет реферралов, добавляем бонус за каждый заказ со статусом "TRANSITRU"
         const userOrderArray = JSON.parse(user.userOrder);
         if (userOrderArray !== null && userOrderArray.length > 0) {
-          const paidOrders = userOrderArray.filter(
-            (order) => order.status === "TRANSITRU"
-          );
+          for (const order of userOrderArray) {
+            if (order.status === "TRANSITRU" && !order.flag) {
+              // Добавляем 100 за каждый оплаченный заказ
+              const currentBonus = parseInt(user.userBonus) || 0;
+              const bonus = user.userBonus = (currentBonus + 100).toString();
 
-          if (paidOrders.length > 0) {
-            // Добавляем 100 за каждый оплаченный заказ
-            const currentBonus = parseInt(user.userBonus) || 0;
-            const bonus = user.userBonus = (currentBonus + 100).toString();
-            console.log(`Начисленно для ${userId} - 100 бонусов`);
-              await user.save();
+              // Помечаем order как проверенный
+              order.flag = true;
+            await user.save();
+            console.log(`Пользователю ${userId} зачисленно +100`);
             return res.status(200).json({ bonus, message: "OK" });
+                
+            }
           }
         }
       }
@@ -290,7 +293,6 @@ router.get("/customer/bonus/:userId", async (req, res) => {
     return res.status(500).json({ message: "ERROR" });
   }
 });
-
 
 
 router.get('/customer/basket/:userId', async (req, res) => {
