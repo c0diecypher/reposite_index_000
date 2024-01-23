@@ -247,10 +247,12 @@ router.get("/customer/bonus/:userId", async (req, res) => {
 
                   // Добавляем бонус за каждый оплаченный заказ
                   const currentBonus = parseInt(user.userBonus) || 0;
-                  const bonus = user.userBonus = (currentBonus + bonusToAdd).toString();
-
-                  // Помечаем order как проверенный
-                  order.flag = true;
+                    user.userBonus = (currentBonus + bonusToAdd).toString();
+                    
+                    // Помечаем order как проверенный
+                    order.flag = true;
+                    // Сохраняем обновленные данные в базе данных
+                    await referredUser.save();
                 }
               }
 
