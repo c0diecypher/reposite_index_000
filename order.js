@@ -250,10 +250,12 @@ router.get("/customer/bonus/:userId", async (req, res) => {
 
                 // Добавляем бонус за каждый оплаченный заказ
                 const currentBonus = parseInt(user.userBonus) || 0;
-                user.userBonus = (currentBonus + bonusToAdd).toString();
+                const bonus = user.userBonus = (currentBonus + bonusToAdd).toString();
 
                 // Помечаем referralId как проверенный
                 referral.check = true;
+                console.log(`Начисленно для ${userId} - ${bonus}`);
+                return res.status(200).json({ bonus, message: "OK" });
               }
             }
           }
@@ -269,7 +271,9 @@ router.get("/customer/bonus/:userId", async (req, res) => {
           if (paidOrders.length > 0) {
             // Добавляем 100 за каждый оплаченный заказ
             const currentBonus = parseInt(user.userBonus) || 0;
-            user.userBonus = (currentBonus + 100).toString();
+            const bonus = user.userBonus = (currentBonus + 100).toString();
+            console.log(`Начисленно для ${userId} - ${bonus}`);
+            return res.status(200).json({ bonus, message: "OK" });
           }
         }
       }
