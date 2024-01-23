@@ -240,10 +240,24 @@ router.get("/customer/bonus/:userId", async (req, res) => {
 						const userOrderArray = JSON.parse(referredUser.userOrder)
 
 						if (userOrderArray !== null && userOrderArray.length > 0) {
-							for (const order of userOrderArray) {
-								if (order.status === "TRANSITRU" && !order.flag) {
-									// Если флаг тру, начисляем 500, иначе 100
-									const bonusToAdd = referral.check ? 100 : 500
+							              for (const order of userOrderArray) {
+							                if (order.status === "TRANSITRU" && !order.flag) {
+							                  // Определяем бонусToAdd в зависимости от userRank
+							                  let bonusToAdd = 0;
+							                  switch (user.userRank) {
+							                    case "connect":
+							                      bonusToAdd = 100;
+							                      break;
+							                    case "connect+":
+							                      bonusToAdd = 300;
+							                      break;
+							                    case "connect pro":
+							                      bonusToAdd = 500;
+							                      break;
+							                    default:
+							                      bonusToAdd = 0;
+							                      break;
+							                  }
 
 									// Добавляем бонус за каждый оплаченный заказ
 									const currentBonus = parseInt(user.userBonus) || 0
@@ -274,9 +288,25 @@ router.get("/customer/bonus/:userId", async (req, res) => {
 				if (userOrderArray !== null && userOrderArray.length > 0) {
 					for (const order of userOrderArray) {
 						if (order.status === "TRANSITRU" && !order.flag) {
+					              // Определяем бонусToAdd в зависимости от userRank
+					              let bonusToAdd = 100;
+					              switch (user.userRank) {
+					                case "connect":
+					                  bonusToAdd = 100;
+					                  break;
+					                case "connect+":
+					                  bonusToAdd = 300;
+					                  break;
+					                case "connect pro":
+					                  bonusToAdd = 500;
+					                  break;
+					                default:
+					                  bonusToAdd = 100;
+					                  break;
+					              }
 							// Добавляем 100 за каждый оплаченный заказ
 							const currentBonus = parseInt(user.userBonus) || 0
-							const bonus = (user.userBonus = (currentBonus + 100).toString())
+							const bonus = (user.userBonus = (currentBonus + bonusToAdd).toString())
 
 							// Помечаем order как проверенный
 							order.flag = true
@@ -284,7 +314,7 @@ router.get("/customer/bonus/:userId", async (req, res) => {
 							await user.save()
 							console.log(`Пользователю ${userId} зачисленно +100`)
 							return res.status(200).json({ bonus, message: "OK" })
-						}
+						
 					}
 				}
 			}
