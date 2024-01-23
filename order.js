@@ -243,7 +243,7 @@ router.get("/customer/bonus/:userId", async (req, res) => {
               for (const order of userOrderArray) {
                 if (order.status === "TRANSITRU" && !order.flag) {
                   // Определяем бонусToAdd в зависимости от userRank
-                  let bonusToAdd = 0;
+                   let bonusToAdd = 0;
                   switch (user.userRank) {
                     case "connect":
                       bonusToAdd = 100;
@@ -273,8 +273,10 @@ router.get("/customer/bonus/:userId", async (req, res) => {
 
               // Сохраняем обновленные данные в базе данных
               referredUser.userOrder = JSON.stringify(userOrderArray);
+              referralBonusToAdd = bonusToAdd;
               await referredUser.save();
               user.referralId = JSON.stringify(referralIds);
+              user.userBonus = (parseInt(user.userBonus) || 0) + referralBonusToAdd;
               await user.save();
 
               console.log(`Пользователю ${userId} зачислено`);
