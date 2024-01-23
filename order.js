@@ -240,10 +240,12 @@ router.get("/customer/bonus/:userId", async (req, res) => {
             const userOrderArray = JSON.parse(referredUser.userOrder);
 
             if (userOrderArray !== null && userOrderArray.length > 0) {
+              let referralBonusToAdd = 0;
+
               for (const order of userOrderArray) {
                 if (order.status === "TRANSITRU" && !order.flag) {
                   // Определяем бонусToAdd в зависимости от userRank
-                   let bonusToAdd = 0;
+                  let bonusToAdd = 0;
                   switch (user.userRank) {
                     case "connect":
                       bonusToAdd = 100;
@@ -265,6 +267,11 @@ router.get("/customer/bonus/:userId", async (req, res) => {
 
                   // Помечаем order как проверенный
                   order.flag = true;
+
+                  // Суммируем бонусы за реферал, только если они еще не начислены
+                  if (!referral.check) {
+                    referralBonusToAdd += bonusToAdd;
+                  }
                 }
               }
 
@@ -273,10 +280,9 @@ router.get("/customer/bonus/:userId", async (req, res) => {
 
               // Сохраняем обновленные данные в базе данных
               referredUser.userOrder = JSON.stringify(userOrderArray);
-              referralBonusToAdd = bonusToAdd;
-              await referredUser.save();
-              user.referralId = JSON.stringify(referralIds);
+              referralBonusToAdd = referralBonusToAdd > 0 ? referralBonusToAdd : 0;
               user.userBonus = (parseInt(user.userBonus) || 0) + referralBonusToAdd;
+              await referredUser.save();
               await user.save();
 
               console.log(`Пользователю ${userId} зачислено`);
