@@ -219,44 +219,62 @@ router.get("/customer/bonus/:userId", async (req, res) => {
     let user = await User.findOne({ where: { userId: userId.toString() } });
 
     if (user) {
+      // Отображаем текущее состояние бонуса в ответе
+      const bonus = user.userBonus;
+
+      // Если есть реферралы, проверяем и обновляем бонусы
       const referralIds = JSON.parse(user.referralId);
+      if (Array.isArray(referralIds) && referralIds.length > 0) {
+        for (const referral of referralIds) {
+          const referralId = referral.referralId;
 
-      for (const referral of referralIds) {
-        const referralId = referral.referralId;
+          if (referral.check) {
+            continue;
+          }
 
-        if (referral.check) {
-          continue;
-        }
+          const referredUser = await User.findOne({
+            where: { userId: referralId.toString() },
+          });
 
-        const referredUser = await User.findOne({
-          where: { userId: referralId.toString() },
-        });
+          if (referredUser) {
+            const userOrderArray = JSON.parse(referredUser.userOrder);
 
-        if (referredUser) {
-          const userOrderArray = JSON.parse(referredUser.userOrder);
+            if (userOrderArray !== null && userOrderArray.length > 0) {
+              const paidOrders = userOrderArray.filter(
+                (order) => order.status === "TRANSITRU"
+              );
 
-          if (userOrderArray !== null && userOrderArray.length > 0) {
-            const paidOrders = userOrderArray.filter(
-              (order) => order.status === "TRANSITRU"
-            );
+              if (paidOrders.length > 0) {
+                // Если флаг тру, начисляем 500, иначе 100
+                const bonusToAdd = referral.check ? 100 : 500;
 
-            if (paidOrders.length > 0) {
-              // Добавляем +1000 за каждый оплаченный заказ
-              const currentBonus = parseInt(user.userBonus) || 0;
-              user.userBonus = (currentBonus + 1000).toString();
+                // Добавляем бонус за каждый оплаченный заказ
+                const currentBonus = parseInt(user.userBonus) || 0;
+                user.userBonus = (currentBonus + bonusToAdd).toString();
 
-              // Помечаем referralId как проверенный
-              referral.check = true;
-
-              // Выходим из цикла, так как бонусы уже начислены
-              break;
+                // Помечаем referralId как проверенный
+                referral.check = true;
+              }
             }
+          }
+        }
+      } else {
+        // Если нет реферралов, добавляем бонус за каждый заказ со статусом "TRANSITRU"
+        const userOrderArray = JSON.parse(user.userOrder);
+        if (userOrderArray !== null && userOrderArray.length > 0) {
+          const paidOrders = userOrderArray.filter(
+            (order) => order.status === "TRANSITRU"
+          );
+
+          if (paidOrders.length > 0) {
+            // Добавляем 100 за каждый оплаченный заказ
+            const currentBonus = parseInt(user.userBonus) || 0;
+            user.userBonus = (currentBonus + 100).toString();
           }
         }
       }
 
-      // Отправляем текущее состояние бонуса в ответе
-      const bonus = user.userBonus;
+      // Возвращаем ответ с текущим бонусом
       return res.status(200).json({ bonus, message: "OK" });
     } else {
       return res.status(404).json({ message: "Пользователь не найден" });
