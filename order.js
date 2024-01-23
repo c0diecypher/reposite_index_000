@@ -251,14 +251,12 @@ router.get("/customer/bonus/:userId", async (req, res) => {
                     
                     // Помечаем order как проверенный
                     order.flag = true;
-                    // Сохраняем обновленные данные в базе данных
-                    await referredUser.save();
                 }
               }
-
-              // Помечаем referralId как проверенный
-              referral.check = true;
-            await referredUser.save();
+                    referral.check = true;
+                  referredUser.userOrder = JSON.stringify(userOrderArray);
+                  referral.check = true;
+                await referredUser.save();
             console.log(`Пользователю ${userId} зачисленно ${bonusToAdd}`);
             return res.status(200).json({ bonus, message: "OK" });
             }
@@ -276,7 +274,8 @@ router.get("/customer/bonus/:userId", async (req, res) => {
 
               // Помечаем order как проверенный
               order.flag = true;
-            await user.save();
+             user.userOrder = JSON.stringify(userOrderArray);
+              await user.save();
             console.log(`Пользователю ${userId} зачисленно +100`);
             return res.status(200).json({ bonus, message: "OK" });
                 
