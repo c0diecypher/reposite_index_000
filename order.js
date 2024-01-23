@@ -212,78 +212,25 @@ Zipper App снова ждет ваших заказов! ⚡`;
 
 
 
-router.get('/customer/bonus/:userId', async (req, res) => {
-  const { userId } = req.params; // Параметр из URL, а не из body
-  console.log(userId);
-  try {
-    // Ищем пользователя по userId
-    let user = await User.findOne({ where: { userId: userId.toString() } });
+router.get("/customer/bonus/:userId", async (req, res) => {
+	const { userId } = req.params // Параметр из URL, а не из body
 
-    if (!user) {
-      return res.status(404).json({ message: 'Пользователь не найден' });
-    }
+	try {
+		let user = await User.findOne({ where: { userId: userId.toString() } })
 
-    // Парсим текстовый массив JSON в объект
-    const referralIds = JSON.parse(user.referralId);
+		if (user) {
+			const bonus = user.userBonus
+			return res.status(200).json({ bonus, message: "OK" })
+		} else {
+			return res.status(404).json({ message: "Пользователь не найден" })
+		}
+	} catch (error) {
+		console.error("Ошибка при обработке запроса /get/bonus:", error)
+		return res.status(500).json({ message: "ERROR" })
+	}
+})
 
-    if (!Array.isArray(referralIds) || referralIds.length === 0) {
-      const bonus = user.userBonus;
-      return res.status(200).json({ bonus, message: 'NO REFERRAL' });
-    }
 
-    for (const referral of referralIds) {
-      const referralId = referral.referralId;
-
-      // Проверяем, был ли уже обработан этот referralId
-      if (referral.check) {
-        continue;
-      }
-
-      const referredUser = await User.findOne({ where: { userId: referralId.toString() } });
-
-      if (referredUser) {
-        const userOrderArray = JSON.parse(referredUser.userOrder);
-        console.log('DATAArray', userOrderArray);
-
-        if (userOrderArray === null) {
-          // Если userOrderArray равен null, отправляем текущее состояние бонуса в ответе
-          const bonus = user.userBonus;
-          return res.status(200).json({ bonus });
-        } else {
-          const paidOrders = userOrderArray.filter(order => order.status === 'TRANSITRU');
-
-          if (paidOrders.length > 0) {
-            // Добавляем +1000 за каждый оплаченный заказ
-            const currentBonus = parseInt(user.userBonus) || 0;
-
-            // Проверяем флаг true перед начислением дополнительных бонусов
-            user.userBonus = (currentBonus + 1000).toString();
-
-            // Помечаем referralId как проверенный
-            referral.check = true;
-          } else {
-            // Отправляем текущее состояние бонуса в ответе независимо от флага
-            const bonus = user.userBonus;
-            return res.status(200).json({ bonus });
-          }
-        }
-      } else {
-        console.log('нет referralId');
-      }
-    }
-
-    // Сохраняем обновленные данные в базе данных
-    user.referralId = JSON.stringify(referralIds);
-    await user.save();
-
-    // После обработки всех referralId, отправляем общую сумму userBonus в ответе
-    const bonus = user.userBonus;
-    return res.status(200).json({ bonus, message: 'OK' });
-  } catch (error) {
-    console.error('Ошибка при обработке запроса /get/bonus:', error);
-    return res.status(500).json({ message: 'Произошла ошибка' });
-  }
-});
 
 router.get('/customer/basket/:userId', async (req, res) => {
     const { userId } = req.params;
