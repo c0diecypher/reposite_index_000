@@ -69,6 +69,7 @@ const User = sequelize.define('User', {
   userRank: {
     type: DataTypes.TEXT,
     allowNull: true,
+    unique: false, // Измененное значение
   },
   userSplit: {
     type: DataTypes.STRING, 
