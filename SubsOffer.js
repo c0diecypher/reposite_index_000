@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const { uuid } = require('uuidv4');
+const { v4: uuidv4 } = require('uuid')
 const { EventEmitter } = require('events');
 const emitter = new EventEmitter();
 const User = require('./models'); 
@@ -37,7 +37,7 @@ router.post("/customer/pay/subscription", async (req, res) => {
 			const project_id = "225"
 			const subsName = name
 			const subsPrice = price
-      const orderId = uuid()
+      const orderId = uuidv4()
       const productId = "1100011"
 			const config = {
 				headers: {
@@ -46,7 +46,7 @@ router.post("/customer/pay/subscription", async (req, res) => {
 			}
 
 			// Поиск пользователя в базе данных
-			const user = await User.findOne({ where: { userId: userId.toString() } })
+			const user = await User.findOne({ where: { userId: userId } })
 
 			if (user) {
 				const desc = `Подписка ${subsName}`
