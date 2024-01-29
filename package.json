@@ -12,6 +12,7 @@
   "dependencies": {
     "@twa.js/init-data-node": "^0.0.11",
     "body-parser": "^1.20.2",
+    "axios": "^1.6.5",
     "cors": "^2.8.5",
     "uuidv4": "^6.2.13",
     "crypto-js": "^4.1.1",
