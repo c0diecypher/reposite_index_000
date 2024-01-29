@@ -14,7 +14,7 @@ router.use(cors());
 	let status = null
 	let paymentId = null
 	let ProductOrder = null
-	app.post("/customer/pay/subscription", async (req, res) => {
+	router.post("/customer/pay/subscription", async (req, res) => {
 		const {
 			productId,
 			queryId,
@@ -166,7 +166,7 @@ Zipper App снова ждет ваших заказов! ⚡`
 				.json({ error: "Ошибка", message: "Внутренняя ошибка сервера." })
 		}
 	})
-	app.post("/customer/pay/subscription/get", async (req, res) => {
+	router.post("/customer/pay/subscription/get", async (req, res) => {
 		const apikey = "cpfmxaq0su2dy63v4g9zowjh"
 		const project_id = "225"
 		const config = {
