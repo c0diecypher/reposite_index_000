@@ -533,7 +533,8 @@ Zipper App снова ждет ваших заказов! ⚡`
 					}
 					return order
 				})
-
+				
+				
 				// Обновляем запись в таблице Users
 				await User.update(
 					{
@@ -544,6 +545,18 @@ Zipper App снова ждет ваших заказов! ⚡`
 					}
 				)
 
+				const SubsToUpdate = currentOrders.find((order) => order.order_id === '111000111' && order.status === "PAID");
+				
+				if (orderToUpdate) {
+				    await User.update(
+				        {
+				            userRank: "connect+",
+				        },
+				        {
+				            where: { userId: user.userId },
+				        }
+				    );
+				}
 				console.log("Статус заказа успешно обновлен.")
 			}
 		}
