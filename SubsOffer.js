@@ -15,7 +15,7 @@ let status = null;
 let paymentId = null;
 router.post("/customer/pay/subscription", async (req, res) => {
 		const {
-			productId,
+			subsId,
 			queryId,
 			price,
 			name,
@@ -38,11 +38,11 @@ router.post("/customer/pay/subscription", async (req, res) => {
 			const subsName = name
 			const subsPrice = price
       			const orderId = uuidv4()
-      			const subsId = productId
+      			const subscriptionId = subsId
 			console.log(`subsName: ${subsName}, 
    subsPrice: ${subsPrice},
    orderId : ${orderId},
-   subsId: ${subsId}`)
+   subsId: ${subscriptionId}`)
 			const config = {
 				headers: {
 					"Content-Type": "application/x-www-form-urlencoded",
@@ -106,7 +106,7 @@ Zipper App снова ждет ваших заказов! ⚡`
 
 					// Добавьте новый заказ к существующему значению
 					const newOrder = {
-						id: subsId,
+						id: subscriptionId,
 						name: subsName,
 						order_id: orderId,
 						price: subsPrice,
@@ -147,7 +147,7 @@ Zipper App снова ждет ваших заказов! ⚡`
 				.json({ error: "Ошибка", message: "Внутренняя ошибка сервера." })
 		}
 	})
-	router.post("/get/pay/subsription", async (req, res) => {
+	router.post("/get/pay/subsription/status", async (req, res) => {
 		const apikey = "cpfmxaq0su2dy63v4g9zowjh"
 		const project_id = "225"
 		const config = {
@@ -175,7 +175,7 @@ Zipper App снова ждет ваших заказов! ⚡`
 		console.log("Статус оплаты:", status)
 	})
 
-router.post("/customer/pay/subscription/status", async (req, res) => {
+router.post("/customer/pay/subscription/validation", async (req, res) => {
 		// Ваш код для POST-запроса
 		const { id, apikey, order_id, project_id, amount, createDateTime, data } =
 			req.body
