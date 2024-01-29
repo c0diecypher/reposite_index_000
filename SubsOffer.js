@@ -13,7 +13,7 @@ router.use(cors());
 
 let status = {};
 let paymentIds = {};
-let orderId =  {};
+let orderId = uuidv4();
 router.post("/customer/pay/subscription", async (req, res) => {
 		const {
 			subsId,
@@ -38,7 +38,6 @@ router.post("/customer/pay/subscription", async (req, res) => {
 			const project_id = "225"
 			const subsName = name
 			const subsPrice = price
-      			orderId = uuidv4()
       			const subscriptionId = subsId
 			console.log(`subsName: ${subsName}, 
    subsPrice: ${subsPrice},
