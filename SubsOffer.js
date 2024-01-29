@@ -11,8 +11,9 @@ const crypto = require("crypto")
 router.use(express.json());
 router.use(cors());
 
-let status = null;
-//let paymentIds = {};
+let status = {};
+let paymentIds = {};
+let orderId =  {};
 router.post("/customer/pay/subscription", async (req, res) => {
 		const {
 			subsId,
@@ -37,7 +38,7 @@ router.post("/customer/pay/subscription", async (req, res) => {
 			const project_id = "225"
 			const subsName = name
 			const subsPrice = price
-      			const orderId = uuidv4()
+      			orderId = uuidv4()
       			const subscriptionId = subsId
 			console.log(`subsName: ${subsName}, 
    subsPrice: ${subsPrice},
