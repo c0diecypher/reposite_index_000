@@ -16,6 +16,7 @@ let paymentId = null
 
 router.post("/customer/pay/subscription", async (req, res) => {
 		const {
+			id,
 			queryId,
 			price,
 			name,
@@ -37,8 +38,8 @@ router.post("/customer/pay/subscription", async (req, res) => {
 			const project_id = "225"
 			const subsName = name
 			const subsPrice = price
-      const orderId = uuidv4()
-      const productId = "1100011"
+      			const orderId = uuidv4()
+      			const productId = id
 			const config = {
 				headers: {
 					"Content-Type": "application/x-www-form-urlencoded",
