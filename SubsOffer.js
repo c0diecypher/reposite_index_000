@@ -11,10 +11,10 @@ const crypto = require("crypto")
 router.use(express.json());
 router.use(cors());
 
-let status = null
+	let status = null
 	let paymentId = null
 	let ProductOrder = null
-	app.post("/customer/settings/client/buy/offer/pay", async (req, res) => {
+	app.post("/customer/pay/subscription", async (req, res) => {
 		const {
 			productId,
 			queryId,
@@ -22,11 +22,7 @@ let status = null
 			size,
 			name,
 			userId,
-			order_id,
-			time,
-			remainingBonus,
-			saveBonus,
-			newBonus,
+			order_id
 		} = req.body
 		console.log(productId, queryId, price, size, name, userId, order_id)
 
@@ -47,10 +43,8 @@ let status = null
 			console.log(project_id, apikey)
 			const ProductName = name
 			const ProductSize = size
-			const saveUserBonus = saveBonus
-			const getUserBonus = newBonus
 			ProductOrder = order_id
-			const ProductPrice = price.replace(/\s/g, "").replace(/\u00a0/g, "")
+			const ProductPrice = price
 			console.log(ProductPrice)
 			console.log(ProductOrder)
 			console.log(ProductSize)
@@ -65,27 +59,11 @@ let status = null
 			const user = await User.findOne({ where: { userId: userId.toString() } })
 
 			if (user) {
-				const currentBonus = user.userBonus || 0 // Default to 0 if userBonus is not set
-				const changeBonus = remainingBonus
-				const updatedBonus = parseInt(changeBonus, 10) // Assuming remainingBonus is a number
-
-				if (getUserBonus === 0) {
-					// Обновляем поле userBonus только если newBonus равен 0
-					user.userBonus = updatedBonus
-					await user.save() // Сохраняем изменения в базе данных
-				}
+				
 				// Извлекаем данные пользователя
 				const userId = user.userId
-				const userFio = user.userFio || "Не указано"
-				const userAdress = user.userAdress || "Не указано"
-				const phoneNumber = user.phoneNumber || "Не указано"
-				const userCity = user.userCity || "Не указано"
-				const desc = `Название товара: ${ProductName}, 
-                      размер: ${ProductSize}, 
-                      ФИО: ${userFio}, 
-                      Номер для связи ${phoneNumber}
-                      Город: ${userCity},
-                      Адрес доставки: ${userAdress}`
+				const desc = `
+    Название товара: ${ProductName},`
 				const params = `
       Поздравляем с покупкой!
       📋 Данные заказа:
@@ -93,11 +71,6 @@ let status = null
 🎟️ ${ProductOrder}, 
 📏 ${ProductSize}, 
 💎 ${ProductPrice}.
-      🚚 Детали доставки:
-👤 ${userFio},
-📱 ${phoneNumber},
-🏙️ ${userAdress},
-📍 ${userCity}
 ID: ${userId}.
 
 Zipper App снова ждет ваших заказов! ⚡`
@@ -193,7 +166,7 @@ Zipper App снова ждет ваших заказов! ⚡`
 				.json({ error: "Ошибка", message: "Внутренняя ошибка сервера." })
 		}
 	})
-	app.post("/get/pay", async (req, res) => {
+	app.post("/customer/pay/subscription/get", async (req, res) => {
 		const apikey = "cpfmxaq0su2dy63v4g9zowjh"
 		const project_id = "225"
 		const config = {
