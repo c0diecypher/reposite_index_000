@@ -38,11 +38,11 @@ router.post("/customer/pay/subscription", async (req, res) => {
 			const subsName = name
 			const subsPrice = price
       			const orderId = uuidv4()
-      			const productId = productId
+      			const subsId = productId
 			console.log(`subsName: ${subsName}, 
    subsPrice: ${subsPrice},
    orderId : ${orderId},
-   productId: ${productId}`)
+   subsId: ${subsId}`)
 			const config = {
 				headers: {
 					"Content-Type": "application/x-www-form-urlencoded",
@@ -106,7 +106,7 @@ Zipper App снова ждет ваших заказов! ⚡`
 
 					// Добавьте новый заказ к существующему значению
 					const newOrder = {
-						id: productId,
+						id: subsId,
 						name: subsName,
 						order_id: orderId,
 						price: subsPrice,
