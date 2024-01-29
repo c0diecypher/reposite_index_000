@@ -12,7 +12,7 @@ router.use(express.json());
 router.use(cors());
 
 let status = null;
-let paymentId = null;
+let paymentIds = {};
 router.post("/customer/pay/subscription", async (req, res) => {
 		const {
 			subsId,
