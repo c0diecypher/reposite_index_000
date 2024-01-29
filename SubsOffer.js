@@ -13,7 +13,7 @@ router.use(cors());
 let status = null
 let paymentId = null
 
-router.post("/customer/pay/subscription, async (req, res) => {
+router.post("/customer/pay/subscription", async (req, res) => {
 		const {
 			queryId,
 			price,
