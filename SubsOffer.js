@@ -10,11 +10,12 @@ const axios = require('axios');
 const crypto = require("crypto")
 router.use(express.json());
 router.use(cors());
+
 let status = null;
 let paymentId = null;
 router.post("/customer/pay/subscription", async (req, res) => {
 		const {
-			id,
+			productId,
 			queryId,
 			price,
 			name,
@@ -37,11 +38,11 @@ router.post("/customer/pay/subscription", async (req, res) => {
 			const subsName = name
 			const subsPrice = price
       			const orderId = uuidv4()
-      			const productId = id
+      			const productId = productId
 			console.log(`subsName: ${subsName}, 
    subsPrice: ${subsPrice},
    orderId : ${orderId},
-   productId: ${id}`)
+   productId: ${productId}`)
 			const config = {
 				headers: {
 					"Content-Type": "application/x-www-form-urlencoded",
@@ -49,7 +50,7 @@ router.post("/customer/pay/subscription", async (req, res) => {
 			}
 
 			// Поиск пользователя в базе данных
-			const user = await User.findOne({ where: { userId: userId } })
+			const user = await User.findOne({ where: { userId: userId.toString() } })
 
 			if (user) {
 				const desc = `Подписка ${subsName}`
