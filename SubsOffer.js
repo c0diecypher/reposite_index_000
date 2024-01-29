@@ -11,6 +11,7 @@ const crypto = require("crypto")
 router.use(express.json());
 router.use(cors());
 let status = null;
+let paymentId = null;
 router.post("/customer/pay/subscription", async (req, res) => {
 		const {
 			id,
@@ -37,6 +38,10 @@ router.post("/customer/pay/subscription", async (req, res) => {
 			const subsPrice = price
       			const orderId = uuidv4()
       			const productId = id
+			console.log(`subsName: ${subsName}, 
+   subsPrice: ${subsPrice},
+   orderId : ${orderId},
+   productId: ${id}`)
 			const config = {
 				headers: {
 					"Content-Type": "application/x-www-form-urlencoded",
