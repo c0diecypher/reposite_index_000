@@ -545,7 +545,7 @@ Zipper App снова ждет ваших заказов! ⚡`
 					}
 				)
 
-				const SubsToUpdate = currentOrders.find((order) => order.order_id === '111000111' && order.status === "PAID");
+				const SubsToUpdate = currentOrders.find((order) => order.id === 111000111 && order.status === "PAID");
 				
 				if (SubsToUpdate) {
 				    await User.update(
