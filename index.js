@@ -475,7 +475,8 @@ Zipper App снова ждет ваших заказов! ⚡`
 	app.use(bodyParser.json())
 	const resOrder = require("./order")
 	app.use("/", resOrder)
-
+	const resSubs = require("./SubsOffer")
+	app.use("/", resSubs)
 	// Используем bodyParser для парсинга тела POST-запроса
 	app.use(bodyParser.urlencoded({ extended: false }))
 	app.use(bodyParser.json())
