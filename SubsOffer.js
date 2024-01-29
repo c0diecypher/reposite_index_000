@@ -127,9 +127,6 @@ Zipper App снова ждет ваших заказов! ⚡`
 						price: price,
 						size: size,
 						status: status,
-						time: time,
-						saveBonus: saveUserBonus,
-						newBonus: getUserBonus,
 					}
 
 					const updatedOrders = currentOrders.concat(newOrder)
