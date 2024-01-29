@@ -19,12 +19,11 @@ router.use(cors());
 			productId,
 			queryId,
 			price,
-			size,
 			name,
 			userId,
 			order_id
 		} = req.body
-		console.log(productId, queryId, price, size, name, userId, order_id)
+		console.log(productId, queryId, price, name, userId, order_id)
 
 		// Проверьте, что userId совпадает с ожидаемым
 		const allowedUserId = userId
@@ -42,12 +41,10 @@ router.use(cors());
 			const project_id = "225"
 			console.log(project_id, apikey)
 			const ProductName = name
-			const ProductSize = size
 			ProductOrder = order_id
 			const ProductPrice = price
 			console.log(ProductPrice)
 			console.log(ProductOrder)
-			console.log(ProductSize)
 			console.log(ProductName)
 			const config = {
 				headers: {
@@ -62,18 +59,8 @@ router.use(cors());
 				
 				// Извлекаем данные пользователя
 				const userId = user.userId
-				const desc = `
-    Название товара: ${ProductName},`
-				const params = `
-      Поздравляем с покупкой!
-      📋 Данные заказа:
-🧾 ${ProductName}, 
-🎟️ ${ProductOrder}, 
-📏 ${ProductSize}, 
-💎 ${ProductPrice}.
-ID: ${userId}.
-
-Zipper App снова ждет ваших заказов! ⚡`
+				const desc = `Теперь вам доступна подписка ${ProductName}`
+				const params = `Теперь вам доступна подписка ${ProductName}`
 
 				const dataToSend = {
 					project_id: project_id,
