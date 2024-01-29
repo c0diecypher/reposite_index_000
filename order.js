@@ -65,13 +65,25 @@ router.get('/customer/rank/:userId', async (req, res) => {
     try {
         const user = await User.findOne({ where: { userId: userId.toString() } });
 	const userOrderArray = JSON.parse(user.userOrder);
-	const order = userOrderArray.find(order => order.order_id === "111000111" && order.status === "PAID");
-	
+	const orderConnectPlus = userOrderArray.find(order => order.order_id === "111000111" && order.status === "PAID");
+	const orderConnectPro = userOrderArray.find(order => order.order_id === "111111111" && order.status === "PAID");
         if (user) {
-            if(order){
+            if(orderConnectPlus){
 		    await User.update(
 	        {
 	            userRank: "connect+",
+	        },
+	        {
+	            where: { userId: user.userId },
+	        }
+	    );
+
+   		 console.log("userRank успешно обновлен.");
+	    }
+		if(orderConnectPro){
+		    await User.update(
+	        {
+	            userRank: "connect pro",
 	        },
 	        {
 	            where: { userId: user.userId },
