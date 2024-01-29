@@ -12,8 +12,9 @@ router.use(express.json());
 router.use(cors());
 
 let status = {};
-let paymentIds = {};
+let paymentId = {};
 let orderId = uuidv4();
+
 router.post("/customer/pay/subscription", async (req, res) => {
 		const {
 			subsId,
