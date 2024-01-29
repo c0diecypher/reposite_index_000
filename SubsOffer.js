@@ -10,10 +10,7 @@ const axios = require('axios');
 const crypto = require("crypto")
 router.use(express.json());
 router.use(cors());
-
-let status = null
-let paymentId = null
-
+let status = null;
 router.post("/customer/pay/subscription", async (req, res) => {
 		const {
 			id,
