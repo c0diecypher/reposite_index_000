@@ -11,19 +11,26 @@ const crypto = require("crypto")
 router.use(express.json());
 router.use(cors());
 
-let status = {};
-let paymentId = {};
-let orderId = uuidv4();
-
-router.post("/customer/pay/subscription", async (req, res) => {
+let status = null
+	let paymentId = null
+	let ProductOrder = null
+	app.post("/customer/settings/client/buy/offer/pay", async (req, res) => {
 		const {
-			subsId,
+			productId,
 			queryId,
 			price,
+			size,
 			name,
 			userId,
+			order_id,
+			time,
+			remainingBonus,
+			saveBonus,
+			newBonus,
 		} = req.body
+		console.log(productId, queryId, price, size, name, userId, order_id)
 
+		// Проверьте, что userId совпадает с ожидаемым
 		const allowedUserId = userId
 		if (userId !== allowedUserId) {
 			return res
@@ -37,13 +44,17 @@ router.post("/customer/pay/subscription", async (req, res) => {
 		try {
 			const apikey = "cpfmxaq0su2dy63v4g9zowjh"
 			const project_id = "225"
-			const subsName = name
-			const subsPrice = price
-      			const subscriptionId = subsId
-			console.log(`subsName: ${subsName}, 
-   subsPrice: ${subsPrice},
-   orderId : ${orderId},
-   subsId: ${subscriptionId}`)
+			console.log(project_id, apikey)
+			const ProductName = name
+			const ProductSize = size
+			const saveUserBonus = saveBonus
+			const getUserBonus = newBonus
+			ProductOrder = order_id
+			const ProductPrice = price.replace(/\s/g, "").replace(/\u00a0/g, "")
+			console.log(ProductPrice)
+			console.log(ProductOrder)
+			console.log(ProductSize)
+			console.log(ProductName)
 			const config = {
 				headers: {
 					"Content-Type": "application/x-www-form-urlencoded",
@@ -54,17 +65,47 @@ router.post("/customer/pay/subscription", async (req, res) => {
 			const user = await User.findOne({ where: { userId: userId.toString() } })
 
 			if (user) {
-				const desc = `Подписка ${subsName}`
+				const currentBonus = user.userBonus || 0 // Default to 0 if userBonus is not set
+				const changeBonus = remainingBonus
+				const updatedBonus = parseInt(changeBonus, 10) // Assuming remainingBonus is a number
+
+				if (getUserBonus === 0) {
+					// Обновляем поле userBonus только если newBonus равен 0
+					user.userBonus = updatedBonus
+					await user.save() // Сохраняем изменения в базе данных
+				}
+				// Извлекаем данные пользователя
+				const userId = user.userId
+				const userFio = user.userFio || "Не указано"
+				const userAdress = user.userAdress || "Не указано"
+				const phoneNumber = user.phoneNumber || "Не указано"
+				const userCity = user.userCity || "Не указано"
+				const desc = `Название товара: ${ProductName}, 
+                      размер: ${ProductSize}, 
+                      ФИО: ${userFio}, 
+                      Номер для связи ${phoneNumber}
+                      Город: ${userCity},
+                      Адрес доставки: ${userAdress}`
 				const params = `
       Поздравляем с покупкой!
-Теперь покупки с подпиской ${subsName} станут намного выгоднее
+      📋 Данные заказа:
+🧾 ${ProductName}, 
+🎟️ ${ProductOrder}, 
+📏 ${ProductSize}, 
+💎 ${ProductPrice}.
+      🚚 Детали доставки:
+👤 ${userFio},
+📱 ${phoneNumber},
+🏙️ ${userAdress},
+📍 ${userCity}
+ID: ${userId}.
 
 Zipper App снова ждет ваших заказов! ⚡`
 
 				const dataToSend = {
 					project_id: project_id,
-					order_id: orderId,
-					amount: subsPrice,
+					order_id: ProductOrder, // Используйте order_id из req.body
+					amount: ProductPrice,
 					apikey: apikey,
 					desc: desc,
 					data: params,
@@ -107,11 +148,15 @@ Zipper App снова ждет ваших заказов! ⚡`
 
 					// Добавьте новый заказ к существующему значению
 					const newOrder = {
-						id: subscriptionId,
-						name: subsName,
-						order_id: orderId,
-						price: subsPrice,
+						id: productId,
+						name: name,
+						order_id: order_id,
+						price: price,
+						size: size,
 						status: status,
+						time: time,
+						saveBonus: saveUserBonus,
+						newBonus: getUserBonus,
 					}
 
 					const updatedOrders = currentOrders.concat(newOrder)
@@ -148,7 +193,7 @@ Zipper App снова ждет ваших заказов! ⚡`
 				.json({ error: "Ошибка", message: "Внутренняя ошибка сервера." })
 		}
 	})
-	router.post("/get/pay/subsription/status", async (req, res) => {
+	app.post("/get/pay", async (req, res) => {
 		const apikey = "cpfmxaq0su2dy63v4g9zowjh"
 		const project_id = "225"
 		const config = {
@@ -176,71 +221,6 @@ Zipper App снова ждет ваших заказов! ⚡`
 		console.log("Статус оплаты:", status)
 	})
 
-router.post("/customer/pay/subscription/validation", async (req, res) => {
-		// Ваш код для POST-запроса
-		const { id, apikey, order_id, project_id, amount, createDateTime, data } =
-			req.body
-		const sign = crypto
-			.createHash("sha256")
-			.update(`${id}:${order_id}:${project_id}:${apikey}`)
-			.digest("hex")
 
-		if (sign !== sign) {
-			return res.status(400).send("Неверная подпись")
-		}
-
-		if (
-			data !== undefined &&
-			id !== undefined &&
-			order_id !== undefined &&
-			createDateTime !== undefined &&
-			amount !== undefined
-		) {
-			// Платеж прошел успешно, проводите операции по обработке платежа
-			console.log("Оплачено", { id, order_id, amount, createDateTime, data })
-
-			// Отправляем статус только если все поля определены
-			res.send("OK")
-
-			// Находим пользователя с совпадающими данными в userOrder
-			const user = await User.findOne({
-				where: {
-					userOrder: {
-						[Sequelize.Op.like]: `%${order_id}%`, // Используем order_id вместо data
-					},
-				},
-			})
-
-			if (user) {
-				const chatId = user.userId
-				const message = `${data}`
-
-				// Отправляем сообщение пользователю
-				bot.sendMessage(chatId, message)
-
-				let currentOrders = user.userOrder ? JSON.parse(user.userOrder) : []
-
-				// Обновляем статус заказов с соответствующим order_id
-				const updatedOrders = currentOrders.map((order) => {
-					if (order.order_id === order_id) {
-						return { ...order, status: "PAID" }
-					}
-					return order
-				})
-
-				// Обновляем запись в таблице Users
-				await User.update(
-					{
-						userOrder: JSON.stringify(updatedOrders),
-					},
-					{
-						where: { userId: user.userId },
-					}
-				)
-
-				console.log("Статус заказа успешно обновлен.")
-			}
-		}
-	})
 
 module.exports = router;
