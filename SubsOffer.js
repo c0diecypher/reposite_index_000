@@ -142,7 +142,7 @@ Zipper App снова ждет ваших заказов! ⚡`
 				.json({ error: "Ошибка", message: "Внутренняя ошибка сервера." })
 		}
 	})
-	app.post("/get/pay/subsription", async (req, res) => {
+	router.post("/get/pay/subsription", async (req, res) => {
 		const apikey = "cpfmxaq0su2dy63v4g9zowjh"
 		const project_id = "225"
 		const config = {
