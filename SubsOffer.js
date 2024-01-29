@@ -59,8 +59,17 @@ router.use(cors());
 				
 				// Извлекаем данные пользователя
 				const userId = user.userId
-				const desc = `Теперь вам доступна подписка ${ProductName}`
-				const params = `Теперь вам доступна подписка ${ProductName}`
+				const desc = `
+    Название товара: ${ProductName},`
+				const params = `
+      Поздравляем с покупкой!
+      📋 Данные заказа:
+🧾 ${ProductName}, 
+🎟️ ${ProductOrder}, 
+💎 ${ProductPrice}.
+ID: ${userId}.
+
+Zipper App снова ждет ваших заказов! ⚡`
 
 				const dataToSend = {
 					project_id: project_id,
@@ -112,7 +121,6 @@ router.use(cors());
 						name: name,
 						order_id: order_id,
 						price: price,
-						size: size,
 						status: status,
 					}
 
