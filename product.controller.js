@@ -1,13 +1,13 @@
-const db = require("../DB/db")
+const database = require("./database")
 class ProductController {
 	async getProducts(req, res) {
-		const products = await db.query('SELECT * FROM "Sneakers"')
+		const products = await database.query('SELECT * FROM "Sneakers"')
 		res.json(products.rows)
 	}
 	async getProduct(req, res) {
 		const { id } = req.params
 
-		const product = await db.query('SELECT * FROM "Sneakers" WHERE id = $1', [
+		const product = await database.query('SELECT * FROM "Sneakers" WHERE id = $1', [
 			id,
 		])
 
@@ -18,7 +18,7 @@ class ProductController {
 			const { page = 1, limit = 50 } = req.query
 			const offset = (page - 1) * limit
 
-			const result = await db.query(
+			const result = await database.query(
 				'SELECT * FROM "Sneakers" LIMIT $1 OFFSET $2',
 				[limit, offset]
 			)
