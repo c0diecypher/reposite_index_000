@@ -16,7 +16,7 @@
 	const bot = new TelegramBot(token, { polling: true })
 	const app = express()
 	const emitter = new events.EventEmitter()
-	const productRouter = require("./routes/product.route")
+	const productRouter = require("./product.route")
 	app.use(express.json())
 	app.use(cors())
 
