@@ -16,7 +16,7 @@
 	const bot = new TelegramBot(token, { polling: true })
 	const app = express()
 	const emitter = new events.EventEmitter()
-	const productRouter = require("./product.route")
+	
 	app.use(express.json())
 	app.use(cors())
 
@@ -31,7 +31,7 @@
 Покупайте стильно и выгодно с <strong>ZipperApp!</strong>`
 	let userId = ""
 	let photoUrl = ""
-	app.use("/api", productRouter)
+	
 	app.post("/validate-initdata", async (req, res) => {
 		try {
 			const authHeader = req.headers.authorization
